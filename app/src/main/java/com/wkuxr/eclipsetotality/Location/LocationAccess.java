@@ -3,14 +3,10 @@ package com.wkuxr.eclipsetotality.Location;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
-import android.view.View;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import android.location.Location;
-
-import android.app.Activity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -21,7 +17,6 @@ import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.gms.tasks.Task;
 import com.wkuxr.eclipsetotality.MainActivity;
-import com.wkuxr.eclipsetotality.R;
 
 public class LocationAccess implements com.google.android.gms.location.LocationListener {
     public static FusedLocationProviderClient fusedLocationProviderClient;

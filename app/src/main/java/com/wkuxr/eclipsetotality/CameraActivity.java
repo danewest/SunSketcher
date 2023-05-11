@@ -31,7 +31,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
-import androidx.navigation.ui.AppBarConfiguration;
 
 import com.wkuxr.eclipsetotality.databinding.ActivityCameraBinding;
 
@@ -42,7 +41,6 @@ import java.util.List;
 
 public class CameraActivity extends AppCompatActivity {
 
-    private AppBarConfiguration appBarConfiguration;
     private ActivityCameraBinding binding;
 
     CameraDevice cameraDevice;
