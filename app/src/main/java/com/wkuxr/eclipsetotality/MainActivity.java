@@ -12,6 +12,10 @@ import android.view.View;
 import android.widget.Button;
 
 import com.wkuxr.eclipsetotality.Location.LocationAccess;
+import com.wkuxr.eclipsetotality.Location.LocToTime;
+
+import java.util.Calendar;
+import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         singleton = this;
-        rPerm(new String[]{"android.permission.ACCESS_FINE_LOCATION"});
+        reqPerm(new String[]{"android.permission.ACCESS_FINE_LOCATION"});
     }
 
     @SuppressLint("SetTextI18n")
@@ -33,17 +37,76 @@ public class MainActivity extends AppCompatActivity {
             Button button = (Button) v;
             button.setText("Getting GPS Location");
 
-            Location location = LocationAccess.getLocation();
+            LocationAccess locAccess = new LocationAccess(this);
+            locAccess.getCurrentLocation(new LocationAccess.LocationResultCallback() {
+                @Override
+                public void onLocationResult(Location location) {
+                    double lon = location.getLongitude();
+                    double lat = location.getLatitude();
+                    double alt = location.getAltitude();
 
-            double lon = location.getLongitude();
-            double lat = location.getLatitude();
-            String loc = "lat: " + lat + "; lon: " + lon;
+                    String[] eclipseData = LocToTime.calculatefor(lon, lat, alt);
+                    if(eclipseData[0] != "N/A") {
+                        long[] times = convertTimes(eclipseData);
 
-            button.setText(loc);
+                        Calendar[] timeCals = new Calendar[2];
+                        timeCals[0] = Calendar.getInstance();
+                        timeCals[0].setTimeInMillis(times[0] * 1000);
+                        timeCals[1] = Calendar.getInstance();
+                        timeCals[1].setTimeInMillis(times[1] * 1000);
+
+                        String details = "lat: " + lat + "; lon: " + lon + "; Eclipse Time: " + timeCals[0].getTime();
+
+                        button.setText(details);
+                    } else {
+                        button.setText("Not in eclipse path.");
+                    }
+                }
+
+                @Override
+                public void onLocationFailed() {
+                    button.setText("Unable to get location");
+                }
+            });
         }
     }
 
-    public void rPerm(String[] permissions){
+    long[] convertTimes(String[] data){
+        String[] start = data[0].split(":");
+        String[] end = data[1].split(":");
+
+        //we don't need to worry about standard timezones, since the actual eclipse is on 4/8, during daylight savings
+        int timeDiff = 0;
+        switch(TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT)){
+            case "HST-10:00":
+                timeDiff = -10;
+                break;
+            case "AKDT-8:00":
+                timeDiff = -8;
+                break;
+            case "PDT-7:00":
+                timeDiff = -7;
+                break;
+            case "MDT-6:00":
+                timeDiff = -6;
+                break;
+            case "CDT-5:00":
+                timeDiff = -5;
+                break;
+            case "EDT-4:00":
+                timeDiff = -4;
+                break;
+            default:
+                timeDiff = 0;
+        }
+
+        long startUnix = 1712530800 + ((Integer.parseInt(start[0]) + timeDiff) * 3600) + (Integer.parseInt(start[1]) * 60) + Integer.parseInt(start[2]);
+        long endUnix = 1712530800 + ((Integer.parseInt(end[0]) + timeDiff) * 3600) + (Integer.parseInt(end[1]) * 60) + Integer.parseInt(end[2]);
+
+        return new long[]{startUnix, endUnix};
+    }
+
+    public void reqPerm(String[] permissions){
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(permissions, 1);
         }

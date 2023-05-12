@@ -1,5 +1,7 @@
 package com.wkuxr.eclipsetotality.Location;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 public class LocToTime {
@@ -762,16 +764,18 @@ static String getcoverage() {
   return a;
 }
 
-static String[] calculatefor(double lat,double lon, double alt){
+public static String[] calculatefor(double lat, double lon, double alt){
     String[] info = new String[2];
-    
+
     calcObsv(lat, lon, alt);
-    
+    //calcObsv(25.122, -104.2252, alt);
+
     getall();
     
     if(mid[39] > 2){
         info[0] = gettime(c2);
         info[1] = gettime(c3);
+        Log.d("LocationTiming", info[0] + ";   " + info[1]);
     }
     else return new String[]{"N/A"};
     return info;
