@@ -26,11 +26,13 @@ public class LocationAccess {
     public interface LocationResultCallback {
         void onLocationResult(Location location);
         void onLocationFailed();
+    }
 
     public void getCurrentLocation(final LocationResultCallback callback) {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Handle the case where location permissions are not granted
+            if (callback != null) {
                 callback.onLocationFailed();
             }
             return;
