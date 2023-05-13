@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                     double alt = location.getAltitude();
 
                     String[] eclipseData = LocToTime.calculatefor(lon, lat, alt);
-                    if(eclipseData[0] != "N/A") {
+                    if(!eclipseData[0].equals("N/A")) {
                         long[] times = convertTimes(eclipseData);
 
                         Calendar[] timeCals = new Calendar[2];
@@ -97,11 +97,11 @@ public class MainActivity extends AppCompatActivity {
                 timeDiff = -4;
                 break;
             default:
-                timeDiff = 0;
+                break;
         }
 
-        long startUnix = 1712530800 + ((Integer.parseInt(start[0]) + timeDiff) * 3600) + (Integer.parseInt(start[1]) * 60) + Integer.parseInt(start[2]);
-        long endUnix = 1712530800 + ((Integer.parseInt(end[0]) + timeDiff) * 3600) + (Integer.parseInt(end[1]) * 60) + Integer.parseInt(end[2]);
+        long startUnix = 1712530800 + ((Integer.parseInt(start[0]) + timeDiff) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);
+        long endUnix = 1712530800 + ((Integer.parseInt(end[0]) + timeDiff) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
 
         return new long[]{startUnix, endUnix};
     }
