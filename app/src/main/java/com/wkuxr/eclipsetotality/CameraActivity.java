@@ -392,7 +392,33 @@ public class CameraActivity extends AppCompatActivity {
                         }
                     };
 
+            //single request
             mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
+            //will need to test with ideas, but the current objective is to use this to capture 2 images per second (1 image every 0.5 seconds)
+
+            //repeating request
+            /*mPreviewCaptureSession.setRepeatingRequest(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        mPreviewCaptureSession.stopRepeating();
+                    } catch (CameraAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+            Handler h = new Handler();
+            h.postDelayed(r, 250);*/
+
+            //burst request
+            /*CaptureRequest request = mCaptureRequestBuilder.build();
+            List<CaptureRequest> requests = new ArrayList<>();
+            for(int i = 0; i < 30; i++){
+                requests.add(request);
+            }
+            mPreviewCaptureSession.captureBurst(requests,stillCaptureCallback, null);*/
+
 
         } catch (CameraAccessException e) {
             e.printStackTrace();
