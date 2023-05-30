@@ -3,6 +3,7 @@ package com.wkuxr.eclipsetotality;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
@@ -209,6 +210,9 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    long startTime;
+    long endTime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -220,6 +224,10 @@ public class CameraActivity extends AppCompatActivity {
 
         mTextureView = findViewById(R.id.textureView);
 
+        //get the start and end time of eclipse totality from SharedPreferences, default to Long.MAX_VALUE if not present so the camera sequence doesn't falsely trigger.
+        SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+        startTime = prefs.getLong("startTime", Long.MAX_VALUE);
+        endTime = prefs.getLong("endTime", Long.MAX_VALUE);
         /*
         ImageButton mStillImageButton = findViewById(R.id.cameraImageButton2);
         mStillImageButton.setOnClickListener(v -> {

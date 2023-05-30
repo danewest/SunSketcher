@@ -5,6 +5,9 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -16,14 +19,17 @@ import com.wkuxr.eclipsetotality.Location.LocToTime;
 
 import java.util.Calendar;
 import java.util.TimeZone;
+import com.wkuxr.eclipsetotality.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
     public static MainActivity singleton;   //having a singleton instance of the MainActivity makes so many things significantly easier because it gives us a definite, central reference point for non-static and activity-related functions
+    static ActivityMainBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         singleton = this;
         reqPerm(new String[]{"android.permission.ACCESS_FINE_LOCATION"});
     }
@@ -58,6 +64,14 @@ public class MainActivity extends AppCompatActivity {
                         String details = "lat: " + lat + "; lon: " + lon + "; Eclipse Time: " + timeCals[0].getTime();
 
                         button.setText(details);
+
+                        //store the unix time for the start and end of totality in SharedPreferences
+                        SharedPreferences.Editor prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE).edit();
+                        prefs.putLong("startTime",times[0] * 1000);
+                        prefs.putLong("endTime",times[1] * 1000);
+                        prefs.apply();
+
+                        Intent intent;
                     } else {
                         button.setText("Not in eclipse path.");
                     }
