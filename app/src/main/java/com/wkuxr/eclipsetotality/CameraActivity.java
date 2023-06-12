@@ -31,9 +31,12 @@ import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -49,14 +52,17 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class CameraActivity extends AppCompatActivity {
 
-    private static final String TAG = "Camera2VideoImageActivity";
+    static CameraActivity singleton;
+
+    private static final String TAG = "Camera2VideoImageActivi"; // The name of the app, we can change this later (i think)
 
     private static final int REQUEST_CAMERA_PERMISSION_RESULT = 0;
-    private static final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_RESULT = 1;
     private static final int STATE_PREVIEW = 0;
     private static final int STATE_WAIT_LOCK = 1;
     private int mCaptureState = STATE_PREVIEW;
@@ -117,7 +123,7 @@ public class CameraActivity extends AppCompatActivity {
                 }
             };
 
-
+    // This class saves images
     private class ImageSaver implements Runnable {
 
         private final Image mImage;
@@ -163,6 +169,7 @@ public class CameraActivity extends AppCompatActivity {
     private final CameraCaptureSession.CaptureCallback mPreviewCaptureCallback = new
             CameraCaptureSession.CaptureCallback() {
 
+                @RequiresApi(api = Build.VERSION_CODES.O)
                 private void process(CaptureResult captureResult) {
                     switch (mCaptureState) {
                         case STATE_PREVIEW:
@@ -173,13 +180,24 @@ public class CameraActivity extends AppCompatActivity {
                             Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
                             if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED ||
                                     afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
+                                //This line displays the popup
+                                // that is shown after an image is taken. we don't particularly need it in the final product, but it is good for testing.
                                 Toast.makeText(getApplicationContext(), "AF Locked!", Toast.LENGTH_SHORT).show();
-                                startStillCaptureRequest();
+                                /*try {
+                                    CaptureRequest.Builder builder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+                                    startStillCaptureRequest(builder);
+                                    builder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+                                    builder.set(CaptureRequest.SENSOR_SENSITIVITY,100);
+                                    startStillCaptureRequest(builder);
+                                } catch (CameraAccessException e) {
+                                    e.printStackTrace();
+                                }*/
                             }
                             break;
                     }
                 }
 
+                @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
@@ -187,6 +205,7 @@ public class CameraActivity extends AppCompatActivity {
                     process(result);
                 }
             };
+
     private CaptureRequest.Builder mCaptureRequestBuilder;
 
     private File mImageFolder;
@@ -210,6 +229,43 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    /*@RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        createImageFolder();
+
+        mTextureView = findViewById(R.id.textureView);
+        ImageButton mStillImageButton = findViewById(R.id.cameraImageButton2);
+        mStillImageButton.setOnClickListener(v -> {
+            //checkWriteStoragePermission();  // this was taken out because it causes the app to crash by asking
+            // for permission twice. may be an issue that causes the app to crash upon startup currently.
+            //try{
+            //    startStillCaptureRequest(mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE));
+            //} catch (CameraAccessException e){
+            //    e.printStackTrace();
+            //}
+
+            lockFocus();
+            try {
+                CaptureRequest.Builder builder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+                builder.set(CaptureRequest.EDGE_MODE, CaptureRequest.EDGE_MODE_OFF);
+                builder.set(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE_ON);
+                builder.set(CaptureRequest.COLOR_CORRECTION_ABERRATION_MODE, CaptureRequest.COLOR_CORRECTION_ABERRATION_MODE_OFF);
+                builder.set(CaptureRequest.NOISE_REDUCTION_MODE, CaptureRequest.NOISE_REDUCTION_MODE_OFF);
+                builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
+                builder.set(CaptureRequest.CONTROL_AE_LOCK, true);
+                builder.set(CaptureRequest.CONTROL_AWB_LOCK, true);
+
+                startStillCaptureRequest(builder);
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
+        });
+    }*/
+
     long startTime;
     long endTime;
 
@@ -218,7 +274,9 @@ public class CameraActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
-        checkWriteStoragePermission();
+        singleton = this;
+
+        //checkWriteStoragePermission();
 
         createImageFolder();
 
@@ -228,14 +286,67 @@ public class CameraActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         startTime = prefs.getLong("startTime", Long.MAX_VALUE);
         endTime = prefs.getLong("endTime", Long.MAX_VALUE);
-        /*
-        ImageButton mStillImageButton = findViewById(R.id.cameraImageButton2);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        //TODO: add timer that takes images every 0.5 seconds for 10 seconds starting 7 seconds before t[c2], then another timer for images every 0.5s for 10s starting 3s before t[c3]
+        startTime = System.currentTimeMillis() + 10000;
+        Date startC2 = new Date(startTime - 7000);
+        Date endC2 = new Date(startTime + 3100);
+        //Date startC3 = new Date(endTime - 3000);
+        //Date endC3 = new Date(endTime + 7100);
+        sequenceTimer = new Timer();
+        //set timer to start captures at t[c2]-7
+        sequenceTimer.schedule(new StartSequenceTask(),startC2);
+        //set timer to stop t[c2]-7 captures
+        sequenceTimer.schedule(new StopSequenceTask(), endC2);
+        //set timer to start captures at t[c3]-3
+        //sequenceTimer.schedule(new StartSequenceTask(), startC3);
+        //set timer to stop t[c3]-3 captures
+        //sequenceTimer.schedule(new StopSequenceTask(), endC3);
+
+
+        Button mStillImageButton = findViewById(R.id.button);
         mStillImageButton.setOnClickListener(v -> {
             //checkWriteStoragePermission();
             startStillCaptureRequest();
             lockFocus();
         });
-        */
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(sequenceTimer != null){
+            sequenceTimer.cancel();
+        }
+    }
+
+    Timer sequenceTimer = null;
+    Handler sequenceHandler = new Handler();
+    Runnable sequenceRunnable = new Runnable(){
+        @Override
+        public void run(){
+            startStillCaptureRequest();
+            sequenceHandler.postDelayed(this, 500);
+        }
+    };
+
+    static class StartSequenceTask extends TimerTask {
+        public void run(){
+            singleton.sequenceHandler.postDelayed(singleton.sequenceRunnable, 500);
+        }
+    }
+
+    static class StopSequenceTask extends TimerTask {
+        public void run(){
+            singleton.sequenceHandler.removeCallbacks(singleton.sequenceRunnable);
+            Log.d("STOP_CAPTURES", "Captures have stopped, close app and check gallery.");
+        }
     }
 
     @Override
@@ -279,7 +390,8 @@ public class CameraActivity extends AppCompatActivity {
     private void setupCamera(int width, int height) {
         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
-            // sets the value of the highest resolution camera as the first one on the device, then iterates through every camera, and determines if it is larger than the largest quality camera
+            // sets the value of the highest resolution camera as the first one on the device, then iterates through every camera,
+            // and determines if it is larger than the largest quality camera
             // and if it is, sets the currentLargest to the new largest camera
             // currentLargest stores the resolution value
             // currentLarge stores the cameraID value
@@ -288,7 +400,8 @@ public class CameraActivity extends AppCompatActivity {
             String[] camera1 = cameraManager.getCameraIdList();
             Size currentLargest = getResolution(cameraManager,camera1[index]);
             String currentLarge = camera1[index];
-            // add a catch to ensure that camera id 0 is not front facing
+            // add a catch to ensure that camera id 0 is not front facing. if it is, and is the highest resolution, it will stay as the front camera.
+            // it is very rare that a front camera will have the highest resolution, but it is better to be safe.
             if (cameraManager.getCameraCharacteristics(currentLarge).get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT){
                 currentLargest = getResolution(cameraManager, camera1[index+1]);
                 currentLarge = camera1[index+1];
@@ -312,7 +425,7 @@ public class CameraActivity extends AppCompatActivity {
             int rotatedWidth = width;
             int rotatedHeight = height;
             if (swapRotation) {
-                rotatedWidth = height; // this is for rotation, will call a warning, its no issue
+                rotatedWidth = height; // this is for rotation, it is possible it may call a warning, its no issue
                 rotatedHeight = width; // this too
             }
             mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), rotatedWidth, rotatedHeight);
@@ -325,26 +438,34 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    // first checks for permission then opens the camera with the selected cameraID found in the setupCamera method.
     private void connectCamera() {
         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
-                    PackageManager.PERMISSION_GRANTED) {
-                cameraManager.openCamera(mCameraId, mCameraDeviceStateCallback, mBackgroundHandler);
-            } else {
-                if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                    Toast.makeText(this,
-                            "Video app required access to camera", Toast.LENGTH_SHORT).show();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) ==
+                        PackageManager.PERMISSION_GRANTED) {
+                    cameraManager.openCamera(mCameraId, mCameraDeviceStateCallback, mBackgroundHandler);
+                } else {
+                    if (shouldShowRequestPermissionRationale(android.Manifest.permission.CAMERA)) {
+                        Toast.makeText(this,
+                                "Video app required access to camera", Toast.LENGTH_SHORT).show();
+                    }
+                    requestPermissions(new String[]{android.Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
+                    }, REQUEST_CAMERA_PERMISSION_RESULT);
                 }
-                requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
-                }, REQUEST_CAMERA_PERMISSION_RESULT);
-            }
 
+            } else {
+                cameraManager.openCamera(mCameraId, mCameraDeviceStateCallback, mBackgroundHandler);
+            }
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
     }
 
+    // the method that displays what the camera sees on screen. Since the resolution is currently stretched, in the xml,
+    // we can fix it to display the image correctly. Not a huge deal since the user will not be looking at the screen during operation
+    // and the image saved looks correct, but could be fixed for quality purposes.
     private void startPreview() {
         SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture();
         surfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
@@ -379,11 +500,15 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    // this is the code that actually captures an image. if you need it to take a burst photo, call this function multiple times.
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    //private void startStillCaptureRequest(CaptureRequest.Builder builder) {
     private void startStillCaptureRequest() {
         try {
-            mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+            mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            //mCaptureRequestBuilder = builder;
 
-            mCaptureRequestBuilder.addTarget(mImageReader.getSurface()); // builder builds off of the screen image, not the camera, if you can find a way to make this take pictures from the camera, then it would allow for better image quality
+            mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
             mCaptureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, mTotalRotation);
 
             CameraCaptureSession.CaptureCallback stillCaptureCallback = new
@@ -399,10 +524,8 @@ public class CameraActivity extends AppCompatActivity {
                             }
                         }
                     };
-
             //single request
             mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
-            //will need to test with ideas, but the current objective is to use this to capture 2 images per second (1 image every 0.5 seconds)
 
             //repeating request
             /*mPreviewCaptureSession.setRepeatingRequest(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
@@ -433,6 +556,8 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    // not closing the camera can cause a memory leak. as well as create privacy issues that can
+    // develop into legal issues. when utilizing the camera always make sure to close it when not in use.
     private void closeCamera() {
         if (mCameraDevice != null) {
             mCameraDevice.close();
@@ -461,6 +586,9 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    // this determines which direction the phone is oriented. im assuming that we will want our images to be vertical so it may be possible
+    // to remove this if not necessary. i would leave it for now though because removing it may cause further issues we would have
+    // to fix
     private static int sensorToDeviceRotation(CameraCharacteristics cameraCharacteristics, int deviceOrientation) {
         int sensorOrientation = cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
         deviceOrientation = ORIENTATIONS.get(deviceOrientation);
@@ -482,6 +610,7 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    // creates a folder in local files to store images at. it also stores them in the gallery
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void createImageFolder() {
         File imageFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
@@ -491,26 +620,18 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    // names the files. in here you may be able to change the file type based on the extension, might want to look into that if we want to save
+    // RAW filetypes instead of jpg, which are lossy.
     private void createImageFileName() throws IOException {
-        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()); // also saves a timestamp which we can use to
+        // create metadata files.
         String prepend = "IMAGE_" + timestamp + "_";
         File imageFile = File.createTempFile(prepend, ".jpg", mImageFolder);
         mImageFileName = imageFile.getAbsolutePath();
     }
 
-    private void checkWriteStoragePermission() {
-        if (!(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-            if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                Toast.makeText(this, "app needs to be able to save videos", Toast.LENGTH_SHORT).show();
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                requestPermissions(new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_RESULT);
-            } else {
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_RESULT);
-            }
-
-        }
-    }
+    // if we want to create a filetype that saves metadata, follow the format of the createImageFileName and createImageFolder
+    // but have it make a txt document that stores the metadata. of however we want to save it.
 
     private void lockFocus() {
         mCaptureState = STATE_WAIT_LOCK;
@@ -522,18 +643,25 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-    // Iterates through all the camera devices in the phone and returns the largest resolution camera
+
+    // Iterates through all the camera devices in the phone and returns the largest resolution camera and returns a resolution.
+    // could not change it to return a cameraID so when implementing the method to find a cameraID be sure to create a string array
+    // that stores the values of the cameraID's based on an iterator.
+
     @NonNull
     public Size getResolution(@NonNull final CameraManager cameraManager, @NonNull final String cameraId) throws CameraAccessException
     {
-        final CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraId);
-        final StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+        final CameraCharacteristics  characteristics = cameraManager.getCameraCharacteristics(cameraId);
+        final StreamConfigurationMap map             = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
+        // if there is no camera
         if (map == null)
         {
             throw new IllegalStateException("Failed to get configuration map.");
         }
 
+        // stores the output sizes in JPEG format. im not sure if this will cause an issue if we try to store RAW type files.
+        // if errors occur when trying to set up RAW file types try changing this line to ImageFormat.RAW
         final Size[] choices = map.getOutputSizes(ImageFormat.JPEG);
 
         Arrays.sort(choices, Collections.reverseOrder((lhs, rhs) -> {
