@@ -292,7 +292,8 @@ public class CameraActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        //TODO: add timer that takes images every 0.5 seconds for 10 seconds starting 7 seconds before t[c2], then another timer for images every 0.5s for 10s starting 3s before t[c3]
+        //timer that takes images every 0.5 seconds for 10 seconds starting 7 seconds before t[c2], then another timer for images every 0.5s for 10s starting 3s before t[c3]
+        //the next line is a testcase to make sure functionality works
         startTime = System.currentTimeMillis() + 10000;
         Date startC2 = new Date(startTime - 7000);
         Date endC2 = new Date(startTime + 3100);
