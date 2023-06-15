@@ -6,19 +6,16 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "metadata")
 class Metadata(
-    @NonNull
-    @PrimaryKey(autoGenerate = true)
-    var id: Int = 0,
+    var filepath: String = "",
 
-    @NonNull
     var latitude: Double = 0.0,
 
-    @NonNull
     var longitude: Double = 0.0,
 
-    @NonNull
     var altitude: Double = 0.0,
 
-    @NonNull
     var captureTime: Long = 0
-) {}
+) {
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0
+}

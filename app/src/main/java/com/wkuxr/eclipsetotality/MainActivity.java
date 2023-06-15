@@ -85,6 +85,9 @@ public class MainActivity extends AppCompatActivity {
                         SharedPreferences.Editor prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE).edit();
                         prefs.putLong("startTime",times[0] * 1000);
                         prefs.putLong("endTime",times[1] * 1000);
+                        prefs.putFloat("lat", (float)lat);
+                        prefs.putFloat("lon", (float)lon);
+                        prefs.putFloat("alt", (float)alt);
                         prefs.apply();
 
                         //go to camera 15 seconds prior, start taking images 7 seconds prior to 3 seconds after, and then at end of eclipse 3 seconds before and 7 after

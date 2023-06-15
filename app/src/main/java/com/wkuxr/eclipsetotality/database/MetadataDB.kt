@@ -27,6 +27,14 @@ abstract class MetadataDB : RoomDatabase() {
         metadataDao()
     }
 
+    fun addMetadata(metadata: Metadata): Long {
+        return metadataDao().addImageMeta(metadata)
+    }
+
+    fun getMetadata(): List<Metadata> {
+        return metadataDao().getAllImageMetas()
+    }
+
     override fun clearAllTables() {
         TODO("Not yet implemented")
     }

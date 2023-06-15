@@ -40,6 +40,9 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.wkuxr.eclipsetotality.database.Metadata;
+import com.wkuxr.eclipsetotality.database.MetadataDB;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -269,12 +272,16 @@ public class CameraActivity extends AppCompatActivity {
     long startTime;
     long endTime;
 
+    MetadataDB db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
         singleton = this;
+
+        db = MetadataDB.Companion.createDB(this);
 
         //checkWriteStoragePermission();
 
@@ -629,6 +636,13 @@ public class CameraActivity extends AppCompatActivity {
         String prepend = "IMAGE_" + timestamp + "_";
         File imageFile = File.createTempFile(prepend, ".jpg", mImageFolder);
         mImageFileName = imageFile.getAbsolutePath();
+
+        SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+        float lat = prefs.getFloat("lat", 0f);
+        float lon = prefs.getFloat("lon", 0f);
+        float alt = prefs.getFloat("alt", 0f);
+
+        db.addMetadata(new Metadata(mImageFileName, (double)lat, (double)lon, (double)alt, System.currentTimeMillis()));
     }
 
     // if we want to create a filetype that saves metadata, follow the format of the createImageFileName and createImageFolder
