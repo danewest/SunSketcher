@@ -1,4 +1,4 @@
-# EclipseTotality
+# SunSketcher
 Android app to crowdsource image data of Baily's Beads of 4/8/2024 total solar eclipse.
 
 # Troubleshooting
