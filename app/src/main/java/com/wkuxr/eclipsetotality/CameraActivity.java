@@ -1,5 +1,7 @@
 package com.wkuxr.eclipsetotality;
 
+import static com.wkuxr.eclipsetotality.SendConfirmationActivity.prefs;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -621,10 +623,19 @@ public class CameraActivity extends AppCompatActivity {
     // creates a folder in local files to store images at. it also stores them in the gallery
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void createImageFolder() {
+        //external directory at `/Pictures/`, will not be deleted upon uninstall
         File imageFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+
+        //internal directory, will be deleted upon uninstall
+        //File imageFile = getFilesDir().getAbsoluteFile();
+
+        //make folder at above location named camera2VideoImage
         mImageFolder = new File(imageFile, "camera2VideoImage");
         if (!mImageFolder.exists()) {
             mImageFolder.mkdirs();
+            SharedPreferences.Editor prefEdit = prefs.edit();
+            prefEdit.putString("imageFolderDirectory", mImageFolder.getAbsolutePath());
+            prefEdit.apply();
         }
     }
 
