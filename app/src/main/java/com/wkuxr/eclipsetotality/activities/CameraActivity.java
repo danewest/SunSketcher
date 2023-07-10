@@ -1,6 +1,6 @@
-package com.wkuxr.eclipsetotality.Activities;
+package com.wkuxr.eclipsetotality.activities;
 
-import static com.wkuxr.eclipsetotality.Activities.SendConfirmationActivity.prefs;
+import static com.wkuxr.eclipsetotality.activities.SendConfirmationActivity.prefs;
 
 import android.Manifest;
 import android.content.Context;
@@ -319,6 +319,7 @@ public class CameraActivity extends AppCompatActivity {
         //set timer to stop t[c3]-3 captures
         //sequenceTimer.schedule(new StopSequenceTask(), endC3);
 
+        //set timer to switch to SendConfirmationActivity
         sequenceTimer.schedule(new SwitchActivityTask(), activityTimer);
 
 

@@ -1,4 +1,4 @@
-package com.wkuxr.eclipsetotality.Activities
+package com.wkuxr.eclipsetotality.activities
 
 import android.content.Context
 import android.content.SharedPreferences

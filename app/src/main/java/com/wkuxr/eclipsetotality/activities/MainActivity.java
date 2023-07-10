@@ -1,4 +1,4 @@
-package com.wkuxr.eclipsetotality.Activities;
+package com.wkuxr.eclipsetotality.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
