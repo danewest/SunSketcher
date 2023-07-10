@@ -1,10 +1,8 @@
-package com.wkuxr.eclipsetotality
+package com.wkuxr.eclipsetotality.Activities
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +13,7 @@ import android.widget.ImageView
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.wkuxr.eclipsetotality.R
 import com.wkuxr.eclipsetotality.databinding.ActivitySendConfirmationBinding
 import com.wkuxr.eclipsetotality.database.Metadata
 import com.wkuxr.eclipsetotality.database.MetadataDB.Companion.db
@@ -58,7 +57,7 @@ class SendConfirmationActivity : AppCompatActivity() {
         val fMan = fragManager
         val fDir = directory
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemAdapter.ItemViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.recycle_list_item, parent, false)
             return ItemViewHolder(view)
         }
@@ -67,7 +66,7 @@ class SendConfirmationActivity : AppCompatActivity() {
             return metadataList.size
         }
 
-        override fun onBindViewHolder(holder: ItemAdapter.ItemViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
             val item = metadataList[position]
             holder.itemView.tag = item.id
             Log.d("IMAGEFILEPATHS", item.filepath)

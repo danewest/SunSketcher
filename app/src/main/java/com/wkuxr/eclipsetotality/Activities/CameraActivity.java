@@ -1,6 +1,6 @@
-package com.wkuxr.eclipsetotality;
+package com.wkuxr.eclipsetotality.Activities;
 
-import static com.wkuxr.eclipsetotality.SendConfirmationActivity.prefs;
+import static com.wkuxr.eclipsetotality.Activities.SendConfirmationActivity.prefs;
 
 import android.Manifest;
 import android.content.Context;
@@ -34,7 +34,6 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -42,6 +41,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.wkuxr.eclipsetotality.R;
 import com.wkuxr.eclipsetotality.database.Metadata;
 import com.wkuxr.eclipsetotality.database.MetadataDB;
 

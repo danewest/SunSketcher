@@ -1,4 +1,4 @@
-package com.wkuxr.eclipsetotality;
+package com.wkuxr.eclipsetotality.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -17,19 +17,13 @@ import android.widget.Button;
 
 import com.wkuxr.eclipsetotality.Location.LocationAccess;
 import com.wkuxr.eclipsetotality.Location.LocToTime;
+import com.wkuxr.eclipsetotality.databinding.ActivityMainBinding;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Executor;
-
-import com.wkuxr.eclipsetotality.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,6 +36,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         singleton = this;
         reqPerm(new String[]{"android.permission.ACCESS_FINE_LOCATION"});
+        reqPerm(new String[]{"android.permission.CAMERA"});
+
+        SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+        int hasCaptured = prefs.getInt("upload", -1);
+        if(hasCaptured != -1){
+            Intent intent = new Intent(this, FinishedInfoActivity.class);
+            this.startActivity(intent);
+        }
     }
 
 
@@ -63,8 +65,11 @@ public class MainActivity extends AppCompatActivity {
                     double lat = location.getLatitude();
                     double alt = location.getAltitude();
 
+                    //get actual device location
                     //String[] eclipseData = LocToTime.calculatefor(lon, lat, alt);
+                    //spoof location for testing TODO: remove spoof for actual app releases
                     String[] eclipseData = LocToTime.calculatefor(37.60786, -91.02687, 0);
+
                     if(!eclipseData[0].equals("N/A")) {
                         long[] times = convertTimes(eclipseData);
 

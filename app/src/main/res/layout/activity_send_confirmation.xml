@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SendConfirmationActivity">
+    tools:context=".Activities.SendConfirmationActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/imageRecycler"
@@ -54,6 +54,7 @@
         android:layout_marginStart="76dp"
         android:layout_marginBottom="32dp"
         android:backgroundTint="#005EA6"
+        android:onClick="onClick"
         android:text="Allow"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -65,6 +66,7 @@
         android:layout_marginStart="76dp"
         android:layout_marginBottom="32dp"
         android:backgroundTint="#AE0000"
+        android:onClick="onClick"
         android:text="Deny"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/allowBtn" />
