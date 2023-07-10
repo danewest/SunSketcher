@@ -15,8 +15,8 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
 public class LocationAccess {
-    private Context context;
-    private FusedLocationProviderClient fusedLocationProviderClient;
+    private final Context context;
+    private final FusedLocationProviderClient fusedLocationProviderClient;
 
     public LocationAccess(Context context) {
         this.context = context;

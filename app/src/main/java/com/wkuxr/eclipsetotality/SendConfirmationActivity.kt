@@ -1,11 +1,13 @@
 package com.wkuxr.eclipsetotality
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,7 +33,19 @@ class SendConfirmationActivity : AppCompatActivity() {
         binding = ActivitySendConfirmationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        recyclerView
+        recyclerView = binding.imageRecycler
+
+        prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE)
+
+        displayImageList()
+    }
+
+    fun onClick(v: View){
+        if(v.id == binding.allowBtn.id){
+            prefs.edit().putInt("upload", 1).apply()
+        } else {
+            prefs.edit().putInt("upload", 0).apply()
+        }
     }
 
     fun displayImageList(){
@@ -56,7 +70,8 @@ class SendConfirmationActivity : AppCompatActivity() {
         override fun onBindViewHolder(holder: ItemAdapter.ItemViewHolder, position: Int) {
             val item = metadataList[position]
             holder.itemView.tag = item.id
-            val imgFile = File(prefs.getString("imageFolderDirectory", fDir) + item.filepath)
+            Log.d("IMAGEFILEPATHS", item.filepath)
+            val imgFile = File(item.filepath)
 
             //create bitmap from image
             val imgBitmap = BitmapFactory.decodeFile(imgFile.absolutePath)

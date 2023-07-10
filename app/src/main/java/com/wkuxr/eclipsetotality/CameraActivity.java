@@ -306,6 +306,7 @@ public class CameraActivity extends AppCompatActivity {
         startTime = System.currentTimeMillis() + 10000;
         Date startC2 = new Date(startTime - 7000);
         Date endC2 = new Date(startTime + 3100);
+        Date activityTimer = new Date(startTime + 7000);
         //Date startC3 = new Date(endTime - 3000);
         //Date endC3 = new Date(endTime + 7100);
         sequenceTimer = new Timer();
@@ -317,6 +318,8 @@ public class CameraActivity extends AppCompatActivity {
         //sequenceTimer.schedule(new StartSequenceTask(), startC3);
         //set timer to stop t[c3]-3 captures
         //sequenceTimer.schedule(new StopSequenceTask(), endC3);
+
+        sequenceTimer.schedule(new SwitchActivityTask(), activityTimer);
 
 
         Button mStillImageButton = findViewById(R.id.button);
@@ -356,6 +359,15 @@ public class CameraActivity extends AppCompatActivity {
         public void run(){
             singleton.sequenceHandler.removeCallbacks(singleton.sequenceRunnable);
             Log.d("STOP_CAPTURES", "Captures have stopped, close app and check gallery.");
+        }
+    }
+
+
+    static class SwitchActivityTask extends TimerTask {
+        public void run(){
+            Log.d("ACTIVITYSWITCH", "To " + SendConfirmationActivity.class.getName());
+            Intent intent = new Intent(CameraActivity.singleton, SendConfirmationActivity.class);
+            CameraActivity.singleton.startActivity(intent);
         }
     }
 
