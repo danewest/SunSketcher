@@ -79,7 +79,7 @@ class SendConfirmationActivity : AppCompatActivity() {
         }
 
         inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val imgView: ImageView = itemView.findViewById(R.id.imageView)
+            val imgView: ImageView = itemView.findViewById(R.id.itemImage)
         }
     }
 }
