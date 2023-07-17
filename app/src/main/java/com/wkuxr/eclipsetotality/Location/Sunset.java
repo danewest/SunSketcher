@@ -7,8 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 
 public class Sunset {
-    public long calculateSunset(double lat, double lon){
-        int timezoneDiff = timeDiff();
+    public long calcSun(double lat, double lon){
+        int timezoneDiff = 5 - timeDiff();
         int[] date = getDate();
         
         //TODO: rename to month, using the same variable names as NOAA for now to make it easy to translate
@@ -23,10 +23,49 @@ public class Sunset {
         double theta = calcSunDeclination(T);
         double Etime = calcEquationOfTime(T);
         
+        double eqTime = Etime;
+        double solarDec = theta;
+        
+        var riseTimeGMT = calcSunriseUTC(JD, lat, lon);
+        var setTimeGMT = calcSunsetUTC(JD, lat, lon);
+        
+        //daylight saving time boolean, assumed to be true for this test since it's being tested during daylight saving time so doesn't matter. also doesn't matter for actual eclipse because both October 14 and April 8 are in daylight saving time; false would be 0 though
+        int daySaving = 60;
+        
+        var solNoonGMT = calcSolNoonUTC(T, lon);
+        var solNoonLST = solNoonGMT - (60 * timezoneDiff) + daySaving;
+        
+        var solnStr = timeString(solNoonLST);
+        var utcSolnStr = timeString(solNoonGMT);
+        
+        var tsnoon = calcTimeeJulianCent(calcJDFromJulianCent(T) - 0.5 + solNoonGMT / 1440.0);
+        
+        eqTime = calcEquationOfTime(tsnoon);
+        solarDec = calcSunDeclination(tsnoon);
+        
+        //copied stuff from JS, fix later
+        if ( ((lat > 66.4) && ((doy < 83) || (doy > 263))) || ((lat < -66.4) && (doy > 79) && (doy < 267))){
+            double newjd = findRecentSunset(JD, lat, lon);
+            double newtime = calcSunsetUTC(newjd, lat, lon) - (60 * timezoneDiff) + daySaving;
+            if (newtime > 1440){
+                newtime -= 1440;
+                newjd += 1.0;
+            }
+            if (newtime < 0){
+		newtime += 1440;
+		newjd -= 1.0;
+            }
+            riseSetForm["sunset"].value = timeStringAMPMDate(newtime, newjd);
+            riseSetForm["utcsunset"].value = "prior sunset";
+            riseSetForm["solnoon"].value = "N/A";
+            riseSetForm["utcsolnoon"].value = "";
+        }
+
+        
         return 0;
     }
     
-    //the calculateSunset function uses CDT as its base timezone, so we need to separately determine the difference in hours between CDT and the user's timezone
+    //the calcSun function uses CDT as its base timezone, so we need to separately determine the difference in hours between CDT and the user's timezone
     int timeDiff(){
         int hours;
         switch(TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT)){
@@ -89,7 +128,7 @@ public class Sunset {
         return ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0);
     }
     
-    double calcTimeJulianCent(int jd){
+    double calcTimeJulianCent(double jd){
         return (jd - 2451545.0) / 36525.0;
     }
     
@@ -177,5 +216,93 @@ public class Sunset {
     
     double calcEccentricityEarthOrbit(double t){
         return 0.016708634 - t * (0.000042037 + 0.0000001267 * t);
+    }
+    
+    double calcSunriseUTC(double JD, double latitude, double longitude){
+        double t = calcTimeJulianCent(JD);
+        
+        //get time of solar noon for more accurate calculation than start of Julian day
+        var noonmin = calcSolNoonUTC(t, longitude);
+        double tnoon = calcTimeJulianCent(JD + noonmin / 1440.0);
+        
+        //approximate sunrise
+        var eqTime = calcEquationOfTime(tnoon);
+        var solarDec = calcSunDeclination(tnoon);
+        var hourAngle = calcHourAngleSunrise(latitude, solarDec);
+        
+        var delta = longitude - Math.toDegrees(hourAngle);
+        var timeDiff = 4 * delta; //minutes
+        var timeUTC = 720 + timeDiff - eqTime; //minutes
+        
+        var newt = calcTimeJulianCent(calcJDFromJulianCent(t) + timeUTC / 1440.0);
+        eqTime = calcEquationOfTime(newt);
+        solarDec = calcSunDeclination(newt);
+        hourAngle = calcHourAngleSunrise(latitude, solarDec);
+        delta = longitude - Math.toDegrees(hourAngle);
+        timeDiff = 4 * delta;
+        timeUTC = 720 + timeDiff - eqTime;
+        
+        return timeUTC;
+    }
+    
+    double calcSolNoonUTC(double t, double longitude){
+        var tnoon = calcTimeJulianCent(calcJDFromJulianCent(t) + longitude / 360.0);
+        var eqTime = calcEquationOfTime(tnoon);
+        var solNoonUTC = 720 + (longitude * 4) - eqTime;
+        
+        var newt = calcTimeJulianCent(calcJDFromJulianCent(t) - 0.5 + solNoonUTC / 1440.0);
+        
+        eqTime = calcEquationOfTime(newt);
+        solNoonUTC = 720 + (longitude * 4) - eqTime;
+        
+        return solNoonUTC;
+    }
+    
+    double calcHourAngleSunrise(double lat, double solarDec){
+        var latRad = Math.toRadians(lat);
+        var sdRad = Math.toRadians(solarDec);
+        
+        var HA = (Math.acos(Math.cos(Math.toRadians(90.833)) / (Math.cos(latRad) * Math.cos(sdRad)) - Math.tan(latRad) * Math.tan(sdRad)));
+        
+        return HA;
+    }
+    
+    double calcJDFromJulianCent(double t){
+        return t * 36525.0 + 2451545.0;
+    }
+    
+    double calcSunsetUTC(double JD, double latitude, double longitude){
+        var t = calcTimeJulianCent(JD);
+        
+        var noonmin = calcSolNoonUTC(t, longitude);
+        var tnoon = calcTimeJulianCent(JD + noonmin / 1440.0);
+        
+        var eqTime = calcEquationOfTime(tnoon);
+        var solarDec = calcSunDeclination(tnoon);
+        var hourAngle = calcHourAngleSunset(latitude, solarDec);
+        
+        var delta = longitude - Math.toRadians(hourAngle);
+        var timeDiff = 4 * delta;
+        var timeUTC = 720 + timeDiff - eqTime;
+        
+        var newt = calcTimeJulianCent(calcJDFromJulianCent(t) + timeUTC / 1440.0);
+        eqTime = calcEquationOfTime(newt);
+        solarDec = calcSunDeclination(newt);
+        hourAngle = calcHourAngleSunset(latitude, solarDec);
+        
+        delta = longitude - Math.toDegrees(hourAngle);
+        timeDiff = 4 * delta;
+        timeUTC = 720 + timeDiff - eqTime;
+        
+        return timeUTC;
+    }
+    
+    double calcHourAngleSunset(double lat, double solarDec){
+        var latRad = Math.toRadians(lat);
+        var sdRad = Math.toRadians(solarDec);
+        
+        var HA = (Math.acos(Math.cos(Math.toRadians(90.833)) / (Math.cos(latRad) * Math.cos(sdRad)) - Math.tan(latRad) * Math.tan(sdRad)));
+        
+        return -HA;
     }
 }

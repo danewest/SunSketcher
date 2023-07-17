@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //get actual device location
                     //String[] eclipseData = LocToTime.calculatefor(lon, lat, alt);
-                    //spoof location for testing TODO: remove spoof for actual app releases
+                    //spoof location for testing; TODO: remove spoof for actual app releases
                     String[] eclipseData = LocToTime.calculatefor(37.60786, -91.02687, 0);
 
                     if(!eclipseData[0].equals("N/A")) {
