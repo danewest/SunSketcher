@@ -15,8 +15,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.wkuxr.eclipsetotality.Location.LocationAccess;
-import com.wkuxr.eclipsetotality.Location.LocToTime;
+import com.wkuxr.eclipsetotality.location.LocationAccess;
+import com.wkuxr.eclipsetotality.location.LocToTime;
+import com.wkuxr.eclipsetotality.location.Sunset;
 import com.wkuxr.eclipsetotality.databinding.ActivityMainBinding;
 
 import java.util.Calendar;

@@ -1,4 +1,4 @@
-package com.wkuxr.eclipsetotality.Location;
+package com.wkuxr.eclipsetotality.location;
 
 import android.util.Log;
 
