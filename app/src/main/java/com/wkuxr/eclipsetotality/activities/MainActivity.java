@@ -62,17 +62,22 @@ public class MainActivity extends AppCompatActivity {
             locAccess.getCurrentLocation(new LocationAccess.LocationResultCallback() {
                 @Override
                 public void onLocationResult(Location location) {
-                    double lon = location.getLongitude();
                     double lat = location.getLatitude();
+                    double lon = location.getLongitude();
                     double alt = location.getAltitude();
 
-                    //get actual device location
-                    //String[] eclipseData = LocToTime.calculatefor(lon, lat, alt);
-                    //spoof location for testing; TODO: remove spoof for actual app releases
-                    String[] eclipseData = LocToTime.calculatefor(37.60786, -91.02687, 0);
+                    //get actual device location TODO: use for actual app releases
+                    //String[] eclipseData = LocToTime.calculatefor(lat, lon, alt);
 
-                    if(!eclipseData[0].equals("N/A")) {
-                        long[] times = convertTimes(eclipseData);
+                    //spoof location for testing; TODO: remove for actual app releases
+                    //String[] eclipseData = LocToTime.calculatefor(37.60786, -91.02687, 0);
+
+                    //get actual device location for sunset timing (test stuff) TODO: remove for actual app releases
+                    long sunsetTimeUnix = Sunset.calcSun(lat, -lon) + 86400; //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
+                    long[] times = new long[]{sunsetTimeUnix, sunsetTimeUnix};
+
+                    if(/*!eclipseData[0].equals("N/A")*/ true) {
+                        //long[] times = convertTimes(eclipseData);
 
                         //--------to make it visible that something is happening--------
                         //for the final app, might want to replace this code with something that makes a countdown timer on screen tick down
@@ -82,7 +87,9 @@ public class MainActivity extends AppCompatActivity {
                         timeCals[1] = Calendar.getInstance();
                         timeCals[1].setTimeInMillis(times[1] * 1000);
 
-                        String details = "lat: " + lat + "; lon: " + lon + "; Eclipse Time: " + timeCals[0].getTime();
+                        //String details = "lat: " + lat + "; lon: " + lon + "; Eclipse Time: " + timeCals[0].getTime(); //TODO: use for actual app releases
+                        String details = "lat: " + lat + "; lon: " + lon + "; Sunset Time: " + timeCals[0].getTime(); //TODO: remove for actual app releases
+                        Log.d("Timing", details);
 
                         button.setText(details);
                         //--------made it visible that something is happening--------
@@ -96,10 +103,10 @@ public class MainActivity extends AppCompatActivity {
                         prefs.putFloat("alt", (float)alt);
                         prefs.apply();
 
-                        //go to camera 15 seconds prior, start taking images 7 seconds prior to 3 seconds after, and then at end of eclipse 3 seconds before and 7 after
+                        //go to camera 15 seconds prior, start taking images 7 seconds prior to 3 seconds after, and then at end of eclipse 3 seconds before and 7 after TODO: also for the sunset timing
                         Date date = new Date((times[0] - 15) * 1000);
-                        //the next line is a testcase to make sure functionality works
-                        date = new Date((System.currentTimeMillis()) + 5000);
+                        //the next line is a testcase to make sure functionality works for eclipse timing
+                        //date = new Date((System.currentTimeMillis()) + 5000);
                         Log.d("SCHEDULE_CAMERA", date.toString());
 
                         timer = new Timer();

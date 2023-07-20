@@ -2,6 +2,8 @@ package com.wkuxr.eclipsetotality.location;
 
 //this is being translated from JS to Java; Source is https://gml.noaa.gov/grad/solcalc/sunrise.html (I have a backup of the JS if site goes down for some reason)
 
+import android.util.Log;
+
 import java.util.TimeZone;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
@@ -35,6 +37,7 @@ public class Sunset {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         LocalDateTime now = LocalDateTime.now();
         String date = dtf.format(now);
+        Log.d("Date", date);
         String[] dateArr = date.split("/");
         int[] dateVals = new int[3];
         for(int i = 0; i < 3; i++){
@@ -251,13 +254,26 @@ public class Sunset {
     static int timeDiff(){
         int hours;
         switch(TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT)){
-            case "HST-10:00" -> hours = -5;
-            case "AKDT-8:00" -> hours = -3;
-            case "PDT-7:00" -> hours = -2;
-            case "MDT-6:00" -> hours = -1;
-            case "CDT-5:00" -> hours = 0;
-            case "EDT-4:00" -> hours = 1;
-            default -> hours = 0;
+            case "HST-10:00":
+                hours = -5;
+                break;
+            case "AKDT-8:00":
+                hours = -3;
+                break;
+            case "PDT-7:00":
+                hours = -2;
+                break;
+            case "MDT-6:00":
+                hours = -1;
+                break;
+            case "CDT-5:00":
+                hours = 0;
+                break;
+            case "EDT-4:00":
+                hours = 1;
+                break;
+            default:
+                hours = 0;
         }
         return hours;
     }
