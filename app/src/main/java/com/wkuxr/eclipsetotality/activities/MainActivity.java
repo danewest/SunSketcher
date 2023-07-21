@@ -13,6 +13,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import com.wkuxr.eclipsetotality.location.LocationAccess;
@@ -36,17 +37,47 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         singleton = this;
-        reqPerm(new String[]{"android.permission.ACCESS_FINE_LOCATION"});
+
         reqPerm(new String[]{"android.permission.CAMERA"});
+        reqPerm(new String[]{"android.permission.ACCESS_FINE_LOCATION"});
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
-        int hasCaptured = prefs.getInt("upload", -1);
-        if(hasCaptured != -1){
-            Intent intent = new Intent(this, FinishedInfoActivity.class);
-            this.startActivity(intent);
+        int hasConfirmDeny = prefs.getInt("upload", -1);
+        switch(hasConfirmDeny){
+            case -2:
+                Intent intent = new Intent(this, SendConfirmationActivity.class);
+                this.startActivity(intent);
+                break;
+            case 0:
+            case 1:
+                intent = new Intent(this, FinishedInfoActivity.class);
+                this.startActivity(intent);
+                break;
+            default:
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+        int hasConfirmDeny = prefs.getInt("upload", -1);
+        switch(hasConfirmDeny){
+            case -2:
+                Intent intent = new Intent(this, SendConfirmationActivity.class);
+                this.startActivity(intent);
+                break;
+            case 0:
+            case 1:
+                intent = new Intent(this, FinishedInfoActivity.class);
+                this.startActivity(intent);
+                break;
+            default:
+        }
+    }
 
     Timer timer = null;
     @SuppressLint("SetTextI18n")
@@ -106,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                         //go to camera 15 seconds prior, start taking images 7 seconds prior to 3 seconds after, and then at end of eclipse 3 seconds before and 7 after TODO: also for the sunset timing
                         Date date = new Date((times[0] - 15) * 1000);
                         //the next line is a testcase to make sure functionality works for eclipse timing
-                        //date = new Date((System.currentTimeMillis()) + 5000);
+                        //Date date = new Date((System.currentTimeMillis()) + 5000);
                         Log.d("SCHEDULE_CAMERA", date.toString());
 
                         timer = new Timer();

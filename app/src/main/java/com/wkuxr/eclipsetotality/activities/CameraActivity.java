@@ -33,6 +33,7 @@ import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -283,6 +284,8 @@ public class CameraActivity extends AppCompatActivity {
 
         singleton = this;
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         db = MetadataDB.Companion.createDB(this);
 
         //checkWriteStoragePermission();
@@ -327,7 +330,7 @@ public class CameraActivity extends AppCompatActivity {
         mStillImageButton.setOnClickListener(v -> {
             //checkWriteStoragePermission();
             startStillCaptureRequest();
-            lockFocus();
+            //lockFocus();
         });
 
     }
@@ -366,6 +369,10 @@ public class CameraActivity extends AppCompatActivity {
 
     static class SwitchActivityTask extends TimerTask {
         public void run(){
+            if(prefs == null){
+                prefs = singleton.getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+            }
+            prefs.edit().putInt("upload", -2).apply();
             Log.d("ACTIVITYSWITCH", "To " + SendConfirmationActivity.class.getName());
             Intent intent = new Intent(CameraActivity.singleton, SendConfirmationActivity.class);
             CameraActivity.singleton.startActivity(intent);
@@ -528,6 +535,7 @@ public class CameraActivity extends AppCompatActivity {
     //private void startStillCaptureRequest(CaptureRequest.Builder builder) {
     private void startStillCaptureRequest() {
         try {
+            //sometimes the cameraDevice just... becomes null??? Have no idea why it happens, but it causes this to crash on my phone (but interestingly, not on Starr's)
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             //mCaptureRequestBuilder = builder;
 
@@ -572,8 +580,6 @@ public class CameraActivity extends AppCompatActivity {
                 requests.add(request);
             }
             mPreviewCaptureSession.captureBurst(requests,stillCaptureCallback, null);*/
-
-
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -643,7 +649,7 @@ public class CameraActivity extends AppCompatActivity {
         //File imageFile = getFilesDir().getAbsoluteFile();
 
         //make folder at above location named camera2VideoImage
-        mImageFolder = new File(imageFile, "camera2VideoImage");
+        mImageFolder = new File(imageFile, "SunSketcher");
         if (!mImageFolder.exists()) {
             mImageFolder.mkdirs();
             SharedPreferences.Editor prefEdit = prefs.edit();
