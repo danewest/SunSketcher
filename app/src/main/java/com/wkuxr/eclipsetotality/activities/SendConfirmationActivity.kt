@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wkuxr.eclipsetotality.R
 import com.wkuxr.eclipsetotality.database.Metadata
+import com.wkuxr.eclipsetotality.database.MetadataDB
+import com.wkuxr.eclipsetotality.database.MetadataDB.Companion.createDB
 import com.wkuxr.eclipsetotality.database.MetadataDB.Companion.db
 import com.wkuxr.eclipsetotality.databinding.ActivitySendConfirmationBinding
 import java.io.File
@@ -51,15 +53,13 @@ class SendConfirmationActivity : AppCompatActivity() {
     }
 
     fun displayImageList(){
+        db = createDB(this)
         val metadata = db.getMetadata()
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = ItemAdapter(metadata, supportFragmentManager, filesDir.absolutePath)
     }
 
     class ItemAdapter(private val metadataList: List<Metadata>, fragManager: FragmentManager, directory: String) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
-        val fMan = fragManager
-        val fDir = directory
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.recycle_list_item, parent, false)
             return ItemViewHolder(view)

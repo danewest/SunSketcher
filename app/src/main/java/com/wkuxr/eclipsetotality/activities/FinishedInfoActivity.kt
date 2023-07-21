@@ -1,7 +1,7 @@
 package com.wkuxr.eclipsetotality.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.wkuxr.eclipsetotality.activities.SendConfirmationActivity.Companion.prefs
 import com.wkuxr.eclipsetotality.databinding.ActivityFinishedInfoBinding
 
@@ -13,6 +13,7 @@ class FinishedInfoActivity : AppCompatActivity() {
         binding = ActivityFinishedInfoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        prefs = getSharedPreferences("eclipseDetails", MODE_PRIVATE)
         val uploadReady = prefs.getInt("upload", 0)
 
         var text = binding.infoText
