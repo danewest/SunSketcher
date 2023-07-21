@@ -304,6 +304,8 @@ public class CameraActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         if(prefs == null){
             prefs = singleton.getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         }
