@@ -9,13 +9,8 @@ import com.wkuxr.eclipsetotality.database.MetadataDAO;
 import java.net.*;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 //untested transfer code added
@@ -28,26 +23,8 @@ public class ClientRunOnTransfer {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         AtomicReference<Socket> socketHolder = new AtomicReference<>();
 
-        Callable<Void> task = () -> {
-            System.out.print("Trying connection...");
-            Socket ssocket = new Socket("161.6.109.198", 4440);
-            socketHolder.set(ssocket);
-            return null;
-        };
+        Socket ssocket = new Socket("172.30.204.50", 4440);
 
-        Future<Void> future = executorService.submit(task);
-
-        try {
-            future.get(60, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
-            System.err.println("Connection timeout. Moving connection time...");
-            future.cancel(true); // Cancel the task
-            setTransferAlarm();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        Socket ssocket = socketHolder.get();
         if (ssocket != null) {
             startTransfer(ssocket);
             ssocket.close(); // Close the socket when you're done using it
@@ -92,7 +69,7 @@ public class ClientRunOnTransfer {
             System.out.println("Transfer Rejected. Setting New Alarm.");
         } else {
             System.out.println("Moving to port " + inputLine);
-            Socket socket = new Socket("161.6.109.198", Integer.parseInt(inputLine));
+            Socket socket = new Socket("172.30.204.50", Integer.parseInt(inputLine));
             System.out.println("Successful!");
 
             // to send data to the server

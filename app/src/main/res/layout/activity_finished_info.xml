@@ -22,6 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/infoText" />
 
+    <!--
     <Button
         android:id="@+id/uploadBtn"
         android:layout_width="wrap_content"
@@ -41,4 +42,5 @@
         android:text="TEST INFO: The button below will will set up a socket connection with the storage server. It is currently only programmed to work over LAN, and does not happen automatically. You must be in the lab on the same network as the ethernet cables in the room for this to work properly."
         app:layout_constraintBottom_toTopOf="@+id/uploadBtn"
         app:layout_constraintStart_toStartOf="parent" />
+    -->
 </androidx.constraintlayout.widget.ConstraintLayout>

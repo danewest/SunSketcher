@@ -18,4 +18,15 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <TextView
+        android:id="@+id/startInfoText"
+        android:layout_width="292dp"
+        android:layout_height="149dp"
+        android:layout_marginTop="156dp"
+        android:text="Tap the button at the bottom of the screen to start the sequence. It will get the device's GPS location, calculate the time of sunset at that location, and display both. Then, 15 seconds before the displayed time, the app will go to the camera activity, which will automatically begin to take photos at T-0."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

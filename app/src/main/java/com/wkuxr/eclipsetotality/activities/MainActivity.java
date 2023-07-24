@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         reqPerm(new String[]{"android.permission.CAMERA"});
         reqPerm(new String[]{"android.permission.ACCESS_FINE_LOCATION"});
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         int hasConfirmDeny = prefs.getInt("upload", -1);
@@ -88,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
             v.setEnabled(false);
             Button button = (Button) v;
             button.setText("Getting GPS Location");
+
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
             LocationAccess locAccess = new LocationAccess(this);
             locAccess.getCurrentLocation(new LocationAccess.LocationResultCallback() {

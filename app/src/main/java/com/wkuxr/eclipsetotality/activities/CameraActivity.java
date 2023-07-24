@@ -307,9 +307,7 @@ public class CameraActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        if(prefs == null){
-            prefs = singleton.getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
-        }
+        prefs = singleton.getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         prefs.edit().putInt("upload", -2).apply();
 
         //timer that takes images every 0.5 seconds for 10 seconds starting 7 seconds before t[c2], then another timer for images every 0.5s for 10s starting 3s before t[c3]
@@ -334,12 +332,12 @@ public class CameraActivity extends AppCompatActivity {
         sequenceTimer.schedule(new SwitchActivityTask(), activityTimer);
 
 
-        Button mStillImageButton = findViewById(R.id.button);
-        mStillImageButton.setOnClickListener(v -> {
-            //checkWriteStoragePermission();
-            startStillCaptureRequest();
-            //lockFocus();
-        });
+        //Button mStillImageButton = findViewById(R.id.button);
+        //mStillImageButton.setOnClickListener(v -> {
+        //    //checkWriteStoragePermission();
+        //    startStillCaptureRequest();
+        //    //lockFocus();
+        //});
 
     }
 
@@ -656,6 +654,7 @@ public class CameraActivity extends AppCompatActivity {
         mImageFolder = new File(imageFile, "SunSketcher");
         if (!mImageFolder.exists()) {
             mImageFolder.mkdirs();
+            prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
             SharedPreferences.Editor prefEdit = prefs.edit();
             prefEdit.putString("imageFolderDirectory", mImageFolder.getAbsolutePath());
             prefEdit.apply();

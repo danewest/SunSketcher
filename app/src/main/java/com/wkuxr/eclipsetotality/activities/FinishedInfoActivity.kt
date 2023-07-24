@@ -2,6 +2,9 @@ package com.wkuxr.eclipsetotality.activities
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.wkuxr.eclipsetotality.activities.SendConfirmationActivity.Companion.prefs
@@ -28,16 +31,40 @@ class FinishedInfoActivity : AppCompatActivity() {
         }
     }
 
-    fun onUploadClick(v: Button){
+    fun onUploadClick(v: View) {
+        var btn: Button = v as Button
         try {
             prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE)
-            clientTransferSequence()
-            v.text = "uploading, please wait..."
 
-            while(prefs.getInt("finishedUpload", 0) == 0);
-            v.text = "upload complete"
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+            var thread = NetworkThread { updateUIOnUploadFinish() }
+            thread.start()
+
+            btn.text = "uploading, please wait..."
         } catch (e: Exception){
             e.printStackTrace();
+        }
+    }
+
+    private fun updateUIOnUploadFinish(){
+        runOnUiThread {
+            Runnable {
+                Log.d("NetworkThread", "Upload is complete. Changing button text.")
+                //binding.uploadBtn.text = "upload complete"
+            }
+        }
+    }
+    class NetworkThread(uiUpdate: () -> Unit) : Thread() {
+        val uiUpdateFun = uiUpdate
+        override fun run() {
+            try {
+                Log.d("NetworkThread", "Beginning Upload. Please wait...")
+                clientTransferSequence()
+                uiUpdateFun()
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
         }
     }
 }
