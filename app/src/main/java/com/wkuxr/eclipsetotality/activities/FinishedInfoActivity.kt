@@ -6,6 +6,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.wkuxr.eclipsetotality.activities.SendConfirmationActivity.Companion.prefs
 import com.wkuxr.eclipsetotality.databinding.ActivityFinishedInfoBinding
+import com.wkuxr.eclipsetotality.networking.ClientRunOnTransfer.clientTransferSequence
 
 class FinishedInfoActivity : AppCompatActivity() {
 

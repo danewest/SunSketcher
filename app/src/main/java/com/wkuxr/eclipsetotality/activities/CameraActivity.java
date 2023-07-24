@@ -58,6 +58,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -664,7 +665,9 @@ public class CameraActivity extends AppCompatActivity {
     // names the files. in here you may be able to change the file type based on the extension, might want to look into that if we want to save
     // RAW filetypes instead of jpg, which are lossy.
     private void createImageFileName() throws IOException {
-        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()); // also saves a timestamp which we can use to
+        long timestampLong = System.currentTimeMillis() + timezoneOffset();
+        String timestamp = "" + timestampLong;
+        //String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()); // also saves a timestamp which we can use to
         // create metadata files.
         String prepend = "IMAGE_" + timestamp + "_";
         File imageFile = File.createTempFile(prepend, ".jpg", mImageFolder);
@@ -675,11 +678,39 @@ public class CameraActivity extends AppCompatActivity {
         float lon = prefs.getFloat("lon", 0f);
         float alt = prefs.getFloat("alt", 0f);
 
-        db.addMetadata(new Metadata(mImageFileName, (double)lat, (double)lon, (double)alt, System.currentTimeMillis()));
+        db.addMetadata(new Metadata(mImageFileName, (double)lat, (double)lon, (double)alt, timestampLong));
     }
 
     // if we want to create a filetype that saves metadata, follow the format of the createImageFileName and createImageFolder
     // but have it make a txt document that stores the metadata. of however we want to save it.
+
+    //used to give offset from user's timezone to UTC to convert all timestamps to UTC for consistency and ease of sorting
+    private long timezoneOffset(){
+        //we don't need to worry about standard timezones, since the actual eclipse is on 4/8, during daylight savings
+        int timeDiff = 1000 * 60 * 60;
+        switch(TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT)){
+            case "HST-10:00":
+                timeDiff *= 10;
+                break;
+            case "AKDT-8:00":
+                timeDiff *= 8;
+                break;
+            case "PDT-7:00":
+                timeDiff *= 7;
+                break;
+            case "MDT-6:00":
+                timeDiff *= 6;
+                break;
+            case "EDT-4:00":
+                timeDiff *= 4;
+                break;
+            default: //CDT-5:00
+                timeDiff *= 5;
+                break;
+        }
+
+        return timeDiff;
+    }
 
     private void lockFocus() {
         mCaptureState = STATE_WAIT_LOCK;

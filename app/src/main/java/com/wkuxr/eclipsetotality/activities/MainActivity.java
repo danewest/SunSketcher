@@ -175,7 +175,6 @@ public class MainActivity extends AppCompatActivity {
         if(timer != null){
             timer.cancel();
         }
-
     }
 
     long[] convertTimes(String[] data){
