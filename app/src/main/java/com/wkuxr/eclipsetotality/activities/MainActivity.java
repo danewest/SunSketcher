@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                     //String[] eclipseData = LocToTime.calculatefor(37.60786, -91.02687, 0);
 
                     //get actual device location for sunset timing (test stuff) TODO: remove for actual app releases
-                    long sunsetTimeUnix = Sunset.calcSun(lat, -lon) + 86400; //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
+                    long sunsetTimeUnix = Sunset.calcSun(lat, -lon); //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
                     long[] times = new long[]{sunsetTimeUnix, sunsetTimeUnix};
 
                     if(/*!eclipseData[0].equals("N/A")*/ true) {
