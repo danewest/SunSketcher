@@ -106,11 +106,11 @@ public class MainActivity extends AppCompatActivity {
                     //String[] eclipseData = LocToTime.calculatefor(37.60786, -91.02687, 0);
 
                     //get actual device location for sunset timing (test stuff) TODO: remove for actual app releases
-                    long sunsetTimeUnix = Sunset.calcSun(lat, -lon); //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
-                    long[] times = new long[]{sunsetTimeUnix, sunsetTimeUnix};
+                    String sunsetTime = Sunset.calcSun(lat, -lon); //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
 
                     if(/*!eclipseData[0].equals("N/A")*/ true) {
                         //long[] times = convertTimes(eclipseData);
+                        long[] times = convertSunsetTime(sunsetTime);
 
                         //--------to make it visible that something is happening--------
                         //for the final app, might want to replace this code with something that makes a countdown timer on screen tick down
@@ -212,6 +212,26 @@ public class MainActivity extends AppCompatActivity {
         long endUnix = 1712530800 + ((Integer.parseInt(end[0]) + timeDiff) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
 
         return new long[]{startUnix, endUnix};
+    }
+
+    long[] convertSunsetTime(String data){
+        //0 -> hour; 1 -> minute; 2 -> second
+        String[] start = data.split(":");
+
+        //get current time in seconds, remove a day if it is past UTC midnight for the date that your timezone is currently in
+        long currentDateUnix = (System.currentTimeMillis() / 1000);
+        long currentTimeUnix = currentDateUnix % 86400;
+        if(currentTimeUnix > 0 && currentTimeUnix < 5 * 60 * 60){
+            Log.d("SunsetTiming", "Current time is past UTC midnight; Subtracting a day from time estimate");
+            currentDateUnix -= 86400;
+        }
+
+        long currentDateTimezoneCorrectedUnix = (currentDateUnix - (currentDateUnix % (60 * 60 * 24))) - (-5 * 60 * 60);
+
+        //convert the given time to seconds, add it to the start of the day as calculated by
+        long startUnix = currentDateTimezoneCorrectedUnix + (Integer.parseInt(start[0]) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);
+
+        return new long[]{startUnix, startUnix};
     }
 
     public void reqPerm(String[] permissions){

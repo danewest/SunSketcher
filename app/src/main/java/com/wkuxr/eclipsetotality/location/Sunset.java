@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 
 public class Sunset {
-    public static long calcSun(double lat, double lon){
+    public static String calcSun(double lat, double lon){
         int timezoneDiff = -timeDiff();
         int[] date = getDate();
 
@@ -28,9 +28,13 @@ public class Sunset {
             newtime += 1440;
             newjd -= 1.0;
         }
-        long sunset = timeUnixMilDate(newtime, newjd);
 
-        return sunset;
+        int spd = 60 * 60 * 24;
+        //long sunset = timeUnixMilDate(newtime, newjd);
+        //long currentTime = System.currentTimeMillis();
+        //long unixSunset = (sunset % spd) + (currentTime - (currentTime % spd));
+
+        return timeUnixMilDate(newtime, newjd);
     }
 
     static int[] getDate(){
@@ -202,17 +206,71 @@ public class Sunset {
         return julianday;
     }
 
-    static long timeUnixMilDate(double minutes, double jd){
+    static String timeUnixMilDate(double minutes, double jd){
         double floatHour = minutes / 60.0;
-        double hour = Math.floor(floatHour);
+        int hour = (int) Math.floor(floatHour);
         double floatMinute = 60.0 * (floatHour - hour);
-        double minute = Math.floor(floatMinute);
+        int minute = (int) Math.floor(floatMinute);
         double floatSec = 60.0 * (floatMinute - minute);
-        double second = Math.floor(floatSec + 0.5);
+        int second = (int) Math.floor(floatSec + 0.5);
 
-        long timeUnix = convertTimes(new double[]{hour, minute, second});
+        //long timeUnix = convertTimes(new double[]{hour, minute, second});
+        hour = convertHour(hour);
 
-        return timeUnix;
+        String secondStr;
+        String minuteStr;
+        String hourStr;
+
+        if(second < 10){
+            secondStr = "0" + second;
+        } else if(second == 60){
+            second = 0;
+            minute++;
+            secondStr = "00";
+        } else {
+            secondStr = "" + second;
+        }
+
+        if(minute < 10){
+            minuteStr = "0" + minute;
+        } else {
+            minuteStr = "" + minute;
+        }
+
+        hourStr = "" + hour;
+
+        String timeString = hourStr + ":" + minuteStr + ":" + secondStr;
+
+
+        return timeString;
+    }
+
+    static int convertHour(int hour) {
+        int timeDiff = 0;
+        switch(TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT)){
+            case "HST-10:00":
+                timeDiff = -10;
+                break;
+            case "AKDT-8:00":
+                timeDiff = -8;
+                break;
+            case "PDT-7:00":
+                timeDiff = -7;
+                break;
+            case "MDT-6:00":
+                timeDiff = -6;
+                break;
+            case "CDT-5:00":
+                timeDiff = -5;
+                break;
+            case "EDT-4:00":
+                timeDiff = 4;
+                break;
+            default:
+                timeDiff = -3;
+        }
+
+        return hour + timeDiff;
     }
 
     //the calcSun function uses CDT as its base timezone, so we need to separately determine the difference in hours between CDT and the user's timezone
@@ -255,25 +313,25 @@ public class Sunset {
         int hours;
         switch(TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT)){
             case "HST-10:00":
-                hours = -5;
+                hours = -10;
                 break;
             case "AKDT-8:00":
-                hours = -3;
+                hours = -8;
                 break;
             case "PDT-7:00":
-                hours = -2;
+                hours = -7;
                 break;
             case "MDT-6:00":
-                hours = -1;
+                hours = -6;
                 break;
             case "CDT-5:00":
-                hours = 0;
+                hours = -5;
                 break;
             case "EDT-4:00":
-                hours = 1;
+                hours = -4;
                 break;
             default:
-                hours = 0;
+                hours = -3;
         }
         return hours;
     }
