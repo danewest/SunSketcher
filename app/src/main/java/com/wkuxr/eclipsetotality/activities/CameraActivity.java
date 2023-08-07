@@ -312,23 +312,24 @@ public class CameraActivity extends AppCompatActivity {
 
         //timer that takes images every 0.5 seconds for 10 seconds starting 7 seconds before t[c2], then another timer for images every 0.5s for 10s starting 3s before t[c3]
         //the next line is a testcase to make sure functionality works
-        startTime = System.currentTimeMillis() + 10000;
+        //startTime = System.currentTimeMillis() + 15000;
         Date startC2 = new Date(startTime - 7000);
         Date endC2 = new Date(startTime + 3100);
-        Date activityTimer = new Date(startTime + 7000);
-        //Date startC3 = new Date(endTime - 3000);
-        //Date endC3 = new Date(endTime + 7100);
+        //Date activityTimer = new Date(startTime + 10000);
+        Date startC3 = new Date(endTime - 3000);
+        Date endC3 = new Date(endTime + 7100);
         sequenceTimer = new Timer();
-        //set timer to start captures at t[c2]-7
+        //set timer to start captures at t[c2] - 7
         sequenceTimer.schedule(new StartSequenceTask(),startC2);
-        //set timer to stop t[c2]-7 captures
+        //set timer to stop captures at t[c2] + 3
         sequenceTimer.schedule(new StopSequenceTask(), endC2);
-        //set timer to start captures at t[c3]-3
-        //sequenceTimer.schedule(new StartSequenceTask(), startC3);
-        //set timer to stop t[c3]-3 captures
-        //sequenceTimer.schedule(new StopSequenceTask(), endC3);
+        //set timer to start captures at t[c3] - 3
+        sequenceTimer.schedule(new StartSequenceTask(), startC3);
+        //set timer to stop captures at t[c3] + 7
+        sequenceTimer.schedule(new StopSequenceTask(), endC3);
 
         //set timer to switch to SendConfirmationActivity
+        Date activityTimer = new Date(endTime + 10000);
         sequenceTimer.schedule(new SwitchActivityTask(), activityTimer);
 
 

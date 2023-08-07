@@ -22,11 +22,35 @@
         android:id="@+id/startInfoText"
         android:layout_width="292dp"
         android:layout_height="149dp"
-        android:layout_marginTop="156dp"
+        android:layout_marginTop="108dp"
         android:text="Tap the button at the bottom of the screen to start the sequence. It will get the device's GPS location, calculate the time of sunset at that location, and display both. Then, 15 seconds before the displayed time, the app will go to the camera activity, which will automatically begin to take photos at T-0."
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="293dp"
+        android:layout_height="221dp"
+        android:text="It is NEVER safe to look at the sun. Even a short glance at the sun can cause permanent eye damage. That’s also true during the first and last phases of an eclipse when the sun’s disk is partially covered. So while the dimmer light of a partial eclipse may tempt you, the only time you can safely view the sun is the short period called totality, when the sun is completely covered by the moon. Please wear ISO 12312-2:2015 compliant solar filter glasses to avoid injury. (A list of compliant manufacturers can be found at https://eclipse.aas.org/resources/solar-filters)"
+        app:layout_constraintBottom_toTopOf="@+id/startSequenceButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/startInfoText"
+        app:layout_constraintVertical_bias="0.197" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="WARNING"
+        android:textColor="#D30000"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/startInfoText"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

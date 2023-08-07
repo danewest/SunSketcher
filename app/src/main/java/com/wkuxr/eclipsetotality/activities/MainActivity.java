@@ -100,17 +100,17 @@ public class MainActivity extends AppCompatActivity {
                     double alt = location.getAltitude();
 
                     //get actual device location TODO: use for actual app releases
-                    //String[] eclipseData = LocToTime.calculatefor(lat, lon, alt);
+                    String[] eclipseData = LocToTime.calculatefor(lat, lon, alt);
 
                     //spoof location for testing; TODO: remove for actual app releases
                     //String[] eclipseData = LocToTime.calculatefor(37.60786, -91.02687, 0);
 
                     //get actual device location for sunset timing (test stuff) TODO: remove for actual app releases
-                    String sunsetTime = Sunset.calcSun(lat, -lon); //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
+                    //String sunsetTime = Sunset.calcSun(lat, -lon); //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
 
-                    if(/*!eclipseData[0].equals("N/A")*/ true) {
-                        //long[] times = convertTimes(eclipseData);
-                        long[] times = convertSunsetTime(sunsetTime);
+                    if(!eclipseData[0].equals("N/A") /*true*/) {
+                        long[] times = convertTimes(eclipseData);
+                        //long[] times = convertSunsetTime(sunsetTime);
 
                         //--------to make it visible that something is happening--------
                         //for the final app, might want to replace this code with something that makes a countdown timer on screen tick down
@@ -120,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
                         timeCals[1] = Calendar.getInstance();
                         timeCals[1].setTimeInMillis(times[1] * 1000);
 
-                        //String details = "lat: " + lat + "; lon: " + lon + "; Eclipse Time: " + timeCals[0].getTime(); //TODO: use for actual app releases
-                        String details = "lat: " + lat + "; lon: " + lon + "; Sunset Time: " + timeCals[0].getTime(); //TODO: remove for actual app releases
+                        String details = "You are at lat: " + lat + ", lon: " + lon + "; The total solar eclipse will start at the following time at your current location: " + timeCals[0].getTime(); //TODO: use for actual app releases
+                        //String details = "lat: " + lat + "; lon: " + lon + "; Sunset Time: " + timeCals[0].getTime(); //TODO: remove for actual app releases
                         Log.d("Timing", details);
 
                         button.setText(details);

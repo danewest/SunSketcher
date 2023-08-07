@@ -8,19 +8,13 @@
 
     <TextView
         android:id="@+id/infoText"
-        android:layout_width="wrap_content"
+        android:layout_width="308dp"
         android:layout_height="wrap_content"
-        android:text="Thanks + sample info text about app"
+        android:layout_marginTop="64dp"
+        android:text="Your images have been successfully uploaded to our data server for analysis. Thank you for your contribution! You may now delete the app. Deleting the app will not delete the images it took, so you can still find them in your gallery."
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/doNotDeleteWarning"
-        android:layout_width="308dp"
-        android:layout_height="76dp"
-        android:text="Please do not delete the app until after your photos have been uploaded. Deleting the app will not delete your photos, so you will get to keep your eclipse photos!"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/infoText" />
 
     <!--
     <Button
