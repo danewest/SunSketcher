@@ -83,12 +83,14 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     public void getLocation(View v) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //request permission again if it wasn't given
             requestPermissions(new String[]{"android.permission.ACCESS_FINE_LOCATION"}, 1);
         } else {
             v.setEnabled(false);
             Button button = (Button) v;
             button.setText("Getting GPS Location");
 
+            //prevent phone from automatically locking
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
             LocationAccess locAccess = new LocationAccess(this);
@@ -99,29 +101,29 @@ public class MainActivity extends AppCompatActivity {
                     double lon = location.getLongitude();
                     double alt = location.getAltitude();
 
-                    //get actual device location TODO: use for actual app releases
-                    String[] eclipseData = LocToTime.calculatefor(lat, lon, alt);
+                    //get actual device location for eclipse timing TODO: use for actual app releases
+                    //String[] eclipseData = LocToTime.calculatefor(lat, lon, alt);
 
-                    //spoof location for testing; TODO: remove for actual app releases
+                    //spoof location for eclipse testing; TODO: remove for actual app releases
                     //String[] eclipseData = LocToTime.calculatefor(37.60786, -91.02687, 0);
 
                     //get actual device location for sunset timing (test stuff) TODO: remove for actual app releases
-                    //String sunsetTime = Sunset.calcSun(lat, -lon); //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
+                    String sunsetTime = Sunset.calcSun(lat, -lon); //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
 
-                    if(!eclipseData[0].equals("N/A") /*true*/) {
-                        long[] times = convertTimes(eclipseData);
-                        //long[] times = convertSunsetTime(sunsetTime);
+                    if(/*!eclipseData[0].equals("N/A")*/ true) {        //TODO: swap for actual app releases
+                        //long[] times = convertTimes(eclipseData);     //TODO: use for actual app releases
+                        long[] times = convertSunsetTime(sunsetTime);   //TODO: remove for actual app releases
 
-                        //--------to make it visible that something is happening--------
-                        //for the final app, might want to replace this code with something that makes a countdown timer on screen tick down
+                        //use the given times to create calendar objects to use in setting alarms
                         Calendar[] timeCals = new Calendar[2];
                         timeCals[0] = Calendar.getInstance();
                         timeCals[0].setTimeInMillis(times[0] * 1000);
                         timeCals[1] = Calendar.getInstance();
                         timeCals[1].setTimeInMillis(times[1] * 1000);
 
-                        String details = "You are at lat: " + lat + ", lon: " + lon + "; The total solar eclipse will start at the following time at your current location: " + timeCals[0].getTime(); //TODO: use for actual app releases
-                        //String details = "lat: " + lat + "; lon: " + lon + "; Sunset Time: " + timeCals[0].getTime(); //TODO: remove for actual app releases
+                        //for the final app, might want to add something that makes a countdown timer on screen tick down
+                        //String details = "You are at lat: " + lat + ", lon: " + lon + "; The solar eclipse will start at the following time at your current location: " + timeCals[0].getTime(); //TODO: use for actual app releases
+                        String details = "lat: " + lat + "; lon: " + lon + "; Sunset Time: " + timeCals[0].getTime(); //TODO: remove for actual app releases
                         Log.d("Timing", details);
 
                         button.setText(details);
@@ -137,9 +139,9 @@ public class MainActivity extends AppCompatActivity {
                         prefs.apply();
 
                         //go to camera 15 seconds prior, start taking images 7 seconds prior to 3 seconds after, and then at end of eclipse 3 seconds before and 7 after TODO: also for the sunset timing
-                        Date date = new Date((times[0] - 15) * 1000);
+                        //Date date = new Date((times[0] - 15) * 1000);
                         //the next line is a testcase to make sure functionality works for eclipse timing
-                        //Date date = new Date((System.currentTimeMillis()) + 5000);
+                        Date date = new Date((System.currentTimeMillis()) + 5000);
                         Log.d("SCHEDULE_CAMERA", date.toString());
 
                         timer = new Timer();
@@ -158,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //TimerTask subclass that opens the CameraActivity at the specified time
     static class TimeTask extends TimerTask{
         Context context;
 
@@ -179,11 +182,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //convert `hh:mm:ss` format string to unix time (this version is specifically for Apr. 8, 2024 eclipse, the first number in startUnix and endUnix will need to be modified to the unix time for the start of Oct. 14, 2023 for that test
     long[] convertTimes(String[] data){
         String[] start = data[0].split(":");
         String[] end = data[1].split(":");
 
-        //we don't need to worry about standard timezones, since the actual eclipse is on 4/8, during daylight savings
+        //we don't need to worry about standard timezones, since the actual eclipse is on 4/8, during daylight savings (same for 10/14 eclipse)
+        //actually this code might not even do anything, but it works correctly. TODO: Might want to test printing out the timezone displayname, if the format doesn't match the cases here then the switch can likely be removed entirely
         int timeDiff = 0;
         switch(TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT)){
             case "HST-10:00":

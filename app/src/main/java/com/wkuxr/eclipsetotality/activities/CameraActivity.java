@@ -176,7 +176,6 @@ public class CameraActivity extends AppCompatActivity {
     private final CameraCaptureSession.CaptureCallback mPreviewCaptureCallback = new
             CameraCaptureSession.CaptureCallback() {
 
-                @RequiresApi(api = Build.VERSION_CODES.O)
                 private void process(CaptureResult captureResult) {
                     switch (mCaptureState) {
                         case STATE_PREVIEW:
@@ -312,7 +311,8 @@ public class CameraActivity extends AppCompatActivity {
 
         //timer that takes images every 0.5 seconds for 10 seconds starting 7 seconds before t[c2], then another timer for images every 0.5s for 10s starting 3s before t[c3]
         //the next line is a testcase to make sure functionality works
-        //startTime = System.currentTimeMillis() + 15000;
+        startTime = System.currentTimeMillis() + 15000;
+        endTime = startTime + 120000; //2 minutes after startTime
         Date startC2 = new Date(startTime - 7000);
         Date endC2 = new Date(startTime + 3100);
         //Date activityTimer = new Date(startTime + 10000);
@@ -534,7 +534,6 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     // this is the code that actually captures an image. if you need it to take a burst photo, call this function multiple times.
-    @RequiresApi(api = Build.VERSION_CODES.O)
     //private void startStillCaptureRequest(CaptureRequest.Builder builder) {
     private void startStillCaptureRequest() {
         try {
