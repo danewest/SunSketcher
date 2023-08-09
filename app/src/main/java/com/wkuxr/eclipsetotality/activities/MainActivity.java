@@ -144,9 +144,12 @@ public class MainActivity extends AppCompatActivity {
                         //Date date = new Date((System.currentTimeMillis()) + 5000);
                         Log.d("SCHEDULE_CAMERA", date.toString());
 
-                        timer = new Timer();
-                        TimeTask cameraActivitySchedulerTask = new TimeTask();
-                        timer.schedule(cameraActivitySchedulerTask, date);
+                        if(timer == null) {
+                            Log.d("Timing", "Creating timer.");
+                            timer = new Timer();
+                            TimeTask cameraActivitySchedulerTask = new TimeTask();
+                            timer.schedule(cameraActivitySchedulerTask, date);
+                        }
                     } else {
                         button.setText("Not in eclipse path.");
                     }

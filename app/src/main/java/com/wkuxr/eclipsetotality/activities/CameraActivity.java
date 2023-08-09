@@ -311,12 +311,13 @@ public class CameraActivity extends AppCompatActivity {
 
         //timer that takes images every 0.5 seconds for 10 seconds starting 7 seconds before t[c2], then another timer for images every 0.5s for 10s starting 3s before t[c3]
         //the next line is a testcase to make sure functionality works
-        endTime = startTime + 120000; //2 minutes after startTime
+        //startTime = System.currentTimeMillis() + 15000; //TODO: this is just for specific test stuff, remove for any builds
+        endTime = startTime + 120000; //2 minutes after startTime TODO: remove this line for actual eclipse builds, this is only for sunset stuff
         Date startC2 = new Date(startTime - 7000);
-        Date endC2 = new Date(startTime + 3100);
+        Date endC2 = new Date(startTime + 3400);
         //Date activityTimer = new Date(startTime + 10000);
         Date startC3 = new Date(endTime - 3000);
-        Date endC3 = new Date(endTime + 7100);
+        Date endC3 = new Date(endTime + 7400);
         sequenceTimer = new Timer();
         //set timer to start captures at t[c2] - 7
         sequenceTimer.schedule(new StartSequenceTask(),startC2);
@@ -663,7 +664,7 @@ public class CameraActivity extends AppCompatActivity {
     // names the files. in here you may be able to change the file type based on the extension, might want to look into that if we want to save
     // RAW filetypes instead of jpg, which are lossy.
     private void createImageFileName() throws IOException {
-        long timestampLong = System.currentTimeMillis() + timezoneOffset();
+        long timestampLong = System.currentTimeMillis();
         String timestamp = "" + timestampLong;
         //String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()); // also saves a timestamp which we can use to
         // create metadata files.
@@ -683,6 +684,7 @@ public class CameraActivity extends AppCompatActivity {
     // but have it make a txt document that stores the metadata. of however we want to save it.
 
     //used to give offset from user's timezone to UTC to convert all timestamps to UTC for consistency and ease of sorting
+    //testing disabling this part because I misunderstood how UTC and currentTimeMillis works
     private long timezoneOffset(){
         //we don't need to worry about standard timezones, since the actual eclipse is on 4/8, during daylight savings
         int timeDiff = 1000 * 60 * 60;
