@@ -311,7 +311,6 @@ public class CameraActivity extends AppCompatActivity {
 
         //timer that takes images every 0.5 seconds for 10 seconds starting 7 seconds before t[c2], then another timer for images every 0.5s for 10s starting 3s before t[c3]
         //the next line is a testcase to make sure functionality works
-        startTime = System.currentTimeMillis() + 15000;
         endTime = startTime + 120000; //2 minutes after startTime
         Date startC2 = new Date(startTime - 7000);
         Date endC2 = new Date(startTime + 3100);
