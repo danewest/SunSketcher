@@ -141,6 +141,12 @@ public class CameraActivity extends AppCompatActivity {
 
         @Override
         public void run() {
+            try {
+                createImageFileName();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             ByteBuffer byteBuffer = mImage.getPlanes()[0].getBuffer();
             byte[] bytes = new byte[byteBuffer.remaining()];
             byteBuffer.get(bytes);
@@ -311,7 +317,7 @@ public class CameraActivity extends AppCompatActivity {
 
         //timer that takes images every 0.5 seconds for 10 seconds starting 7 seconds before t[c2], then another timer for images every 0.5s for 10s starting 3s before t[c3]
         //the next line is a testcase to make sure functionality works
-        //startTime = System.currentTimeMillis() + 15000; //TODO: this is just for specific test stuff, remove for any builds
+        startTime = System.currentTimeMillis() + 15000; //TODO: this is just for specific test stuff, remove for any builds
         endTime = startTime + 120000; //2 minutes after startTime TODO: remove this line for actual eclipse builds, this is only for sunset stuff
         Date startC2 = new Date(startTime - 7000);
         Date endC2 = new Date(startTime + 3400);
@@ -549,12 +555,6 @@ public class CameraActivity extends AppCompatActivity {
                         @Override
                         public void onCaptureStarted(CameraCaptureSession session, CaptureRequest request, long timestamp, long frameNumber) {
                             super.onCaptureStarted(session, request, timestamp, frameNumber);
-
-                            try {
-                                createImageFileName();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
                         }
                     };
             //single request
@@ -666,16 +666,18 @@ public class CameraActivity extends AppCompatActivity {
     private void createImageFileName() throws IOException {
         long timestampLong = System.currentTimeMillis();
         String timestamp = "" + timestampLong;
+
+        //create image metadata
+        SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+        float lat = prefs.getFloat("lat", 0f);
+        float lon = prefs.getFloat("lon", 0f);
+        float alt = prefs.getFloat("alt", 0f);
+
         //String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()); // also saves a timestamp which we can use to
         // create metadata files.
         String prepend = "IMAGE_" + timestamp + "_";
         File imageFile = File.createTempFile(prepend, ".jpg", mImageFolder);
         mImageFileName = imageFile.getAbsolutePath();
-
-        SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
-        float lat = prefs.getFloat("lat", 0f);
-        float lon = prefs.getFloat("lon", 0f);
-        float alt = prefs.getFloat("alt", 0f);
 
         db.addMetadata(new Metadata(mImageFileName, (double)lat, (double)lon, (double)alt, timestampLong));
     }

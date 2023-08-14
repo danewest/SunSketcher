@@ -139,9 +139,9 @@ public class MainActivity extends AppCompatActivity {
                         prefs.apply();
 
                         //go to camera 15 seconds prior, start taking images 7 seconds prior to 3 seconds after, and then at end of eclipse 3 seconds before and 7 after TODO: also for the sunset timing
-                        Date date = new Date((times[0] - 15) * 1000);
+                        //Date date = new Date((times[0] - 15) * 1000);
                         //the next line is a testcase to make sure functionality works for eclipse timing
-                        //Date date = new Date((System.currentTimeMillis()) + 5000);
+                        Date date = new Date((System.currentTimeMillis()) + 5000);
                         Log.d("SCHEDULE_CAMERA", date.toString());
 
                         if(timer == null) {
