@@ -2,14 +2,19 @@ package com.wkuxr.eclipsetotality.activities
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.wkuxr.eclipsetotality.activities.SendConfirmationActivity.Companion.prefs
+import com.wkuxr.eclipsetotality.database.MetadataDB.Companion.db
 import com.wkuxr.eclipsetotality.databinding.ActivityFinishedInfoBinding
 import com.wkuxr.eclipsetotality.networking.ClientRunOnTransfer.clientTransferSequence
+import java.io.File
+import java.io.FileWriter
+import java.util.Calendar
 
 class FinishedInfoActivity : AppCompatActivity() {
 
@@ -29,6 +34,32 @@ class FinishedInfoActivity : AppCompatActivity() {
         } else {
             text.text = "Thank you for using the SunSketcher app. You have chosen to upload your images for analysis. Please keep the app installed and do not delete the photos in the `Pictures/SunSketcher/` directory, or the SunSketcher album in your gallery, until further notice. You will receive a notification when your images have been uploaded, at which point you can freely delete the app and images from your device. This may take more than a month, so we appreciate your patience."
         }
+
+        createTimingCSV()
+    }
+
+    //dump timing data to a CSV
+    fun createTimingCSV(){
+        db.initialize()
+        val metas = db.getMetadata()
+
+        var out = "Filename,Saved Time,Image Time,Difference\n"
+
+        for(meta in metas){
+            val splitFilepath = meta.filepath.split("/")
+            out += splitFilepath[splitFilepath.size - 1] + "," + meta.captureTime + ",,\n"
+        }
+
+        //save the file to the same folder as the images, or to the documents folder if the image folder directory somehow wasn't saved to shared preferences
+        val imageFolder = prefs.getString("imageFolderDirectory", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath)
+
+        val csvFileName = "ImageUnixTimes ${System.currentTimeMillis()}.csv"
+        Log.d("CSVWriter", "Writing timing data to $imageFolder/$csvFileName")
+
+        val csv = File("$imageFolder/$csvFileName")
+        val writer = FileWriter(csv)
+        writer.write(out)
+        writer.close()
     }
 
     fun onUploadClick(v: View) {

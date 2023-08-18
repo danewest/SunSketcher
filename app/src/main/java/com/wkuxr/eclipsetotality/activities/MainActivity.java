@@ -38,8 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         singleton = this;
 
-        reqPerm(new String[]{"android.permission.CAMERA"});
-        reqPerm(new String[]{"android.permission.ACCESS_FINE_LOCATION"});
+        reqPerm(new String[]{"android.permission.CAMERA","android.permission.ACCESS_FINE_LOCATION","android.permission.WRITE_EXTERNAL_STORAGE"});
 
 
 
