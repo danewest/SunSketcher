@@ -51,7 +51,7 @@ class FinishedInfoActivity : AppCompatActivity() {
         }
 
         //save the file to the same folder as the images, or to the documents folder if the image folder directory somehow wasn't saved to shared preferences
-        val imageFolder = prefs.getString("imageFolderDirectory", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath)
+        val imageFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath
 
         val csvFileName = "ImageUnixTimes ${System.currentTimeMillis()}.csv"
         Log.d("CSVWriter", "Writing timing data to $imageFolder/$csvFileName")

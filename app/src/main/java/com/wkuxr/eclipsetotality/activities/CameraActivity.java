@@ -28,6 +28,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
+import android.util.Range;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
@@ -209,7 +210,6 @@ public class CameraActivity extends AppCompatActivity {
                     }
                 }
 
-                @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
@@ -425,6 +425,7 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    boolean aeModeOffAvailable = false;
     @SuppressWarnings("SuspiciousNameCombination")
     private void setupCamera(int width, int height) {
         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
@@ -457,6 +458,22 @@ public class CameraActivity extends AppCompatActivity {
                 }
             }
             CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(currentLarge);
+            final int[] availableAeModes = cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_MODES);
+            Log.d("AE_MODE", "Target mode ID: " + CameraCharacteristics.CONTROL_AE_MODE_OFF + "\nAvailable IDs:");
+            for(int mode : availableAeModes){
+                if(mode == CameraCharacteristics.CONTROL_AE_MODE_OFF){
+                    aeModeOffAvailable = true;
+                }
+            }
+            final Range<Integer> isoRange = cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE);
+            if(null != isoRange) {
+                Log.d("AE_MODE","iso range => lower : " + isoRange.getLower() + ", higher : " + isoRange.getUpper());
+            }
+            final Range<Long>  exposureTimeRange = cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
+            if(null!=exposureTimeRange){
+                Log.d("AE_MODE","exposure time range => lower : " + exposureTimeRange.getLower() + ", higher : " + exposureTimeRange.getUpper());
+            }
+
             StreamConfigurationMap map = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             int deviceOrientation = getWindowManager().getDefaultDisplay().getRotation();
             mTotalRotation = sensorToDeviceRotation(cameraCharacteristics, deviceOrientation);
@@ -481,22 +498,18 @@ public class CameraActivity extends AppCompatActivity {
     private void connectCamera() {
         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) ==
-                        PackageManager.PERMISSION_GRANTED) {
-                    cameraManager.openCamera(mCameraId, mCameraDeviceStateCallback, mBackgroundHandler);
-                } else {
-                    if (shouldShowRequestPermissionRationale(android.Manifest.permission.CAMERA)) {
-                        Toast.makeText(this,
-                                "Video app required access to camera", Toast.LENGTH_SHORT).show();
-                    }
-                    requestPermissions(new String[]{android.Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
-                    }, REQUEST_CAMERA_PERMISSION_RESULT);
-                }
-
-            } else {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
+                    PackageManager.PERMISSION_GRANTED) {
                 cameraManager.openCamera(mCameraId, mCameraDeviceStateCallback, mBackgroundHandler);
+            } else {
+                if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                    Toast.makeText(this,
+                            "Video app required access to camera", Toast.LENGTH_SHORT).show();
+                }
+                requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
+                }, REQUEST_CAMERA_PERMISSION_RESULT);
             }
+
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -549,6 +562,12 @@ public class CameraActivity extends AppCompatActivity {
 
             mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
             mCaptureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, mTotalRotation);
+            if(aeModeOffAvailable) {
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO);
+                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, 64);
+                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 5000000L);
+            }
 
             CameraCaptureSession.CaptureCallback stillCaptureCallback = new
                     CameraCaptureSession.CaptureCallback() {
@@ -682,38 +701,6 @@ public class CameraActivity extends AppCompatActivity {
         db.addMetadata(new Metadata(mImageFileName, (double)lat, (double)lon, (double)alt, timestampLong));
     }
 
-    // if we want to create a filetype that saves metadata, follow the format of the createImageFileName and createImageFolder
-    // but have it make a txt document that stores the metadata. of however we want to save it.
-
-    //used to give offset from user's timezone to UTC to convert all timestamps to UTC for consistency and ease of sorting
-    //testing disabling this part because I misunderstood how UTC and currentTimeMillis works
-    private long timezoneOffset(){
-        //we don't need to worry about standard timezones, since the actual eclipse is on 4/8, during daylight savings
-        int timeDiff = 1000 * 60 * 60;
-        switch(TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT)){
-            case "HST-10:00":
-                timeDiff *= 10;
-                break;
-            case "AKDT-8:00":
-                timeDiff *= 8;
-                break;
-            case "PDT-7:00":
-                timeDiff *= 7;
-                break;
-            case "MDT-6:00":
-                timeDiff *= 6;
-                break;
-            case "EDT-4:00":
-                timeDiff *= 4;
-                break;
-            default: //CDT-5:00
-                timeDiff *= 5;
-                break;
-        }
-
-        return timeDiff;
-    }
-
     private void lockFocus() {
         mCaptureState = STATE_WAIT_LOCK;
         mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
@@ -732,8 +719,8 @@ public class CameraActivity extends AppCompatActivity {
     @NonNull
     public Size getResolution(@NonNull final CameraManager cameraManager, @NonNull final String cameraId) throws CameraAccessException
     {
-        final CameraCharacteristics  characteristics = cameraManager.getCameraCharacteristics(cameraId);
-        final StreamConfigurationMap map             = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+        final CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraId);
+        final StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
         // if there is no camera
         if (map == null)
