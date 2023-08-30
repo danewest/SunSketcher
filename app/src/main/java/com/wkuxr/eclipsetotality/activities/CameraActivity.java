@@ -317,8 +317,8 @@ public class CameraActivity extends AppCompatActivity {
 
         //timer that takes images every 0.5 seconds for 10 seconds starting 7 seconds before t[c2], then another timer for images every 0.5s for 10s starting 3s before t[c3]
         //the next line is a testcase to make sure functionality works
-        startTime = System.currentTimeMillis() + 17000; //TODO: this is just for specific test stuff, remove for any builds
-        endTime = startTime + 120000; //2 minutes after startTime TODO: remove this line for actual eclipse builds, this is only for sunset stuff
+        //startTime = System.currentTimeMillis() + 17000; //TODO: this is just for specific test stuff, remove for any builds
+        //endTime = startTime + 120000; //2 minutes after startTime TODO: remove this line for actual eclipse builds, this is only for sunset stuff
         Date startC2 = new Date(startTime - 15000);
         Date endC2 = new Date(startTime + 5400);
         //Date activityTimer = new Date(startTime + 10000);
