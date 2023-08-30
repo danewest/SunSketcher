@@ -35,28 +35,28 @@ class FinishedInfoActivity : AppCompatActivity() {
             text.text = "Thank you for using the SunSketcher app. You have chosen to upload your images for analysis. Please keep the app installed and do not delete the photos in the `Pictures/SunSketcher/` directory, or the SunSketcher album in your gallery, until further notice. You will receive a notification when your images have been uploaded, at which point you can freely delete the app and images from your device. This may take more than a month, so we appreciate your patience."
         }
 
-        createTimingCSV()
+        dumpDBtoCSV()
     }
 
     //dump timing data to a CSV
-    fun createTimingCSV(){
+    fun dumpDBtoCSV(){
         db.initialize()
         val metas = db.getMetadata()
 
-        var out = "Filename,Saved Time,Image Time,Difference\n"
+        var out = "Filepath,Latitude,Longitude,Altitude,Saved Time\n"
 
         for(meta in metas){
-            val splitFilepath = meta.filepath.split("/")
-            out += splitFilepath[splitFilepath.size - 1] + "," + meta.captureTime + ",,\n"
+            //val splitFilepath = meta.filepath.split("/")
+            out += meta.filepath + "," + meta.latitude + "," + meta.longitude + "," + meta.altitude + "," + meta.captureTime + "\n"
         }
 
         //save the file to the same folder as the images, or to the documents folder if the image folder directory somehow wasn't saved to shared preferences
-        val imageFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath
+        val documents = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath
 
         val csvFileName = "ImageUnixTimes ${System.currentTimeMillis()}.csv"
-        Log.d("CSVWriter", "Writing timing data to $imageFolder/$csvFileName")
+        Log.d("CSVWriter", "Writing timing data to $documents/$csvFileName")
 
-        val csv = File("$imageFolder/$csvFileName")
+        val csv = File("$documents/$csvFileName")
         val writer = FileWriter(csv)
         writer.write(out)
         writer.close()

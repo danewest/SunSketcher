@@ -40,8 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
         reqPerm(new String[]{"android.permission.CAMERA","android.permission.ACCESS_FINE_LOCATION","android.permission.WRITE_EXTERNAL_STORAGE"});
 
-
-
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         int hasConfirmDeny = prefs.getInt("upload", -1);
         switch(hasConfirmDeny){
@@ -101,17 +99,18 @@ public class MainActivity extends AppCompatActivity {
                     double alt = location.getAltitude();
 
                     //get actual device location for eclipse timing TODO: use for actual app releases
-                    //String[] eclipseData = LocToTime.calculatefor(lat, lon, alt);
+                    String[] eclipseData = LocToTime.calculatefor(lat, lon, alt);
 
                     //spoof location for eclipse testing; TODO: remove for actual app releases
                     //String[] eclipseData = LocToTime.calculatefor(37.60786, -91.02687, 0);
 
                     //get actual device location for sunset timing (test stuff) TODO: remove for actual app releases
-                    String sunsetTime = Sunset.calcSun(lat, -lon); //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
+                    //String sunsetTime = Sunset.calcSun(lat, -lon); //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
 
                     if(/*!eclipseData[0].equals("N/A")*/ true) {        //TODO: swap for actual app releases
                         //long[] times = convertTimes(eclipseData);     //TODO: use for actual app releases
-                        long[] times = convertSunsetTime(sunsetTime);   //TODO: remove for actual app releases
+                        //long[] times = convertSunsetTime(new String[]{sunsetTime, sunsetTime});   //TODO: remove for actual app releases
+                        long[] times = convertSunsetTime(eclipseData);
 
                         //use the given times to create calendar objects to use in setting alarms
                         Calendar[] timeCals = new Calendar[2];
@@ -138,9 +137,9 @@ public class MainActivity extends AppCompatActivity {
                         prefs.apply();
 
                         //go to camera 15 seconds prior, start taking images 7 seconds prior to 3 seconds after, and then at end of eclipse 3 seconds before and 7 after TODO: also for the sunset timing
-                        //Date date = new Date((times[0] - 15) * 1000);
+                        Date date = new Date((times[0] - 17) * 1000);
                         //the next line is a testcase to make sure functionality works for eclipse timing
-                        Date date = new Date((System.currentTimeMillis()) + 5000);
+                        //Date date = new Date((System.currentTimeMillis()) + 5000);
                         Log.d("SCHEDULE_CAMERA", date.toString());
 
                         if(timer == null) {
@@ -191,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
 
         //we don't need to worry about standard timezones, since the actual eclipse is on 4/8, during daylight savings (same for 10/14 eclipse)
         //actually this code might not even do anything, but it works correctly. TODO: Might want to test printing out the timezone displayname, if the format doesn't match the cases here then the switch can likely be removed entirely
-        int timeDiff = 0;
+        /*int timeDiff = 0;
         switch(TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT)){
             case "HST-10:00":
                 timeDiff = -10;
@@ -213,17 +212,18 @@ public class MainActivity extends AppCompatActivity {
                 break;
             default:
                 break;
-        }
+        }*/
 
-        long startUnix = 1712530800 + ((Integer.parseInt(start[0]) + timeDiff) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);
-        long endUnix = 1712530800 + ((Integer.parseInt(end[0]) + timeDiff) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
+        long startUnix = 1712530800 + ((Integer.parseInt(start[0])/* + timeDiff*/) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);
+        long endUnix = 1712530800 + ((Integer.parseInt(end[0])/* + timeDiff*/) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
 
         return new long[]{startUnix, endUnix};
     }
 
-    long[] convertSunsetTime(String data){
+    long[] convertSunsetTime(String[] data){
         //0 -> hour; 1 -> minute; 2 -> second
-        String[] start = data.split(":");
+        String[] start = data[0].split(":");
+        String[] end = data[1].split(":");
 
         //get current time in seconds, remove a day if it is past UTC midnight for the date that your timezone is currently in
         long currentDateUnix = (System.currentTimeMillis() / 1000);
@@ -237,8 +237,9 @@ public class MainActivity extends AppCompatActivity {
 
         //convert the given time to seconds, add it to the start of the day as calculated by
         long startUnix = currentDateTimezoneCorrectedUnix + (Integer.parseInt(start[0]) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);
+        long endUnix = currentDateTimezoneCorrectedUnix + (Integer.parseInt(end[0]) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
 
-        return new long[]{startUnix, startUnix};
+        return new long[]{startUnix, endUnix};
     }
 
     public void reqPerm(String[] permissions){

@@ -317,13 +317,13 @@ public class CameraActivity extends AppCompatActivity {
 
         //timer that takes images every 0.5 seconds for 10 seconds starting 7 seconds before t[c2], then another timer for images every 0.5s for 10s starting 3s before t[c3]
         //the next line is a testcase to make sure functionality works
-        startTime = System.currentTimeMillis() + 15000; //TODO: this is just for specific test stuff, remove for any builds
+        startTime = System.currentTimeMillis() + 17000; //TODO: this is just for specific test stuff, remove for any builds
         endTime = startTime + 120000; //2 minutes after startTime TODO: remove this line for actual eclipse builds, this is only for sunset stuff
-        Date startC2 = new Date(startTime - 7000);
-        Date endC2 = new Date(startTime + 3400);
+        Date startC2 = new Date(startTime - 15000);
+        Date endC2 = new Date(startTime + 5400);
         //Date activityTimer = new Date(startTime + 10000);
-        Date startC3 = new Date(endTime - 3000);
-        Date endC3 = new Date(endTime + 7400);
+        Date startC3 = new Date(endTime - 5000);
+        Date endC3 = new Date(endTime + 15400);
         sequenceTimer = new Timer();
         //set timer to start captures at t[c2] - 7
         sequenceTimer.schedule(new StartSequenceTask(),startC2);
@@ -335,7 +335,7 @@ public class CameraActivity extends AppCompatActivity {
         sequenceTimer.schedule(new StopSequenceTask(), endC3);
 
         //set timer to switch to SendConfirmationActivity
-        Date activityTimer = new Date(endTime + 10000);
+        Date activityTimer = new Date(endTime + 20000);
         sequenceTimer.schedule(new SwitchActivityTask(), activityTimer);
 
 
@@ -362,13 +362,13 @@ public class CameraActivity extends AppCompatActivity {
         @Override
         public void run(){
             startStillCaptureRequest();
-            sequenceHandler.postDelayed(this, 500);
+            sequenceHandler.postDelayed(this, 1000);//TODO: Lower delay if possible
         }
     };
 
     static class StartSequenceTask extends TimerTask {
         public void run(){
-            singleton.sequenceHandler.postDelayed(singleton.sequenceRunnable, 500);
+            singleton.sequenceHandler.postDelayed(singleton.sequenceRunnable, 1000);//TODO: Lower delay if possible
         }
     }
 
@@ -693,7 +693,7 @@ public class CameraActivity extends AppCompatActivity {
         float alt = prefs.getFloat("alt", 0f);
 
         //String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()); // also saves a timestamp which we can use to
-        // create metadata files.
+        // create metadata files. Additionally, saves some weird number to the end of the filename. Not sure how to prevent that.
         String prepend = "IMAGE_" + timestamp + "_";
         File imageFile = File.createTempFile(prepend, ".jpg", mImageFolder);
         mImageFileName = imageFile.getAbsolutePath();

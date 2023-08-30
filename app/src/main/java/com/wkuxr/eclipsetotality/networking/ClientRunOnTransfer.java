@@ -23,7 +23,7 @@ public class ClientRunOnTransfer {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         AtomicReference<Socket> socketHolder = new AtomicReference<>();
 
-        Socket ssocket = new Socket("172.30.204.50", 4440);
+        Socket ssocket = new Socket("161.6.109.198", 443);
 
         if (ssocket != null) {
             startTransfer(ssocket);
@@ -69,7 +69,7 @@ public class ClientRunOnTransfer {
             System.out.println("Transfer Rejected. Setting New Alarm.");
         } else {
             System.out.println("Moving to port " + inputLine);
-            Socket socket = new Socket("172.30.204.50", Integer.parseInt(inputLine));
+            Socket socket = new Socket("161.6.109.198", Integer.parseInt(inputLine));
             System.out.println("Successful!");
 
             // to send data to the server
