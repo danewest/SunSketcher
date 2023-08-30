@@ -3,14 +3,21 @@ package com.wkuxr.eclipsetotality.networking;
 import static com.wkuxr.eclipsetotality.activities.SendConfirmationActivity.prefs;
 import static com.wkuxr.eclipsetotality.database.MetadataDB.db;
 
+import android.util.Log;
+
 import com.wkuxr.eclipsetotality.database.Metadata;
 import com.wkuxr.eclipsetotality.database.MetadataDAO;
 
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 //untested transfer code added
@@ -25,9 +32,23 @@ public class ClientRunOnTransfer {
 
         Socket ssocket = new Socket("161.6.109.198", 443);
 
+        Future<Void> future = executorService.submit(task);
+
+        //backup code if timed out
+        try {
+            future.get(60, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            System.err.println("Connection timeout. Moving connection time...");
+            future.cancel(true); // Cancel the task
+            setTransferAlarm();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        Socket ssocket = socketHolder.get();
         if (ssocket != null) {
             startTransfer(ssocket);
-            ssocket.close(); // Close the socket when you're done using it
+            ssocket.close(); // Close the socket
         }
         executorService.shutdown();
 
@@ -50,14 +71,14 @@ public class ClientRunOnTransfer {
         //-------------------------------------------------------------------------------------------------
 
 
-        System.out.println("Loading...");
+        Log.d("NetworkTransfer","Loading...");
         int currentPhoto = 0;
         String currentName = "nameError";
 
         // to read data coming from the server
         BufferedReader fromThreadManager = new BufferedReader(new InputStreamReader(ssocket.getInputStream()));
 
-        System.out.println("Connection Successful!");
+        Log.d("NetworkTransfer","Connection Successful!");
 
         String inputLine;
         inputLine = fromThreadManager.readLine();
@@ -66,11 +87,11 @@ public class ClientRunOnTransfer {
 
         if (inputLine.equals("0")) {
             setTransferAlarm();
-            System.out.println("Transfer Rejected. Setting New Alarm.");
+            Log.d("NetworkTransfer","Transfer Rejected. Setting New Alarm.");
         } else {
-            System.out.println("Moving to port " + inputLine);
+            Log.d("NetworkTransfer","Moving to port " + inputLine);
             Socket socket = new Socket("161.6.109.198", Integer.parseInt(inputLine));
-            System.out.println("Successful!");
+            Log.d("NetworkTransfer","Successful!");
 
             // to send data to the server
             DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
@@ -79,26 +100,26 @@ public class ClientRunOnTransfer {
             toServer.flush();
 
             for(Metadata metadata : metadataList) {
-                System.out.println("Importing Photo " + currentPhoto + " ...");
+                Log.d("NetworkTransfer","Importing Photo " + currentPhoto + " ...");
 
-                System.out.println();
-                currentName = metadata.getFilepath();
+                String[] filepathSplit = metadata.getFilepath().split("/");
+                currentName = filepathSplit[filepathSplit.length - 1];
 
-                File file = new File(currentName);
+                File file = new File(metadata.getFilepath());
                 byte[] imageData = new byte[(int) file.length()];
 
-                System.out.println("File length = " + (int) file.length());
+                Log.d("NetworkTransfer","File length = " + (int) file.length());
                 toServer.writeBytes((int) file.length() + "\n");
                 toServer.flush();
 
-                System.out.println("current name = " + currentName);
+                Log.d("NetworkTransfer","current name = " + currentName);
                 toServer.writeBytes(currentName + "\n");
                 toServer.flush();
 
                 FileInputStream fileIn = new FileInputStream(file);
                 fileIn.read(imageData);
 
-                System.out.println("Starting Transfer...");
+                Log.d("NetworkTransfer","Starting Transfer...");
 
                 String byteJustSent;
 
@@ -132,12 +153,12 @@ public class ClientRunOnTransfer {
                 toServer.writeBytes(Long.toString(time) + "\n");
                 toServer.flush();
 
-                System.out.println("Transfer Successful!");
+                Log.d("NetworkTransfer","Transfer Successful!");
 
             }
             socket.close();
 
-            System.out.println("Program Complete. Closing...");
+            Log.d("NetworkTransfer","Program Complete. Closing...");
         }
     }
 
