@@ -45,15 +45,42 @@ public class ClientRunOnTransfer {
             e.printStackTrace();
         }
 
-        Socket ssocket = socketHolder.get();
-        if (ssocket != null) {
-            startTransfer(ssocket);
-            ssocket.close(); // Close the socket
-        }
+        ssocket = socketHolder.get();//this may require ssocket to be a new varriable w a new name 
+            if (ssocket != null) {
+                startTransfer(ssocket);
+                ssocket.close(); // Close the socket
+            }
+        
         executorService.shutdown();
 
         prefs.edit().putInt("finishedUpload", 1).apply();
     }
+
+    static void managePorts(Socket ssocket) throws IOException {
+        // to read data coming from the server
+        BufferedReader fromThreadManager = new BufferedReader(new InputStreamReader(ssocket.getInputStream()));
+
+        System.out.println("Connection Successful!");
+
+        String inputLine;
+        inputLine = fromThreadManager.readLine();
+
+        if (inputLine.equals("0")) {
+            setTransferAlarm();
+            System.out.println("Transfer Rejected. Setting New Alarm.");
+        } else if(inputLine.equals("-1")) {
+            System.out.println("Single port config detected.");
+             startTransfer(ssocket);
+        } else {
+            ssocket.close();
+            System.out.println("Moving to port " + inputLine);
+            Socket socket = new Socket("161.6.109.198", Integer.parseInt(inputLine));
+            System.out.println("Successful!");
+            startTransfer(socket);
+        }
+    }
+
+
 
     static void startTransfer(Socket ssocket) throws IOException {
         double latitude = 0;
@@ -80,19 +107,8 @@ public class ClientRunOnTransfer {
 
         Log.d("NetworkTransfer","Connection Successful!");
 
-        String inputLine;
-        inputLine = fromThreadManager.readLine();
-
-        ssocket.close();
-
-        if (inputLine.equals("0")) {
-            setTransferAlarm();
-            Log.d("NetworkTransfer","Transfer Rejected. Setting New Alarm.");
-        } else {
-            Log.d("NetworkTransfer","Moving to port " + inputLine);
-            Socket socket = new Socket("161.6.109.198", Integer.parseInt(inputLine));
-            Log.d("NetworkTransfer","Successful!");
-
+        
+        
             // to send data to the server
             DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
 
@@ -160,7 +176,6 @@ public class ClientRunOnTransfer {
 
             Log.d("NetworkTransfer","Program Complete. Closing...");
         }
-    }
 
     static void setTransferAlarm() {
         // set an alarm to run ClientRunOnTransfer at a time in the future specified by the ID
