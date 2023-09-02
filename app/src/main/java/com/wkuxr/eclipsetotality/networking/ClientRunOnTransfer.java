@@ -32,7 +32,7 @@ public class ClientRunOnTransfer {
 
         Socket ssocket = new Socket("161.6.109.198", 443);
 
-        Future<Void> future = executorService.submit(task);
+        /*Future<Void> future = executorService.submit(task);
 
         //backup code if timed out
         try {
@@ -43,9 +43,9 @@ public class ClientRunOnTransfer {
             setTransferAlarm();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-        }
+        }*/
 
-        ssocket = socketHolder.get();//this may require ssocket to be a new varriable w a new name 
+        //ssocket = socketHolder.get();//this may require ssocket to be a new varriable w a new name
             if (ssocket != null) {
                 startTransfer(ssocket);
                 ssocket.close(); // Close the socket
@@ -110,7 +110,7 @@ public class ClientRunOnTransfer {
         
         
             // to send data to the server
-            DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
+            DataOutputStream toServer = new DataOutputStream(ssocket.getOutputStream());
 
             toServer.writeBytes(Integer.toString(metadataList.size()) + "\n");//---------------------------------------------------------
             toServer.flush();
@@ -172,7 +172,7 @@ public class ClientRunOnTransfer {
                 Log.d("NetworkTransfer","Transfer Successful!");
 
             }
-            socket.close();
+            ssocket.close();
 
             Log.d("NetworkTransfer","Program Complete. Closing...");
         }
