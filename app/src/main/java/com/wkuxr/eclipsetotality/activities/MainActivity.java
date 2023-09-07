@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         singleton = this;
 
-        reqPerm(new String[]{"android.permission.CAMERA","android.permission.ACCESS_FINE_LOCATION","android.permission.WRITE_EXTERNAL_STORAGE"});
+        reqPerm(new String[]{"android.permission.CAMERA","android.permission.ACCESS_FINE_LOCATION","android.permission.WRITE_EXTERNAL_STORAGE","android.permission.INTERNET"});
 
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         int hasConfirmDeny = prefs.getInt("upload", -1);
@@ -138,9 +138,9 @@ public class MainActivity extends AppCompatActivity {
                         prefs.apply();
 
                         //go to camera 17 seconds prior, start taking images 15 seconds prior to 5 seconds after, and then at end of eclipse 5 seconds before and 15 after TODO: also for the sunset timing
-                        Date date = new Date((times[0] - 17) * 1000);
+                        //Date date = new Date((times[0] - 17) * 1000);
                         //the next line is a testcase to make sure functionality works for eclipse timing
-                        //Date date = new Date((System.currentTimeMillis()) + 5000);
+                        Date date = new Date((System.currentTimeMillis()) + 5000);
                         Log.d("SCHEDULE_CAMERA", date.toString());
 
                         if(timer == null) {
@@ -189,34 +189,8 @@ public class MainActivity extends AppCompatActivity {
         String[] start = data[0].split(":");
         String[] end = data[1].split(":");
 
-        //we don't need to worry about standard timezones, since the actual eclipse is on 4/8, during daylight savings (same for 10/14 eclipse)
-        //actually this code might not even do anything, but it works correctly. TODO: Might want to test printing out the timezone displayname, if the format doesn't match the cases here then the switch can likely be removed entirely
-        /*int timeDiff = 0;
-        switch(TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT)){
-            case "HST-10:00":
-                timeDiff = -10;
-                break;
-            case "AKDT-8:00":
-                timeDiff = -8;
-                break;
-            case "PDT-7:00":
-                timeDiff = -7;
-                break;
-            case "MDT-6:00":
-                timeDiff = -6;
-                break;
-            case "CDT-5:00":
-                timeDiff = -5;
-                break;
-            case "EDT-4:00":
-                timeDiff = -4;
-                break;
-            default:
-                break;
-        }*/
-
-        long startUnix = 1712530800 + ((Integer.parseInt(start[0])/* + timeDiff*/) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);
-        long endUnix = 1712530800 + ((Integer.parseInt(end[0])/* + timeDiff*/) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
+        long startUnix = 1712530800 + ((Integer.parseInt(start[0])) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);
+        long endUnix = 1712530800 + ((Integer.parseInt(end[0])) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
 
         return new long[]{startUnix, endUnix};
     }

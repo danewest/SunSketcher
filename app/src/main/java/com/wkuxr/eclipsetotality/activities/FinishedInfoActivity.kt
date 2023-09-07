@@ -9,12 +9,13 @@ import android.view.WindowManager
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.wkuxr.eclipsetotality.activities.SendConfirmationActivity.Companion.prefs
+import com.wkuxr.eclipsetotality.database.MetadataDB
+import com.wkuxr.eclipsetotality.database.MetadataDB.Companion.createDB
 import com.wkuxr.eclipsetotality.database.MetadataDB.Companion.db
 import com.wkuxr.eclipsetotality.databinding.ActivityFinishedInfoBinding
 import com.wkuxr.eclipsetotality.networking.ClientRunOnTransfer.clientTransferSequence
 import java.io.File
 import java.io.FileWriter
-import java.util.Calendar
 
 class FinishedInfoActivity : AppCompatActivity() {
 
@@ -35,13 +36,19 @@ class FinishedInfoActivity : AppCompatActivity() {
             text.text = "Thank you for using the SunSketcher app. You have chosen to upload your images for analysis. Please keep the app installed and do not delete the photos in the `Pictures/SunSketcher/` directory, or the SunSketcher album in your gallery, until further notice. You will receive a notification when your images have been uploaded, at which point you can freely delete the app and images from your device. This may take more than a month, so we appreciate your patience."
         }
 
-        dumpDBtoCSV()
+        //TODO: DB dump causing a crash on app reopen, figure out why
+        if(!prefs.getBoolean("DBIsDumped", false)) {
+            dumpDBtoCSV()
+        }
     }
 
     //dump timing data to a CSV
     fun dumpDBtoCSV(){
+        db = createDB(this)
         db.initialize()
         val metas = db.getMetadata()
+
+        val prefEdit = prefs.edit()
 
         var out = "Filepath,Latitude,Longitude,Altitude,Saved Time\n"
 
@@ -60,6 +67,9 @@ class FinishedInfoActivity : AppCompatActivity() {
         val writer = FileWriter(csv)
         writer.write(out)
         writer.close()
+
+        prefEdit.putBoolean("DBIsDumped", true)
+        prefEdit.apply()
     }
 
     fun onUploadClick(v: View) {

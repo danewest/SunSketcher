@@ -315,13 +315,12 @@ public class CameraActivity extends AppCompatActivity {
         prefs = singleton.getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         prefs.edit().putInt("upload", -2).apply();
 
-        //timer that takes images every 0.5 seconds for 10 seconds starting 7 seconds before t[c2], then another timer for images every 0.5s for 10s starting 3s before t[c3]
+        //timer that takes images every 1 seconds for 20 seconds starting 15 seconds before t[c2], then another timer for images every 1s for 20s starting 5s before t[c3]
         //the next line is a testcase to make sure functionality works
-        //startTime = System.currentTimeMillis() + 17000; //TODO: this is just for specific test stuff, remove for any builds
-        //endTime = startTime + 120000; //2 minutes after startTime TODO: remove this line for actual eclipse builds, this is only for sunset stuff
+        startTime = System.currentTimeMillis() + 17000; //TODO: this is just for specific test stuff, remove for any builds
+        endTime = startTime + 120000; //2 minutes after startTime TODO: remove this line for actual eclipse builds, this is only for sunset stuff
         Date startC2 = new Date(startTime - 15000);
         Date endC2 = new Date(startTime + 5400);
-        //Date activityTimer = new Date(startTime + 10000);
         Date startC3 = new Date(endTime - 5000);
         Date endC3 = new Date(endTime + 15400);
         sequenceTimer = new Timer();
@@ -337,15 +336,6 @@ public class CameraActivity extends AppCompatActivity {
         //set timer to switch to SendConfirmationActivity
         Date activityTimer = new Date(endTime + 20000);
         sequenceTimer.schedule(new SwitchActivityTask(), activityTimer);
-
-
-        //Button mStillImageButton = findViewById(R.id.button);
-        //mStillImageButton.setOnClickListener(v -> {
-        //    //checkWriteStoragePermission();
-        //    startStillCaptureRequest();
-        //    //lockFocus();
-        //});
-
     }
 
     @Override
