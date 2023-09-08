@@ -3,10 +3,12 @@ package com.wkuxr.eclipsetotality.networking;
 import static com.wkuxr.eclipsetotality.activities.SendConfirmationActivity.prefs;
 import static com.wkuxr.eclipsetotality.database.MetadataDB.db;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.wkuxr.eclipsetotality.database.Metadata;
 import com.wkuxr.eclipsetotality.database.MetadataDAO;
+import com.wkuxr.eclipsetotality.database.MetadataDB;
 
 import java.net.*;
 import java.io.*;
@@ -26,10 +28,11 @@ import java.util.concurrent.atomic.AtomicReference;
 //...name = + Integer.toString(databaseFilenameIndex++)
 
 public class ClientRunOnTransfer {
-    public static void clientTransferSequence() throws Exception {
+    public static void clientTransferSequence(Context context) throws Exception {
         //ExecutorService executorService = Executors.newSingleThreadExecutor();
         //AtomicReference<Socket> socketHolder = new AtomicReference<>();
 
+        MetadataDB.Companion.createDB(context);
         Socket ssocket = new Socket("161.6.109.198", 443);
 
         /*Future<Void> future = executorService.submit(task);
@@ -59,22 +62,22 @@ public class ClientRunOnTransfer {
         // to read data coming from the server
         BufferedReader fromThreadManager = new BufferedReader(new InputStreamReader(ssocket.getInputStream()));
 
-        System.out.println("Connection Successful!");
+        Log.d("Networktransfer","Connection Successful!");
 
         String inputLine;
         inputLine = fromThreadManager.readLine();
 
         if (inputLine.equals("0")) {
             setTransferAlarm();
-            System.out.println("Transfer Rejected. Setting New Alarm.");
+            Log.d("Networktransfer","Transfer Rejected. Setting New Alarm.");
         } else if(inputLine.equals("-1")) {
-            System.out.println("Single port config detected.");
+            Log.d("Networktransfer","Single port config detected.");
              startTransfer(ssocket);
         } else {
             ssocket.close();
-            System.out.println("Moving to port " + inputLine);
+            Log.d("Networktransfer","Moving to port " + inputLine);
             Socket socket = new Socket("161.6.109.198", Integer.parseInt(inputLine));
-            System.out.println("Successful!");
+            Log.d("Networktransfer","Successful!");
             startTransfer(socket);
         }
     }

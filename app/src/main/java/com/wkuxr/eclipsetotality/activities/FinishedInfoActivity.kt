@@ -1,6 +1,7 @@
 package com.wkuxr.eclipsetotality.activities
 
 import android.content.Context
+import android.net.Network
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -79,7 +80,7 @@ class FinishedInfoActivity : AppCompatActivity() {
 
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-            var thread = NetworkThread { updateUIOnUploadFinish() }
+            var thread = NetworkThread(this) { updateUIOnUploadFinish() }
             thread.start()
 
             btn.text = "uploading, please wait..."
@@ -96,12 +97,13 @@ class FinishedInfoActivity : AppCompatActivity() {
             }
         }
     }
-    class NetworkThread(uiUpdate: () -> Unit) : Thread() {
+    class NetworkThread(context: Context, uiUpdate: () -> Unit) : Thread() {
         val uiUpdateFun = uiUpdate
+        val context = context
         override fun run() {
             try {
                 Log.d("NetworkThread", "Beginning Upload. Please wait...")
-                clientTransferSequence()
+                clientTransferSequence(context)
                 uiUpdateFun()
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
