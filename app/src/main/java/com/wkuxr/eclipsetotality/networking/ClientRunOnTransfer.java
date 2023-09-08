@@ -27,8 +27,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class ClientRunOnTransfer {
     public static void clientTransferSequence() throws Exception {
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        AtomicReference<Socket> socketHolder = new AtomicReference<>();
+        //ExecutorService executorService = Executors.newSingleThreadExecutor();
+        //AtomicReference<Socket> socketHolder = new AtomicReference<>();
 
         Socket ssocket = new Socket("161.6.109.198", 443);
 
@@ -46,12 +46,11 @@ public class ClientRunOnTransfer {
         }*/
 
         //ssocket = socketHolder.get();//this may require ssocket to be a new varriable w a new name
-            if (ssocket != null) {
-                startTransfer(ssocket);
-                ssocket.close(); // Close the socket
-            }
         
-        executorService.shutdown();
+                startTransfer(ssocket);
+                //ssocket.close(); // Close the socket. Removed for test str 005
+        
+        //executorService.shutdown();
 
         prefs.edit().putInt("finishedUpload", 1).apply();
     }
