@@ -21,6 +21,7 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
+import android.net.InetAddresses;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -47,9 +48,14 @@ import com.wkuxr.eclipsetotality.R;
 import com.wkuxr.eclipsetotality.database.Metadata;
 import com.wkuxr.eclipsetotality.database.MetadataDB;
 
+import org.apache.commons.net.ntp.NTPUDPClient;
+import org.apache.commons.net.ntp.TimeInfo;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -278,6 +284,9 @@ public class CameraActivity extends AppCompatActivity {
         });
     }*/
 
+    NTPUDPClient NTPClient;
+    long offset = 0;
+
     long startTime;
     long endTime;
 
@@ -292,6 +301,9 @@ public class CameraActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        Thread NTPClientThread = new Thread(ntpClientRunnable){};
+        NTPClientThread.start();
+
         db = MetadataDB.Companion.createDB(this);
 
         //checkWriteStoragePermission();
@@ -305,6 +317,23 @@ public class CameraActivity extends AppCompatActivity {
         startTime = prefs.getLong("startTime", Long.MAX_VALUE);
         endTime = prefs.getLong("endTime", Long.MAX_VALUE);
     }
+
+    Runnable ntpClientRunnable = () -> {
+        NTPClient = new NTPUDPClient();
+        NTPClient.setDefaultTimeout(2_000);
+        InetAddress inetAddress;
+        TimeInfo timeInfo;
+        try {
+            inetAddress = InetAddress.getByName("pool.ntp.org");
+            timeInfo = NTPClient.getTime(inetAddress);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        timeInfo.computeDetails();
+
+        offset = timeInfo.getOffset();
+        Log.d("NTPTimingOffset","Offset is " + offset);
+    };
 
     @Override
     protected void onStart() {
@@ -555,8 +584,8 @@ public class CameraActivity extends AppCompatActivity {
             if(aeModeOffAvailable) {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO);
-                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, 64);
-                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 5000000L);
+                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, 64);  // 63 ISO
+                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 5000000L); // 1/200s
             }
 
             CameraCaptureSession.CaptureCallback stillCaptureCallback = new
@@ -673,8 +702,8 @@ public class CameraActivity extends AppCompatActivity {
     // names the files. in here you may be able to change the file type based on the extension, might want to look into that if we want to save
     // RAW filetypes instead of jpg, which are lossy.
     private void createImageFileName() throws IOException {
-        long timestampLong = System.currentTimeMillis();
-        String timestamp = "" + timestampLong;
+        long timestampLong = System.currentTimeMillis() + offset;
+        String timestamp = "" + timestampLong + "NTP";
 
         //create image metadata
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
