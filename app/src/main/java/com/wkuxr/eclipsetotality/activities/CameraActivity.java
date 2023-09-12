@@ -284,8 +284,8 @@ public class CameraActivity extends AppCompatActivity {
         });
     }*/
 
-    NTPUDPClient NTPClient;
-    long offset = 0;
+    //NTPUDPClient NTPClient;
+    //long offset = 0;
 
     long startTime;
     long endTime;
@@ -301,8 +301,8 @@ public class CameraActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        Thread NTPClientThread = new Thread(ntpClientRunnable){};
-        NTPClientThread.start();
+        //Thread NTPClientThread = new Thread(ntpClientRunnable){};
+        //NTPClientThread.start();
 
         db = MetadataDB.Companion.createDB(this);
 
@@ -318,7 +318,7 @@ public class CameraActivity extends AppCompatActivity {
         endTime = prefs.getLong("endTime", Long.MAX_VALUE);
     }
 
-    Runnable ntpClientRunnable = () -> {
+    /*Runnable ntpClientRunnable = () -> {
         NTPClient = new NTPUDPClient();
         NTPClient.setDefaultTimeout(2_000);
         InetAddress inetAddress;
@@ -333,7 +333,7 @@ public class CameraActivity extends AppCompatActivity {
 
         offset = timeInfo.getOffset();
         Log.d("NTPTimingOffset","Offset is " + offset);
-    };
+    };*/
 
     @Override
     protected void onStart() {
@@ -702,7 +702,7 @@ public class CameraActivity extends AppCompatActivity {
     // names the files. in here you may be able to change the file type based on the extension, might want to look into that if we want to save
     // RAW filetypes instead of jpg, which are lossy.
     private void createImageFileName() throws IOException {
-        long timestampLong = System.currentTimeMillis() + offset;
+        long timestampLong = System.currentTimeMillis();// + offset;
         String timestamp = "" + timestampLong + "NTP";
 
         //create image metadata
