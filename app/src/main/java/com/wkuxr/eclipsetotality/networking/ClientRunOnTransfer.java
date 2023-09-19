@@ -82,7 +82,7 @@ public class ClientRunOnTransfer {
         toServer.writeBytes("transferRequest" + "\n");
         toServer.flush();
 
-        toServer.writeBytes(Integer.toString(metadataList.size()) + "\n");
+        toServer.writeBytes(metadataList.size() + "\n");
         toServer.flush();
 
         for (Metadata metadata : metadataList) {
@@ -125,13 +125,13 @@ public class ClientRunOnTransfer {
             time = metadata.getCaptureTime();
 
             // send metadata to server
-            toServer.writeBytes(Double.toString(latitude) + "\n");
+            toServer.writeBytes(latitude + "\n");
             toServer.flush();
-            toServer.writeBytes(Double.toString(longitude) + "\n");
+            toServer.writeBytes(longitude + "\n");
             toServer.flush();
-            toServer.writeBytes(Double.toString(altitude) + "\n");
+            toServer.writeBytes(altitude + "\n");
             toServer.flush();
-            toServer.writeBytes(Long.toString(time) + "\n");
+            toServer.writeBytes(time + "\n");
             toServer.flush();
 
             Log.d("NetworkTransfer", "Transfer Successful!");
@@ -145,6 +145,5 @@ public class ClientRunOnTransfer {
     static void setTransferAlarm() {
         // set an alarm to run ClientRunOnTransfer at a time in the future specified by
         // the ID
-        return;
     }
 }
