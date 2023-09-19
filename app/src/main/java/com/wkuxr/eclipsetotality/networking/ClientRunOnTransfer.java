@@ -13,165 +13,138 @@ import com.wkuxr.eclipsetotality.database.MetadataDB;
 import java.net.*;
 import java.io.*;
 import java.util.*;
-
-//untested transfer code added
-//add to server: ---------------------------------------------------------------------------------------------------------------------
-//int databaseFilenameIndex
-//...name = + Integer.toString(databaseFilenameIndex++)
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ClientRunOnTransfer {
-    public static void clientTransferSequence(Context context) throws Exception {
-        //ExecutorService executorService = Executors.newSingleThreadExecutor();
-        //AtomicReference<Socket> socketHolder = new AtomicReference<>();
+    public static boolean clientTransferSequence(Context context) throws Exception {
 
         MetadataDB.Companion.createDB(context);
         Socket ssocket = new Socket("161.6.109.198", 443);
 
-        /*Future<Void> future = executorService.submit(task);
-
-        //backup code if timed out
-        try {
-            future.get(60, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
-            System.err.println("Connection timeout. Moving connection time...");
-            future.cancel(true); // Cancel the task
-            setTransferAlarm();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }*/
-
-        //ssocket = socketHolder.get();//this may require ssocket to be a new varriable w a new name
-        
-                startTransfer(ssocket);
-                //ssocket.close(); // Close the socket. Removed for test str 005
-        
-        //executorService.shutdown();
+        startTransfer(ssocket);
 
         prefs.edit().putInt("finishedUpload", 1).apply();
+        return true;
     }
 
     static void managePorts(Socket ssocket) throws IOException {
         // to read data coming from the server
         BufferedReader fromThreadManager = new BufferedReader(new InputStreamReader(ssocket.getInputStream()));
 
-        Log.d("Networktransfer","Connection Successful!");
+        Log.d("Networktransfer", "Connection Successful!");
 
         String inputLine;
         inputLine = fromThreadManager.readLine();
 
         if (inputLine.equals("0")) {
             setTransferAlarm();
-            Log.d("Networktransfer","Transfer Rejected. Setting New Alarm.");
-        } else if(inputLine.equals("-1")) {
-            Log.d("Networktransfer","Single port config detected.");
-             startTransfer(ssocket);
+            Log.d("Networktransfer", "Transfer Rejected. Setting New Alarm.");
+        } else if (inputLine.equals("-1")) {
+            Log.d("Networktransfer", "Single port config detected.");
+            startTransfer(ssocket);
         } else {
             ssocket.close();
-            Log.d("Networktransfer","Moving to port " + inputLine);
+            Log.d("Networktransfer", "Moving to port " + inputLine);
             Socket socket = new Socket("161.6.109.198", Integer.parseInt(inputLine));
-            Log.d("Networktransfer","Successful!");
+            Log.d("Networktransfer", "Successful!");
             startTransfer(socket);
         }
     }
-
-
 
     static void startTransfer(Socket ssocket) throws IOException {
         double latitude = 0;
         double longitude = 0;
         double altitude = 0;
         long time = 0;
-        // work with travis, set these variables to the correct values
 
-        //code added---------------------------------------------------------------------------------------
         db.initialize();
         MetadataDAO metadataDao = db.metadataDao();
         List<Metadata> metadataList = metadataDao.getAllImageMetas();
 
-
-        //-------------------------------------------------------------------------------------------------
-
-
-        Log.d("NetworkTransfer","Loading...");
+        Log.d("NetworkTransfer", "Loading...");
         int currentPhoto = 0;
         String currentName = "nameError";
 
         // to read data coming from the server
         BufferedReader fromThreadManager = new BufferedReader(new InputStreamReader(ssocket.getInputStream()));
 
-        Log.d("NetworkTransfer","Connection Successful!");
+        Log.d("NetworkTransfer", "Connection Successful!");
 
-        
-        
-            // to send data to the server
-            DataOutputStream toServer = new DataOutputStream(ssocket.getOutputStream());
+        DataOutputStream toServer = new DataOutputStream(ssocket.getOutputStream());
 
-            toServer.writeBytes(metadataList.size() + "\n");//---------------------------------------------------------
+        toServer.writeBytes("transferRequest" + "\n");
+        toServer.flush();
+
+        toServer.writeBytes(Integer.toString(metadataList.size()) + "\n");
+        toServer.flush();
+
+        for (Metadata metadata : metadataList) {
+            Log.d("NetworkTransfer", "Importing Photo " + currentPhoto + " ...");
+
+            String[] filepathSplit = metadata.getFilepath().split("/");
+            currentName = filepathSplit[filepathSplit.length - 1];
+
+            File file = new File(metadata.getFilepath());
+            byte[] imageData = new byte[(int) file.length()];
+
+            Log.d("NetworkTransfer", "File length = " + (int) file.length());
+            toServer.writeBytes((int) file.length() + "\n");
             toServer.flush();
 
-            for(Metadata metadata : metadataList) {
-                Log.d("NetworkTransfer","Importing Photo " + currentPhoto + " ...");
+            Log.d("NetworkTransfer", "current name = " + currentName);
+            toServer.writeBytes(currentName + "\n");
+            toServer.flush();
 
-                String[] filepathSplit = metadata.getFilepath().split("/");
-                currentName = filepathSplit[filepathSplit.length - 1];
+            FileInputStream fileIn = new FileInputStream(file);
+            fileIn.read(imageData);
 
-                File file = new File(metadata.getFilepath());
-                byte[] imageData = new byte[(int) file.length()];
+            Log.d("NetworkTransfer", "Starting Transfer...");
 
-                Log.d("NetworkTransfer","File length = " + (int) file.length());
-                toServer.writeBytes((int) file.length() + "\n");
+            String byteJustSent;
+
+            // Send image data to server
+            for (int i = 0; i < imageData.length; i++) {
+                // System.out.print(imageData[i]);
+                // System.out.print(Byte.toString(imageData[i]));
+                byteJustSent = Byte.toString(imageData[i]);
+                toServer.writeBytes(byteJustSent + "\n");
                 toServer.flush();
-
-                Log.d("NetworkTransfer","current name = " + currentName);
-                toServer.writeBytes(currentName + "\n");
-                toServer.flush();
-
-                FileInputStream fileIn = new FileInputStream(file);
-                fileIn.read(imageData);
-
-                Log.d("NetworkTransfer","Starting Transfer...");
-
-                String byteJustSent;
-
-                // Send image data to server
-                for (int i = 0; i < imageData.length; i++) {
-                    //System.out.print(imageData[i]);
-                    //System.out.print(Byte.toString(imageData[i]));
-                    byteJustSent = Byte.toString(imageData[i]);
-                    toServer.writeBytes(byteJustSent + "\n");
-                    toServer.flush();
-                }
-                fileIn.close();
-
-                //code added---------------------------------------------------------------------------------------
-                latitude = metadata.getLatitude();
-                longitude = metadata.getLongitude();
-                altitude = metadata.getAltitude();
-                time = metadata.getCaptureTime();
-
-
-
-                //-------------------------------------------------------------------------------------------------
-
-                // send metadata to server
-                toServer.writeBytes(latitude + "\n");
-                toServer.flush();
-                toServer.writeBytes(longitude + "\n");
-                toServer.flush();
-                toServer.writeBytes(altitude + "\n");
-                toServer.flush();
-                toServer.writeBytes(time + "\n");
-                toServer.flush();
-
-                Log.d("NetworkTransfer","Transfer Successful!");
-
             }
-            ssocket.close();
+            fileIn.close();
 
-            Log.d("NetworkTransfer","Program Complete. Closing...");
+            latitude = metadata.getLatitude();
+            longitude = metadata.getLongitude();
+            altitude = metadata.getAltitude();
+            time = metadata.getCaptureTime();
+
+            // send metadata to server
+            toServer.writeBytes(Double.toString(latitude) + "\n");
+            toServer.flush();
+            toServer.writeBytes(Double.toString(longitude) + "\n");
+            toServer.flush();
+            toServer.writeBytes(Double.toString(altitude) + "\n");
+            toServer.flush();
+            toServer.writeBytes(Long.toString(time) + "\n");
+            toServer.flush();
+
+            Log.d("NetworkTransfer", "Transfer Successful!");
+
         }
+        ssocket.close();
+
+        Log.d("NetworkTransfer", "Program Complete. Closing...");
+    }
 
     static void setTransferAlarm() {
-        // set an alarm to run ClientRunOnTransfer at a time in the future specified by the ID
+        // set an alarm to run ClientRunOnTransfer at a time in the future specified by
+        // the ID
+        return;
     }
 }
