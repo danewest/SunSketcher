@@ -20,6 +20,7 @@ import com.wkuxr.eclipsetotality.location.LocationAccess;
 import com.wkuxr.eclipsetotality.location.LocToTime;
 import com.wkuxr.eclipsetotality.location.Sunset;
 import com.wkuxr.eclipsetotality.databinding.ActivityMainBinding;
+import com.wkuxr.eclipsetotality.networking.IDRequest;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -53,6 +54,21 @@ public class MainActivity extends AppCompatActivity {
                 this.startActivity(intent);
                 break;
             default:
+        }
+
+        boolean firstOpen = prefs.getBoolean("firstOpen", true);
+        if(firstOpen){
+            //connect to server to get ID and upload time
+            Thread idTimeThread = new Thread(() -> {
+                try {
+                    IDRequest.clientTransferSequence(MainActivity.singleton);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            idTimeThread.start();
+
+            prefs.edit().putBoolean("firstOpen", false).apply();
         }
     }
 

@@ -85,7 +85,7 @@ class FinishedInfoActivity : AppCompatActivity() {
 
             btn.text = "uploading, please wait..."
         } catch (e: Exception){
-            e.printStackTrace();
+            e.printStackTrace()
         }
     }
 

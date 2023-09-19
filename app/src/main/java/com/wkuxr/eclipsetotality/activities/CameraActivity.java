@@ -480,8 +480,9 @@ public class CameraActivity extends AppCompatActivity {
             final int[] availableAeModes = cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_MODES);
             Log.d("AE_MODE", "Target mode ID: " + CameraCharacteristics.CONTROL_AE_MODE_OFF + "\nAvailable IDs:");
             for(int mode : availableAeModes){
-                if(mode == CameraCharacteristics.CONTROL_AE_MODE_OFF){
+                if (mode == CameraCharacteristics.CONTROL_AE_MODE_OFF) {
                     aeModeOffAvailable = true;
+                    break;
                 }
             }
             final Range<Integer> isoRange = cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE);
