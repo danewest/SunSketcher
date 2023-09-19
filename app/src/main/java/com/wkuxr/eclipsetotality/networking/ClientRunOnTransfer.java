@@ -72,9 +72,6 @@ public class ClientRunOnTransfer {
         int currentPhoto = 0;
         String currentName = "nameError";
 
-        // to read data coming from the server
-        BufferedReader fromThreadManager = new BufferedReader(new InputStreamReader(ssocket.getInputStream()));
-
         Log.d("NetworkTransfer", "Connection Successful!");
 
         DataOutputStream toServer = new DataOutputStream(ssocket.getOutputStream());
@@ -110,10 +107,10 @@ public class ClientRunOnTransfer {
             String byteJustSent;
 
             // Send image data to server
-            for (int i = 0; i < imageData.length; i++) {
+            for (byte imageDatum : imageData) {
                 // System.out.print(imageData[i]);
                 // System.out.print(Byte.toString(imageData[i]));
-                byteJustSent = Byte.toString(imageData[i]);
+                byteJustSent = Byte.toString(imageDatum);
                 toServer.writeBytes(byteJustSent + "\n");
                 toServer.flush();
             }

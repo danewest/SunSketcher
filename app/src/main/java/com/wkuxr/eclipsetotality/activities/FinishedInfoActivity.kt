@@ -1,22 +1,23 @@
 package com.wkuxr.eclipsetotality.activities
 
+import android.app.ActivityManager
 import android.content.Context
-import android.net.Network
+import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.wkuxr.eclipsetotality.activities.SendConfirmationActivity.Companion.prefs
-import com.wkuxr.eclipsetotality.database.MetadataDB
 import com.wkuxr.eclipsetotality.database.MetadataDB.Companion.createDB
 import com.wkuxr.eclipsetotality.database.MetadataDB.Companion.db
 import com.wkuxr.eclipsetotality.databinding.ActivityFinishedInfoBinding
 import com.wkuxr.eclipsetotality.networking.ClientRunOnTransfer.clientTransferSequence
+import com.wkuxr.eclipsetotality.networking.UploadScheduler
 import java.io.File
 import java.io.FileWriter
+
 
 class FinishedInfoActivity : AppCompatActivity() {
 
@@ -78,12 +79,17 @@ class FinishedInfoActivity : AppCompatActivity() {
         try {
             prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE)
 
-            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            //window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-            var thread = NetworkThread(this) { updateUIOnUploadFinish() }
-            thread.start()
+            //var thread = NetworkThread(this) { updateUIOnUploadFinish() }
+            //thread.start()
+            if(!foregroundServiceRunning()) {
+                val uploadSchedulerIntent = Intent(this, UploadScheduler::class.java)
+                startService(uploadSchedulerIntent)
+            }
 
-            btn.text = "uploading, please wait..."
+            btn.text = "UploadScheduler started."
+            btn.isEnabled = false
         } catch (e: Exception){
             e.printStackTrace()
         }
@@ -109,5 +115,15 @@ class FinishedInfoActivity : AppCompatActivity() {
                 e.printStackTrace()
             }
         }
+    }
+
+    fun foregroundServiceRunning(): Boolean {
+        val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        for (service in activityManager.getRunningServices(Int.MAX_VALUE)) {
+            if (UploadScheduler::class.java.name == service.service.className) {
+                return true
+            }
+        }
+        return false
     }
 }

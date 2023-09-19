@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
             Thread idTimeThread = new Thread(() -> {
                 try {
                     IDRequest.clientTransferSequence(MainActivity.singleton);
+                    Log.d("ClientID", "ClientID: " + prefs.getLong("clientID", -1));
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

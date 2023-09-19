@@ -1,5 +1,6 @@
 package com.wkuxr.eclipsetotality.activities
 
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -16,11 +17,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wkuxr.eclipsetotality.R
 import com.wkuxr.eclipsetotality.database.Metadata
-import com.wkuxr.eclipsetotality.database.MetadataDB
 import com.wkuxr.eclipsetotality.database.MetadataDB.Companion.createDB
 import com.wkuxr.eclipsetotality.database.MetadataDB.Companion.db
 import com.wkuxr.eclipsetotality.databinding.ActivitySendConfirmationBinding
+import com.wkuxr.eclipsetotality.networking.UploadScheduler
 import java.io.File
+
 
 class SendConfirmationActivity : AppCompatActivity() {
     lateinit var binding: ActivitySendConfirmationBinding
@@ -45,6 +47,10 @@ class SendConfirmationActivity : AppCompatActivity() {
     fun onClick(v: View){
         if(v.id == binding.allowBtn.id){
             prefs.edit().putInt("upload", 1).apply()
+            if(!foregroundServiceRunning()) {
+                val uploadSchedulerIntent = Intent(this, UploadScheduler::class.java)
+                startService(uploadSchedulerIntent)
+            }
         } else {
             prefs.edit().putInt("upload", 0).apply()
         }
@@ -84,5 +90,15 @@ class SendConfirmationActivity : AppCompatActivity() {
         inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val imgView: ImageView = itemView.findViewById(R.id.itemImage)
         }
+    }
+
+    fun foregroundServiceRunning(): Boolean {
+        val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        for (service in activityManager.getRunningServices(Int.MAX_VALUE)) {
+            if (UploadScheduler::class.java.name == service.service.className) {
+                return true
+            }
+        }
+        return false
     }
 }
