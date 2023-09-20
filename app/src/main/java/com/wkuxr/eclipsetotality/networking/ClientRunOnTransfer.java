@@ -23,15 +23,16 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ClientRunOnTransfer {
-    public static boolean clientTransferSequence(Context context) throws Exception {
+    public static boolean clientTransferSequence(Context context) throws IOException {
 
         MetadataDB.Companion.createDB(context);
         Socket ssocket = new Socket("161.6.109.198", 443);
 
-        startTransfer(ssocket);
+        boolean success = startTransfer(ssocket);
 
         prefs.edit().putInt("finishedUpload", 1).apply();
-        return true;
+        //trust, this could be null if the transfer fails
+        return success;
     }
 
     static void managePorts(Socket ssocket) throws IOException {
@@ -58,7 +59,7 @@ public class ClientRunOnTransfer {
         }
     }
 
-    static void startTransfer(Socket ssocket) throws IOException {
+    static boolean startTransfer(Socket ssocket) throws IOException {
         double latitude = 0;
         double longitude = 0;
         double altitude = 0;
@@ -137,6 +138,7 @@ public class ClientRunOnTransfer {
         ssocket.close();
 
         Log.d("NetworkTransfer", "Program Complete. Closing...");
+        return true;
     }
 
     static void setTransferAlarm() {

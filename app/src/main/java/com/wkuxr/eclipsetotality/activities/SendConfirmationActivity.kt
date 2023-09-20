@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.wkuxr.eclipsetotality.App
 import com.wkuxr.eclipsetotality.R
 import com.wkuxr.eclipsetotality.database.Metadata
 import com.wkuxr.eclipsetotality.database.MetadataDB.Companion.createDB
@@ -48,6 +49,8 @@ class SendConfirmationActivity : AppCompatActivity() {
         if(v.id == binding.allowBtn.id){
             prefs.edit().putInt("upload", 1).apply()
             if(!foregroundServiceRunning()) {
+                if(App.getContext() == null)
+                    App.setContext(this)
                 val uploadSchedulerIntent = Intent(this, UploadScheduler::class.java)
                 startService(uploadSchedulerIntent)
             }

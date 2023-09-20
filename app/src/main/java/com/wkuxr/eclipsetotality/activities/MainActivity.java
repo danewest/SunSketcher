@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import com.wkuxr.eclipsetotality.App;
 import com.wkuxr.eclipsetotality.location.LocationAccess;
 import com.wkuxr.eclipsetotality.location.LocToTime;
 import com.wkuxr.eclipsetotality.location.Sunset;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         singleton = this;
+        App.setContext(this);
 
         reqPerm(new String[]{"android.permission.CAMERA","android.permission.ACCESS_FINE_LOCATION","android.permission.WRITE_EXTERNAL_STORAGE","android.permission.INTERNET"});
 

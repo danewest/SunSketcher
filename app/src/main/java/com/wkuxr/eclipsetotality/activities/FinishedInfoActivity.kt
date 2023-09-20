@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.wkuxr.eclipsetotality.App
 import com.wkuxr.eclipsetotality.activities.SendConfirmationActivity.Companion.prefs
 import com.wkuxr.eclipsetotality.database.MetadataDB.Companion.createDB
 import com.wkuxr.eclipsetotality.database.MetadataDB.Companion.db
@@ -84,6 +85,8 @@ class FinishedInfoActivity : AppCompatActivity() {
             //var thread = NetworkThread(this) { updateUIOnUploadFinish() }
             //thread.start()
             if(!foregroundServiceRunning()) {
+                if(App.getContext() == null)
+                    App.setContext(this)
                 val uploadSchedulerIntent = Intent(this, UploadScheduler::class.java)
                 startService(uploadSchedulerIntent)
             }
@@ -117,7 +120,7 @@ class FinishedInfoActivity : AppCompatActivity() {
         }
     }
 
-    fun foregroundServiceRunning(): Boolean {
+    private fun foregroundServiceRunning(): Boolean {
         val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
         for (service in activityManager.getRunningServices(Int.MAX_VALUE)) {
             if (UploadScheduler::class.java.name == service.service.className) {

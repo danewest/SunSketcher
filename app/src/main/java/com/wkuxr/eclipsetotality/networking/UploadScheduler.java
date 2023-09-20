@@ -4,15 +4,20 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.wkuxr.eclipsetotality.App;
 import com.wkuxr.eclipsetotality.R;
+import com.wkuxr.eclipsetotality.activities.FinishedInfoActivity;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -41,17 +46,31 @@ public class UploadScheduler extends Service {
 
         startForeground(1001, notification.build());
 
+        SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+        Long clientID = prefs.getLong("clientID", 9999999);
+
         Thread thread = new Thread(() -> {
+            boolean successful = false;
             try {
-                boolean successful = false;
-                Thread.sleep(10000);
-                while(!successful){
-                    successful = pingServer();
-                    Thread.sleep(15 * 60 * 1000);
-                }
+                long firstScheduleTime = (1712562431000L + (clientID * (15 * 60 * 1000))) - System.currentTimeMillis();
+                Thread.sleep(firstScheduleTime);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+
+            while(!successful){
+                try {
+                    successful = pingServer();
+                } catch (Exception e) {
+                    Log.w("UploadScheduler","Connection failed. Trying again in 15 minutes.");
+                }
+                try {
+                    Thread.sleep(15 * 60 * 1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            stopSelf();
         });
         thread.start();
 
@@ -64,7 +83,7 @@ public class UploadScheduler extends Service {
         return null;
     }
 
-    boolean pingServer(){
+    boolean pingServer() throws Exception {
         //server ping code
         Log.d("UploadScheduler", "Pinging server.");
         boolean successful = false;
@@ -72,6 +91,7 @@ public class UploadScheduler extends Service {
         //if available
             //do transfer
             //successful = true;
+        successful = ClientRunOnTransfer.clientTransferSequence(App.getContext());
         return successful;
     }
 }
