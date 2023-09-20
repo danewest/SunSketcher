@@ -47,12 +47,13 @@ public class UploadScheduler extends Service {
         startForeground(1001, notification.build());
 
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
-        Long clientID = prefs.getLong("clientID", 9999999);
+        long clientID = prefs.getLong("clientID", 9999999);
 
         Thread thread = new Thread(() -> {
             boolean successful = false;
             try {
-                long firstScheduleTime = (1712562431000L + (clientID * (15 * 60 * 1000))) - System.currentTimeMillis();
+                //long firstScheduleTime = (1712562431000L + (clientID * (15 * 60 * 1000))) - System.currentTimeMillis();
+                long firstScheduleTime = (clientID * (15 * 60 * 1000));// + (60 * 60 * 1000);
                 Thread.sleep(firstScheduleTime);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
