@@ -11,7 +11,7 @@
         android:layout_width="308dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
-        android:text="Your images have been successfully uploaded to our data server for analysis. Thank you for your contribution! You may now delete the app. Deleting the app will not delete the images it took, so you can still find them in your gallery."
+        android:text="Your images are scheduled to be uploaded to our server for analysis. Please allow up to a month for them to be uploaded, as we also have many other users to get to. Thank you for your contribution and patience!"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -21,20 +21,31 @@
         android:id="@+id/uploadBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="160dp"
         android:layout_marginBottom="88dp"
         android:onClick="onUploadClick"
         android:text="upload"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/testInfoText"
         android:layout_width="333dp"
         android:layout_height="115dp"
-        android:layout_marginStart="36dp"
-        android:text="TEST INFO: The button below will will set up a socket connection with the storage server. It is currently only programmed to work over LAN, and does not happen automatically. You must be in the lab on the same network as the ethernet cables in the room for this to work properly."
+        android:text="TEST INFO: The button below will start the upload scheduler foreground service if it is not already running. If it is already running, the button will be grayed out and disabled."
         app:layout_constraintBottom_toTopOf="@+id/uploadBtn"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/clientIDText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="ClientID"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

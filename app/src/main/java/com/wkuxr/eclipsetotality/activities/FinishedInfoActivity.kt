@@ -28,25 +28,34 @@ class FinishedInfoActivity : AppCompatActivity() {
         binding = ActivityFinishedInfoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //get the necessary preferences to fill UI text
         prefs = getSharedPreferences("eclipseDetails", MODE_PRIVATE)
         val uploadReady = prefs.getInt("upload", 0)
+        val clientID = prefs.getLong("clientID", -1)
 
+        //fill the UI text based on the preferences
         var text = binding.infoText
-
         if(uploadReady == 0){
             text.text = "Thank you for using the SunSketcher app. You have chosen not to upload your images for analysis. You no longer need the app installed and can now uninstall it. Even after uninstalling, your eclipse photos can still be found in the `Photos/SunSketcher/` directory in your device storage, or in your gallery."
         } else {
             text.text = "Thank you for using the SunSketcher app. You have chosen to upload your images for analysis. Please keep the app installed and do not delete the photos in the `Pictures/SunSketcher/` directory, or the SunSketcher album in your gallery, until further notice. You will receive a notification when your images have been uploaded, at which point you can freely delete the app and images from your device. This may take more than a month, so we appreciate your patience."
         }
+        binding.clientIDText.text = "ClientID: $clientID"
 
-        //TODO: DB dump causing a crash on app reopen, figure out why
+        //disable the upload button if the UploadScheduler service is already running
+        if(foregroundServiceRunning()){
+            binding.uploadBtn.isEnabled = false
+                binding.uploadBtn.text = "UploadScheduler started."
+        }
+
+        //dump database values to a csv file in documents folder
         if(!prefs.getBoolean("DBIsDumped", false)) {
             dumpDBtoCSV()
         }
     }
 
     //dump timing data to a CSV
-    fun dumpDBtoCSV(){
+    private fun dumpDBtoCSV(){
         db = createDB(this)
         db.initialize()
         val metas = db.getMetadata()
@@ -63,7 +72,7 @@ class FinishedInfoActivity : AppCompatActivity() {
         //save the file to the same folder as the images, or to the documents folder if the image folder directory somehow wasn't saved to shared preferences
         val documents = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath
 
-        val csvFileName = "ImageUnixTimes ${System.currentTimeMillis()}.csv"
+        val csvFileName = "SunSketcher Database Dump ${System.currentTimeMillis()}.csv"
         Log.d("CSVWriter", "Writing timing data to $documents/$csvFileName")
 
         val csv = File("$documents/$csvFileName")
@@ -76,7 +85,7 @@ class FinishedInfoActivity : AppCompatActivity() {
     }
 
     fun onUploadClick(v: View) {
-        var btn: Button = v as Button
+        val btn: Button = v as Button
         try {
             prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE)
 
@@ -102,10 +111,12 @@ class FinishedInfoActivity : AppCompatActivity() {
         runOnUiThread {
             Runnable {
                 Log.d("NetworkThread", "Upload is complete. Changing button text.")
-                //binding.uploadBtn.text = "upload complete"
+                binding.uploadBtn.text = "Upload complete."
             }
         }
     }
+
+    //old manual upload method
     class NetworkThread(context: Context, uiUpdate: () -> Unit) : Thread() {
         val uiUpdateFun = uiUpdate
         val context = context

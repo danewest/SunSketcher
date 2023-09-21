@@ -3,6 +3,7 @@ package com.wkuxr.eclipsetotality.networking;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -31,27 +32,32 @@ public class UploadScheduler extends Service {
 
         Log.d("UploadScheduler", "Starting infrequent pinging.");
 
-        final String CHANNELID = "Foreground Service ID";
+        //channel for foreground service notification
+        final String CHANNELID = "Upload Scheduler Service";
         NotificationChannel channel = new NotificationChannel(
                 CHANNELID,
                 CHANNELID,
                 NotificationManager.IMPORTANCE_LOW
         );
 
+        //create the foreground service persistent notification
         getSystemService(NotificationManager.class).createNotificationChannel(channel);
         Notification.Builder notification = new Notification.Builder(this, CHANNELID)
-                .setContentText("Service is running")
+                .setContentText("Waiting to upload images, please do not force close.")
                 .setContentTitle("SunSketcher Upload Scheduler")
                 .setSmallIcon(R.drawable.ic_launcher_background);
 
+        //start the foreground service
         startForeground(1001, notification.build());
 
+        //grab client ID, later used to determine first upload attempt time
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         long clientID = prefs.getLong("clientID", 9999999);
 
         Thread thread = new Thread(() -> {
             boolean successful = false;
             try {
+                //sleep until time for first upload attempt
                 //long firstScheduleTime = (1712562431000L + (clientID * (15 * 60 * 1000))) - System.currentTimeMillis();
                 long firstScheduleTime = (clientID * (15 * 60 * 1000));// + (60 * 60 * 1000);
                 Thread.sleep(firstScheduleTime);
@@ -59,6 +65,7 @@ public class UploadScheduler extends Service {
                 throw new RuntimeException(e);
             }
 
+            //keep attempting every 15 minutes indefinitely until upload finishes successfully
             while(!successful){
                 try {
                     successful = pingServer();
@@ -71,6 +78,19 @@ public class UploadScheduler extends Service {
                     throw new RuntimeException(e);
                 }
             }
+
+            //create a push notification that says that the user's images have been uploaded, and direct it to FinishedInfoActivity
+            Intent finishedInfoIntent = new Intent(App.getContext(), FinishedInfoActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(App.getContext(), 0, finishedInfoIntent, PendingIntent.FLAG_IMMUTABLE);
+            getSystemService(NotificationManager.class).createNotificationChannel(new NotificationChannel(NotificationChannel.DEFAULT_CHANNEL_ID, NotificationChannel.DEFAULT_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT));
+            final Notification.Builder doneNotification = new Notification.Builder(this, NotificationChannel.DEFAULT_CHANNEL_ID)
+                    .setContentText("Your images have been uploaded! Feel free to delete the app.")
+                    .setContentTitle("SunSketcher")
+                    .setSmallIcon(R.drawable.ic_launcher_background)
+                    .setContentIntent(pendingIntent);
+            doneNotification.build();
+
+            //stop the foreground service
             stopSelf();
         });
         thread.start();
@@ -85,13 +105,9 @@ public class UploadScheduler extends Service {
     }
 
     boolean pingServer() throws Exception {
-        //server ping code
         Log.d("UploadScheduler", "Pinging server.");
         boolean successful = false;
-        //connect to server and see if it's available
-        //if available
-            //do transfer
-            //successful = true;
+        //attempt connection to server
         successful = ClientRunOnTransfer.clientTransferSequence(App.getContext());
         return successful;
     }
