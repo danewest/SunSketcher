@@ -4,8 +4,10 @@ import static com.wkuxr.eclipsetotality.activities.SendConfirmationActivity.pref
 import static com.wkuxr.eclipsetotality.database.MetadataDB.db;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.wkuxr.eclipsetotality.App;
 import com.wkuxr.eclipsetotality.database.Metadata;
 import com.wkuxr.eclipsetotality.database.MetadataDAO;
 import com.wkuxr.eclipsetotality.database.MetadataDB;
@@ -23,9 +25,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ClientRunOnTransfer {
-    public static boolean clientTransferSequence(Context context) throws IOException {
+    public static boolean clientTransferSequence() throws IOException {
 
-        MetadataDB.Companion.createDB(context);
+        MetadataDB.Companion.createDB(App.getContext());
         Socket ssocket = new Socket("161.6.109.198", 443);
 
         boolean success = startTransfer(ssocket);
@@ -80,7 +82,7 @@ public class ClientRunOnTransfer {
         toServer.writeBytes("transferRequest" + "\n");
         toServer.flush();
 
-        SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+        SharedPreferences prefs = App.getContext().getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         int clientID = (int) prefs.getLong("clientID", 9999999);
 
         toServer.writeBytes(Integer.toString(clientID) + "\n");

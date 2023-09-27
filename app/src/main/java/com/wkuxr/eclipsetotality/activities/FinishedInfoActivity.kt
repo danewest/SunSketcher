@@ -123,7 +123,7 @@ class FinishedInfoActivity : AppCompatActivity() {
         override fun run() {
             try {
                 Log.d("NetworkThread", "Beginning Upload. Please wait...")
-                clientTransferSequence(context)
+                clientTransferSequence()
                 uiUpdateFun()
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()

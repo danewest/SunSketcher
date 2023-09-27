@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         boolean firstOpen = prefs.getBoolean("firstOpen", true);
+        Log.d("IsFirstOpen", "" + firstOpen);
         if(firstOpen){
             //connect to server to get ID and upload time
             Thread idTimeThread = new Thread(() -> {
@@ -157,9 +158,9 @@ public class MainActivity extends AppCompatActivity {
                         prefs.apply();
 
                         //go to camera 17 seconds prior, start taking images 15 seconds prior to 5 seconds after, and then at end of eclipse 5 seconds before and 15 after TODO: also for the sunset timing
-                        //Date date = new Date((times[0] - 17) * 1000);
+                        Date date = new Date((times[0] - 17) * 1000);
                         //the next line is a testcase to make sure functionality works for eclipse timing
-                        Date date = new Date((System.currentTimeMillis()) + 5000);
+                        //Date date = new Date((System.currentTimeMillis()) + 5000);
                         Log.d("SCHEDULE_CAMERA", date.toString());
 
                         if(timer == null) {
