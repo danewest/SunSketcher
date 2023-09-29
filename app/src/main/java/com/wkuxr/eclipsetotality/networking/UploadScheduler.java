@@ -78,7 +78,7 @@ public class UploadScheduler extends Service {
                     throw new RuntimeException(e);
                 }
             }
-
+            Log.d("UploadScheduler", "Upload successful. Stopping UploadScheduler foreground service.");
             //create a push notification that says that the user's images have been uploaded, and direct it to FinishedInfoActivity
             Intent finishedInfoIntent = new Intent(App.getContext(), FinishedInfoActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(App.getContext(), 0, finishedInfoIntent, PendingIntent.FLAG_IMMUTABLE);

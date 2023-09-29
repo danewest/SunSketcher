@@ -45,7 +45,7 @@ class FinishedInfoActivity : AppCompatActivity() {
         //disable the upload button if the UploadScheduler service is already running
         if(foregroundServiceRunning()){
             binding.uploadBtn.isEnabled = false
-                binding.uploadBtn.text = "UploadScheduler started."
+                binding.uploadBtn.text = "UploadScheduler started. Estimated finish time: ${(1 + clientID) * 15} minutes from eclipse end."
         }
 
         //dump database values to a csv file in documents folder
