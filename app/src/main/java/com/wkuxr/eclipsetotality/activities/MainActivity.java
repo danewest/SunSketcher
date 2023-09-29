@@ -58,21 +58,18 @@ public class MainActivity extends AppCompatActivity {
             default:
         }
 
-        boolean firstOpen = prefs.getBoolean("firstOpen", true);
-        Log.d("IsFirstOpen", "" + firstOpen);
-        if(firstOpen){
+        //if the app has not yet gotten a clientID from the server, get one
+        if(prefs.getLong("clientID", -1) == -1){
             //connect to server to get ID and upload time
             Thread idTimeThread = new Thread(() -> {
                 try {
-                    IDRequest.clientTransferSequence(MainActivity.singleton);
+                    IDRequest.clientTransferSequence(App.getContext());
                     Log.d("ClientID", "ClientID: " + prefs.getLong("clientID", -1));
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             });
             idTimeThread.start();
-
-            prefs.edit().putBoolean("firstOpen", false).apply();
         }
     }
 

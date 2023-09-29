@@ -704,7 +704,7 @@ public class CameraActivity extends AppCompatActivity {
     // RAW filetypes instead of jpg, which are lossy.
     private void createImageFileName() throws IOException {
         long timestampLong = System.currentTimeMillis();// + offset;
-        String timestamp = "" + timestampLong + "NTP";
+        String timestamp = "" + timestampLong;// + "NTP";
 
         //create image metadata
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);

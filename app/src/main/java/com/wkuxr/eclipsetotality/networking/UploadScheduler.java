@@ -59,7 +59,7 @@ public class UploadScheduler extends Service {
             try {
                 //sleep until time for first upload attempt
                 //long firstScheduleTime = (1712562431000L + (clientID * (15 * 60 * 1000))) - System.currentTimeMillis();
-                long firstScheduleTime = (clientID * (15 * 60 * 1000));// + (60 * 60 * 1000);
+                long firstScheduleTime = (clientID * (30 * 60 * 1000));// + (60 * 60 * 1000);
                 Thread.sleep(firstScheduleTime);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
@@ -72,12 +72,16 @@ public class UploadScheduler extends Service {
                 } catch (IOException e) {
                     Log.w("UploadScheduler","Connection failed. Trying again in 15 minutes.");
                 }
-                try {
-                    Thread.sleep(15 * 60 * 1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                //if unsuccessful, sleep again for 15 minutes
+                if(!successful) {
+                    try {
+                        Thread.sleep(15 * 60 * 1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
+
             Log.d("UploadScheduler", "Upload successful. Stopping UploadScheduler foreground service.");
             //create a push notification that says that the user's images have been uploaded, and direct it to FinishedInfoActivity
             Intent finishedInfoIntent = new Intent(App.getContext(), FinishedInfoActivity.class);
