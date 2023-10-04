@@ -27,7 +27,7 @@ public class UploadScheduler extends Service {
     static UploadScheduler singleton;
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId){
+    public int onStartCommand(Intent intent, int flags, int startId) {
         singleton = this;
 
         Log.d("UploadScheduler", "Starting infrequent pinging.");
@@ -52,52 +52,54 @@ public class UploadScheduler extends Service {
 
         //grab client ID, later used to determine first upload attempt time
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
-        long clientID = prefs.getLong("clientID", 9999999);
+        long clientID = prefs.getLong("clientID", -1);
 
-        Thread thread = new Thread(() -> {
-            boolean successful = false;
-            try {
-                //sleep until time for first upload attempt
-                //long firstScheduleTime = (1712562431000L + (clientID * (15 * 60 * 1000))) - System.currentTimeMillis();
-                long firstScheduleTime = (clientID * (30 * 60 * 1000));// + (60 * 60 * 1000);
-                Thread.sleep(firstScheduleTime);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            //keep attempting every 15 minutes indefinitely until upload finishes successfully
-            while(!successful){
+        if(clientID != -1){
+            Thread thread = new Thread(() -> {
+                boolean successful = false;
                 try {
-                    successful = pingServer();
-                } catch (IOException e) {
-                    Log.w("UploadScheduler","Connection failed. Trying again in 15 minutes.");
+                    //sleep until time for first upload attempt
+                    //long firstScheduleTime = (1712562431000L + (clientID * (15 * 60 * 1000))) - System.currentTimeMillis();
+                    long firstScheduleTime = (clientID * (15 * 60 * 1000));// + (60 * 60 * 1000);
+                    Thread.sleep(firstScheduleTime);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-                //if unsuccessful, sleep again for 15 minutes
-                if(!successful) {
+
+                //keep attempting every 15 minutes indefinitely until upload finishes successfully
+                while (!successful) {
                     try {
-                        Thread.sleep(15 * 60 * 1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                        successful = pingServer();
+                    } catch (IOException e) {
+                        Log.w("UploadScheduler", "Connection failed. Trying again in 15 minutes.");
+                    }
+                    //if unsuccessful, sleep again for 15 minutes
+                    if (!successful) {
+                        try {
+                            Thread.sleep(15 * 60 * 1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
-            }
 
-            Log.d("UploadScheduler", "Upload successful. Stopping UploadScheduler foreground service.");
-            //create a push notification that says that the user's images have been uploaded, and direct it to FinishedInfoActivity
-            Intent finishedInfoIntent = new Intent(App.getContext(), FinishedInfoActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(App.getContext(), 0, finishedInfoIntent, PendingIntent.FLAG_IMMUTABLE);
-            getSystemService(NotificationManager.class).createNotificationChannel(new NotificationChannel(NotificationChannel.DEFAULT_CHANNEL_ID, NotificationChannel.DEFAULT_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT));
-            final Notification.Builder doneNotification = new Notification.Builder(this, NotificationChannel.DEFAULT_CHANNEL_ID)
-                    .setContentText("Your images have been uploaded! Feel free to delete the app.")
-                    .setContentTitle("SunSketcher")
-                    .setSmallIcon(R.drawable.ic_launcher_background)
-                    .setContentIntent(pendingIntent);
-            doneNotification.build();
+                Log.d("UploadScheduler", "Upload successful. Stopping UploadScheduler foreground service.");
+                //create a push notification that says that the user's images have been uploaded, and direct it to FinishedInfoActivity
+                Intent finishedInfoIntent = new Intent(App.getContext(), FinishedInfoActivity.class);
+                PendingIntent pendingIntent = PendingIntent.getActivity(App.getContext(), 0, finishedInfoIntent, PendingIntent.FLAG_IMMUTABLE);
+                getSystemService(NotificationManager.class).createNotificationChannel(new NotificationChannel(NotificationChannel.DEFAULT_CHANNEL_ID, NotificationChannel.DEFAULT_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT));
+                final Notification.Builder doneNotification = new Notification.Builder(this, NotificationChannel.DEFAULT_CHANNEL_ID)
+                        .setContentText("Your images have been uploaded! Feel free to delete the app.")
+                        .setContentTitle("SunSketcher")
+                        .setSmallIcon(R.drawable.ic_launcher_background)
+                        .setContentIntent(pendingIntent);
+                doneNotification.build();
 
-            //stop the foreground service
-            stopSelf();
-        });
-        thread.start();
+                //stop the foreground service
+                stopSelf();
+            });
+            thread.start();
+        }
 
         return super.onStartCommand(intent, flags, startId);
     }

@@ -58,19 +58,23 @@ public class MainActivity extends AppCompatActivity {
             default:
         }
 
+        long clientID = prefs.getLong("clientID", -1);
         //if the app has not yet gotten a clientID from the server, get one
-        if(prefs.getLong("clientID", -1) == -1){
+        if(clientID == -1){
             //connect to server to get ID and upload time
             Thread idTimeThread = new Thread(() -> {
                 try {
                     IDRequest.clientTransferSequence(App.getContext());
                     Log.d("ClientID", "ClientID: " + prefs.getLong("clientID", -1));
+                    long clientIDNew = prefs.getLong("clientID", -1);
+                    runOnUiThread(() -> binding.clientIDText.setText("ClientID: " + clientIDNew));
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             });
             idTimeThread.start();
         }
+        binding.clientIDText.setText("ClientID: " + clientID);
     }
 
     @Override
