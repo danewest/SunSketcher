@@ -143,10 +143,14 @@ public class ClientRunOnTransfer {
             Log.d("NetworkTransfer", "Transfer Successful!");
 
         }
-        ssocket.close();
 
-        Log.d("NetworkTransfer", "Program Complete. Closing...");
-        return true;
+        BufferedReader fromServer = new BufferedReader(new InputStreamReader(ssocket.getInputStream()));
+
+        if(fromServer.readLine().equals("freeToDisconnect")) {
+            ssocket.close();
+            Log.d("NetworkTransfer", "Program Complete. Closing...");
+            return true;
+        }
     }
 
     static void setTransferAlarm() {
