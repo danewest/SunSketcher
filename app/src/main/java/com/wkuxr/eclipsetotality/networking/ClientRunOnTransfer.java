@@ -151,6 +151,7 @@ public class ClientRunOnTransfer {
             Log.d("NetworkTransfer", "Program Complete. Closing...");
             return true;
         }
+        return true;
     }
 
     static void setTransferAlarm() {
