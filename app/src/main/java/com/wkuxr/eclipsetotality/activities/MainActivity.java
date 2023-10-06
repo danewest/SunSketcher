@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     long clientIDNew = prefs.getLong("clientID", -1);
                     runOnUiThread(() -> binding.clientIDText.setText("ClientID: " + clientIDNew));
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    Log.e("ClientID", "Could not connect to server to obtain client ID.");
                 }
             });
             idTimeThread.start();
@@ -119,20 +119,25 @@ public class MainActivity extends AppCompatActivity {
                     double lon = location.getLongitude();
                     double alt = location.getAltitude();
 
+                    //todo: for testing
+                    //lat = 31.86361;
+                    //lon = -102.37163;
+
                     //get actual device location for eclipse timing TODO: use for actual app releases
                     String[] eclipseData = LocToTime.calculatefor(lat, lon, alt);
 
                     //spoof location for eclipse testing; TODO: remove for actual app releases
                     //String[] eclipseData = LocToTime.calculatefor(37.60786, -91.02687, 0); //4/8/2024
+                    //String[] eclipseData = LocToTime.calculatefor(31.86361, -102.37163, 0); //10/14/2023
                     //String[] eclipseData = LocToTime.calculatefor(36.98605, -86.45146, 0); //8/21/2017
 
                     //get actual device location for sunset timing (test stuff) TODO: remove for actual app releases
                     //String sunsetTime = Sunset.calcSun(lat, -lon); //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
 
                     if(!eclipseData[0].equals("N/A")) {        //TODO: swap for actual app releases
-                        //long[] times = convertTimes(eclipseData);     //TODO: use for actual app releases
+                        long[] times = convertTimes(eclipseData);     //TODO: use for actual app releases
                         //long[] times = convertSunsetTime(new String[]{sunsetTime, sunsetTime});   //TODO: remove for actual app releases
-                        long[] times = convertSunsetTime(eclipseData);
+                        //long[] times = convertSunsetTime(eclipseData);
 
                         //use the given times to create calendar objects to use in setting alarms
                         Calendar[] timeCals = new Calendar[2];
@@ -158,8 +163,8 @@ public class MainActivity extends AppCompatActivity {
                         prefs.putFloat("alt", (float)alt);
                         prefs.apply();
 
-                        //go to camera 17 seconds prior, start taking images 15 seconds prior to 5 seconds after, and then at end of eclipse 5 seconds before and 15 after TODO: also for the sunset timing
-                        Date date = new Date((times[0] - 17) * 1000);
+                        //go to camera 60 seconds prior, start taking images 15 seconds prior to 5 seconds after, and then at end of eclipse 5 seconds before and 15 after TODO: also for the sunset timing
+                        Date date = new Date((times[0] - 60) * 1000);
                         //the next line is a testcase to make sure functionality works for eclipse timing
                         //Date date = new Date((System.currentTimeMillis()) + 5000);
                         Log.d("SCHEDULE_CAMERA", date.toString());
@@ -210,8 +215,11 @@ public class MainActivity extends AppCompatActivity {
         String[] start = data[0].split(":");
         String[] end = data[1].split(":");
 
-        long startUnix = 1712530800 + ((Integer.parseInt(start[0])) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);
-        long endUnix = 1712530800 + ((Integer.parseInt(end[0])) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
+        //add actual time to unix time of UTC midnight for start of that day
+        //long startUnix = 1712534400 + ((Integer.parseInt(start[0])) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);   //todo: for april 8
+        //long endUnix = 1712534400 + ((Integer.parseInt(end[0])) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
+        long startUnix = 1697241600 + ((Integer.parseInt(start[0])) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);     //todo: for october 14
+        long endUnix = 1697241600 + ((Integer.parseInt(end[0])) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
 
         return new long[]{startUnix, endUnix};
     }

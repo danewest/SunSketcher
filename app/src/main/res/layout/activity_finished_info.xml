@@ -28,6 +28,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+<!--
     <TextView
         android:id="@+id/testInfoText"
         android:layout_width="333dp"
@@ -36,6 +37,7 @@
         app:layout_constraintBottom_toTopOf="@+id/uploadBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+-->
 
     <TextView
         android:id="@+id/clientIDText"

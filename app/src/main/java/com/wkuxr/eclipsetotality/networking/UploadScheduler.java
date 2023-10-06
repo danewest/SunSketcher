@@ -45,7 +45,7 @@ public class UploadScheduler extends Service {
         Notification.Builder notification = new Notification.Builder(this, CHANNELID)
                 .setContentText("Waiting to upload images, please do not force close.")
                 .setContentTitle("SunSketcher Upload Scheduler")
-                .setSmallIcon(R.drawable.ic_launcher_background);
+                .setSmallIcon(R.mipmap.ic_launcher_foreground);
 
         //start the foreground service
         startForeground(1001, notification.build());
@@ -84,16 +84,21 @@ public class UploadScheduler extends Service {
                 }
 
                 Log.d("UploadScheduler", "Upload successful. Stopping UploadScheduler foreground service.");
+
                 //create a push notification that says that the user's images have been uploaded, and direct it to FinishedInfoActivity
                 Intent finishedInfoIntent = new Intent(App.getContext(), FinishedInfoActivity.class);
                 PendingIntent pendingIntent = PendingIntent.getActivity(App.getContext(), 0, finishedInfoIntent, PendingIntent.FLAG_IMMUTABLE);
-                getSystemService(NotificationManager.class).createNotificationChannel(new NotificationChannel(NotificationChannel.DEFAULT_CHANNEL_ID, NotificationChannel.DEFAULT_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT));
-                final Notification.Builder doneNotification = new Notification.Builder(this, NotificationChannel.DEFAULT_CHANNEL_ID)
-                        .setContentText("Your images have been uploaded! Feel free to delete the app.")
+                NotificationChannel defChannel = new NotificationChannel(NotificationChannel.DEFAULT_CHANNEL_ID, NotificationChannel.DEFAULT_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT);
+                getSystemService(NotificationManager.class).createNotificationChannel(defChannel);
+                final Notification.Builder doneNotification = new Notification.Builder(this, defChannel.getId())
+                        .setContentText("Your images have been uploaded! Feel free to delete the SunSketcher app.")
                         .setContentTitle("SunSketcher")
-                        .setSmallIcon(R.drawable.ic_launcher_background)
+                        .setSmallIcon(R.mipmap.ic_launcher_foreground)
                         .setContentIntent(pendingIntent);
                 doneNotification.build();
+
+                SharedPreferences.Editor prefEdit = prefs.edit();
+                prefEdit.putBoolean("uploadSuccessful", true);
 
                 //stop the foreground service
                 stopSelf();

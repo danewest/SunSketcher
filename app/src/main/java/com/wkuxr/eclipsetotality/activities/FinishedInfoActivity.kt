@@ -38,19 +38,29 @@ class FinishedInfoActivity : AppCompatActivity() {
         if(uploadReady == 0){
             text.text = "Thank you for using the SunSketcher app. You have chosen not to upload your images for analysis. You no longer need the app installed and can now uninstall it. Even after uninstalling, your eclipse photos can still be found in the `Photos/SunSketcher/` directory in your device storage, or in your gallery."
         } else {
-            text.text = "Thank you for using the SunSketcher app. You have chosen to upload your images for analysis. Please keep the app installed and do not delete the photos in the `Pictures/SunSketcher/` directory, or the SunSketcher album in your gallery, until further notice. You will receive a notification when your images have been uploaded, at which point you can freely delete the app and images from your device. This may take more than a month, so we appreciate your patience."
+            text.text = "Thank you for using the SunSketcher app. You have chosen to upload your images for analysis. Please keep the app installed and do not delete the photos in the `Pictures/SunSketcher/` directory, or the SunSketcher album in your gallery, until further notice. The text at the bottom of the screen will change when your images have been uploaded, at which point you can freely delete the app and images from your device. This may take up to a week, so please be patient."
         }
         binding.clientIDText.text = "ClientID: $clientID"
 
         //disable the upload button if the UploadScheduler service is already running
         if(foregroundServiceRunning()){
             binding.uploadBtn.isEnabled = false
-                binding.uploadBtn.text = "UploadScheduler is running. Estimated finish time: ${(0.5 + clientID) * 30} minutes from time that upload was accepted."
+            binding.uploadBtn.text = "The upload service is running. Estimated finish time: ${(0.5 + clientID) * 15} minutes from time that upload was accepted. Please allow for extra time, as your upload time may be delayed without notice."
         }
 
         //dump database values to a csv file in documents folder
         if(!prefs.getBoolean("DBIsDumped", false)) {
             dumpDBtoCSV()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        prefs = getSharedPreferences("eclipseDetails", MODE_PRIVATE)
+        var hasFinishedUpload = prefs.getBoolean("uploadSuccessful", false)
+        if(hasFinishedUpload){
+            binding.uploadBtn.isEnabled = false
+            binding.uploadBtn.text = "Your images have been uploaded successfully. You can now uninstall the SunSketcher app."
         }
     }
 
@@ -88,6 +98,7 @@ class FinishedInfoActivity : AppCompatActivity() {
         val btn: Button = v as Button
         try {
             prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE)
+            val clientID = prefs.getLong("clientID", -1)
 
             //window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
@@ -100,7 +111,7 @@ class FinishedInfoActivity : AppCompatActivity() {
                 startService(uploadSchedulerIntent)
             }
 
-            btn.text = "UploadScheduler started."
+            btn.text = "The upload service is running. Estimated finish time: ${(0.5 + clientID) * 15} minutes from time that upload was accepted. Please allow for extra time, as your upload time may be delayed without notice."
             btn.isEnabled = false
         } catch (e: Exception){
             e.printStackTrace()
