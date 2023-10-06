@@ -60,7 +60,7 @@ public class UploadScheduler extends Service {
                 try {
                     //sleep until time for first upload attempt
                     //long firstScheduleTime = (1712562431000L + (clientID * (15 * 60 * 1000))) - System.currentTimeMillis();
-                    long firstScheduleTime = (clientID * (15 * 60 * 1000));// + (60 * 60 * 1000);
+                    long firstScheduleTime = (clientID * (15 * 60 * 1000)) + (60 * 60 * 1000);
                     Thread.sleep(firstScheduleTime);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
