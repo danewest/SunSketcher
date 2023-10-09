@@ -1,5 +1,6 @@
 package com.wkuxr.eclipsetotality.networking;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -8,11 +9,15 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.wkuxr.eclipsetotality.App;
 import com.wkuxr.eclipsetotality.R;
@@ -45,7 +50,7 @@ public class UploadScheduler extends Service {
         Notification.Builder notification = new Notification.Builder(this, CHANNELID)
                 .setContentText("Waiting to upload images, please do not force close.")
                 .setContentTitle("SunSketcher Upload Scheduler")
-                .setSmallIcon(R.mipmap.ic_launcher_foreground);
+                .setSmallIcon(R.drawable.ic_stat_name);
 
         //start the foreground service
         startForeground(1001, notification.build());
@@ -54,51 +59,57 @@ public class UploadScheduler extends Service {
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         long clientID = prefs.getLong("clientID", -1);
 
-        if(clientID != -1){
+        if (clientID != -1) {
             Thread thread = new Thread(() -> {
-                boolean successful = false;
-                try {
-                    //sleep until time for first upload attempt
-                    //long firstScheduleTime = (1712562431000L + (clientID * (15 * 60 * 1000))) - System.currentTimeMillis();
-                    long firstScheduleTime = (clientID * (15 * 60 * 1000)) + (60 * 60 * 1000);
-                    Thread.sleep(firstScheduleTime);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-
-                //keep attempting every 15 minutes indefinitely until upload finishes successfully
-                while (!successful) {
+                if (!prefs.getBoolean("uploadSuccessful", false)) {
+                    Log.d("UploadScheduler", "This device has not yet successfully uploaded. Scheduling...");
+                    boolean successful = false;
                     try {
-                        successful = pingServer();
-                    } catch (IOException e) {
-                        Log.w("UploadScheduler", "Connection failed. Trying again in 15 minutes.");
+                        //sleep until time for first upload attempt
+                        //long firstScheduleTime = (1712562431000L + (clientID * (15 * 60 * 1000))) - System.currentTimeMillis();
+                        long firstScheduleTime = (clientID * (15 * 60 * 1000)) + (60 * 60 * 1000);
+                        Thread.sleep(firstScheduleTime);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
-                    //if unsuccessful, sleep again for 15 minutes
-                    if (!successful) {
+
+                    //keep attempting every 15 minutes indefinitely until upload finishes successfully
+                    while (!successful) {
                         try {
-                            Thread.sleep(15 * 60 * 1000);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
+                            successful = pingServer();
+                        } catch (IOException e) {
+                            Log.w("UploadScheduler", "Connection failed. Trying again in 15 minutes.");
+                        }
+                        //if unsuccessful, sleep again for 15 minutes
+                        if (!successful) {
+                            try {
+                                Thread.sleep(15 * 60 * 1000);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                     }
                 }
 
                 Log.d("UploadScheduler", "Upload successful. Stopping UploadScheduler foreground service.");
 
-                //create a push notification that says that the user's images have been uploaded, and direct it to FinishedInfoActivity
-                Intent finishedInfoIntent = new Intent(App.getContext(), FinishedInfoActivity.class);
-                PendingIntent pendingIntent = PendingIntent.getActivity(App.getContext(), 0, finishedInfoIntent, PendingIntent.FLAG_IMMUTABLE);
-                NotificationChannel defChannel = new NotificationChannel(NotificationChannel.DEFAULT_CHANNEL_ID, NotificationChannel.DEFAULT_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT);
-                getSystemService(NotificationManager.class).createNotificationChannel(defChannel);
-                final Notification.Builder doneNotification = new Notification.Builder(this, defChannel.getId())
-                        .setContentText("Your images have been uploaded! Feel free to delete the SunSketcher app.")
-                        .setContentTitle("SunSketcher")
-                        .setSmallIcon(R.mipmap.ic_launcher_foreground)
-                        .setContentIntent(pendingIntent);
-                doneNotification.build();
-
                 SharedPreferences.Editor prefEdit = prefs.edit();
                 prefEdit.putBoolean("uploadSuccessful", true);
+
+                //create a push notification that says that the user's images have been uploaded, and direct it to FinishedInfoActivity
+                createNotificationChannel();
+                Intent finishedInfoIntent = new Intent(App.getContext(), FinishedInfoActivity.class);
+                PendingIntent pendingIntent = PendingIntent.getActivity(App.getContext(), 0, finishedInfoIntent, PendingIntent.FLAG_IMMUTABLE);
+                final Notification.Builder doneNotification = new Notification.Builder(this, "UploadInfo")
+                        .setContentText("Your images have been uploaded! Feel free to delete the SunSketcher app.")
+                        .setContentTitle("SunSketcher")
+                        .setSmallIcon(R.drawable.ic_stat_name)
+                        .setContentIntent(pendingIntent);
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    //theoretically it's impossible for it to not have this permission at this point, so just ignore
+                }
+                notificationManager.notify(1002, doneNotification.build());
 
                 //stop the foreground service
                 stopSelf();
@@ -120,4 +131,21 @@ public class UploadScheduler extends Service {
         //attempt connection to server
         return ClientRunOnTransfer.clientTransferSequence();
     }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is not in the Support Library.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Upload Info";
+            String description = "This channel is used to notify the user once their upload is complete.";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("UploadInfo", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this.
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
 }
