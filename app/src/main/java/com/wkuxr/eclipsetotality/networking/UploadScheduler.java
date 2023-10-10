@@ -66,7 +66,6 @@ public class UploadScheduler extends Service {
                     boolean successful = false;
                     try {
                         //sleep until time for first upload attempt
-                        //long firstScheduleTime = (1712562431000L + (clientID * (15 * 60 * 1000))) - System.currentTimeMillis();
                         long firstScheduleTime = (clientID * (15 * 60 * 1000)) + (60 * 60 * 1000);
                         Thread.sleep(firstScheduleTime);
                     } catch (InterruptedException e) {
@@ -95,6 +94,7 @@ public class UploadScheduler extends Service {
 
                 SharedPreferences.Editor prefEdit = prefs.edit();
                 prefEdit.putBoolean("uploadSuccessful", true);
+                prefEdit.apply();
 
                 //create a push notification that says that the user's images have been uploaded, and direct it to FinishedInfoActivity
                 createNotificationChannel();

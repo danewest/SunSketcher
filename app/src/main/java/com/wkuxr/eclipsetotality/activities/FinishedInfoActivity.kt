@@ -49,9 +49,9 @@ class FinishedInfoActivity : AppCompatActivity() {
         }
 
         //dump database values to a csv file in documents folder
-        if(!prefs.getBoolean("DBIsDumped", false)) {
+        /*if(!prefs.getBoolean("DBIsDumped", false)) {
             dumpDBtoCSV()
-        }
+        }*/
     }
 
     override fun onResume() {
