@@ -134,7 +134,8 @@ public class MainActivity extends AppCompatActivity {
                     //get actual device location for sunset timing (test stuff) TODO: remove for actual app releases
                     //String sunsetTime = Sunset.calcSun(lat, -lon); //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
 
-                    if(!eclipseData[0].equals("N/A")) {        //TODO: swap for actual app releases
+                    //make sure the user is actually in eclipse path before trying to do any scheduling stuff
+                    if(!eclipseData[0].equals("N/A")) {
                         long[] times = convertTimes(eclipseData);     //TODO: use for actual app releases
                         //long[] times = convertSunsetTime(new String[]{sunsetTime, sunsetTime});   //TODO: remove for actual app releases
                         //long[] times = convertSunsetTime(eclipseData);

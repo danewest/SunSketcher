@@ -88,7 +88,7 @@ static double[] obsvconst = new double[7];
    0.00466833,  0.00464509};*/
 
 //updated elements provided by Fred Espenak
-//Apr. 8, 2024
+//TODO: Apr. 8, 2024
 /*public static double[] elements = {2460409.262841, 18.0, -4.0, 4.0, 69.2, 69.2,    //Date, hour of greatest eclipse, delta T
    -0.3182485,    0.5117099,  0.0000326, -0.0000084,                                //x
     0.2197639,    0.2709581, -0.0000594, -0.0000047,                                //y
@@ -98,7 +98,7 @@ static double[] obsvconst = new double[7];
    -0.0102736,    0.0000615, -1.269e-05,                                            //l2
     0.0046683,    0.0046450};*/                                                       //tan f1, tan f2
 
-//Oct. 14, 2023
+//TODO: Oct. 14, 2023
 public static double[] elements = {2460232.250470, 18.0, -4.0, 4.0, 69.1, 69.1,     //Date, hour of greatest eclipse, delta T
     0.1696573,   0.4585517,  0.0000278, -0.0000054,                                 //x
     0.3348613,  -0.2413663,  0.0000241,  0.0000030,                                 //y
@@ -108,7 +108,7 @@ public static double[] elements = {2460232.250470, 18.0, -4.0, 4.0, 69.1, 69.1, 
     0.0180827,  -0.0000886, -0.0000103,                                             //l2
     0.0046882,   0.0046648};                                                        //tan f1, tan f2
 
-//Aug. 21, 2017 (for testing)
+//TODO: Aug. 21, 2017 (for testing)
 /*public static double[] elements = {2457987.268521,  18.0, -4.0, 4.0, 70.3, 70.3,
    -0.1295710,   0.5406426, -2.940e-05, -8.100e-06,
     0.4854160,  -0.1416400, -9.050e-05,  2.050e-06,
