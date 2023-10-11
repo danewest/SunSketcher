@@ -36,7 +36,9 @@ class FinishedInfoActivity : AppCompatActivity() {
         //fill the UI text based on the preferences
         var text = binding.infoText
         if(uploadReady == 0){
-            text.text = "Thank you for using the SunSketcher app. You have chosen not to upload your images for analysis. You no longer need the app installed and can now uninstall it. Even after uninstalling, your eclipse photos can still be found in the `Photos/SunSketcher/` directory in your device storage, or in your gallery."
+            text.text = "Thank you for using the SunSketcher app. You have chosen not to upload your images for analysis. You can now uninstall the SunSketcher app. Even after uninstalling, your eclipse photos can still be found in the `Photos/SunSketcher/` directory in your device storage, or in your gallery."
+            binding.uploadBtn.isEnabled = false
+            binding.uploadBtn.text = "You have chosen not to upload photos."
         } else {
             text.text = "Thank you for using the SunSketcher app. You have chosen to upload your images for analysis. Please keep the app installed and do not delete the photos in the `Pictures/SunSketcher/` directory, or the SunSketcher album in your gallery, until further notice. The text at the bottom of the screen will change when your images have been uploaded, at which point you can freely delete the app and images from your device. This may take up to a week, so please be patient."
         }
