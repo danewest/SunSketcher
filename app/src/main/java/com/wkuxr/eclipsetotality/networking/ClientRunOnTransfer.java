@@ -47,7 +47,6 @@ public class ClientRunOnTransfer {
         inputLine = fromThreadManager.readLine();
 
         if (inputLine.equals("0")) {
-            setTransferAlarm();
             Log.d("Networktransfer", "Transfer Rejected. Setting New Alarm.");
         } else if (inputLine.equals("-1")) {
             Log.d("Networktransfer", "Single port config detected.");
@@ -152,10 +151,5 @@ public class ClientRunOnTransfer {
             return true;
         }
         return true;
-    }
-
-    static void setTransferAlarm() {
-        // set an alarm to run ClientRunOnTransfer at a time in the future specified by
-        // the ID
     }
 }

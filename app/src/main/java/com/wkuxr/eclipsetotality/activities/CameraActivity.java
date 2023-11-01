@@ -74,7 +74,7 @@ public class CameraActivity extends AppCompatActivity {
 
     static CameraActivity singleton;
 
-    private static final String TAG = "Camera2VideoImageActivi"; // The name of the app, we can change this later (i think)
+    private static final String TAG = "Camera2VideoImageActivi"; // The name of debug channel
 
     private static final int REQUEST_CAMERA_PERMISSION_RESULT = 0;
     private static final int STATE_PREVIEW = 0;
@@ -179,29 +179,25 @@ public class CameraActivity extends AppCompatActivity {
                     }
                 }
             }
-
         }
     }
 
     private MediaRecorder mMediaRecorder;
     private int mTotalRotation;
     private CameraCaptureSession mPreviewCaptureSession;
-    private final CameraCaptureSession.CaptureCallback mPreviewCaptureCallback = new
-            CameraCaptureSession.CaptureCallback() {
-
-                private void process(CaptureResult captureResult) {
-                    switch (mCaptureState) {
-                        case STATE_PREVIEW:
-                            // Do nothing
-                            break;
-                        case STATE_WAIT_LOCK:
-                            mCaptureState = STATE_PREVIEW;
-                            Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
-                            if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED ||
-                                    afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
-                                //This line displays the popup
-                                // that is shown after an image is taken. we don't particularly need it in the final product, but it is good for testing.
-                                Toast.makeText(getApplicationContext(), "AF Locked!", Toast.LENGTH_SHORT).show();
+    private final CameraCaptureSession.CaptureCallback mPreviewCaptureCallback = new CameraCaptureSession.CaptureCallback() {
+        private void process(CaptureResult captureResult) {
+            switch (mCaptureState) {
+                case STATE_PREVIEW:
+                    // Do nothing
+                    break;
+                case STATE_WAIT_LOCK:
+                    mCaptureState = STATE_PREVIEW;
+                    Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
+                    if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
+                        //This line displays the popup
+                        // that is shown after an image is taken. we don't particularly need it in the final product, but it is good for testing.
+                        Toast.makeText(getApplicationContext(), "AF Locked!", Toast.LENGTH_SHORT).show();
                                 /*try {
                                     CaptureRequest.Builder builder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
                                     startStillCaptureRequest(builder);
@@ -211,18 +207,18 @@ public class CameraActivity extends AppCompatActivity {
                                 } catch (CameraAccessException e) {
                                     e.printStackTrace();
                                 }*/
-                            }
-                            break;
                     }
-                }
+                    break;
+            }
+        }
 
-                @Override
-                public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
-                    super.onCaptureCompleted(session, request, result);
+        @Override
+        public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
+            super.onCaptureCompleted(session, request, result);
 
-                    process(result);
-                }
-            };
+            process(result);
+        }
+    };
 
     private CaptureRequest.Builder mCaptureRequestBuilder;
 
