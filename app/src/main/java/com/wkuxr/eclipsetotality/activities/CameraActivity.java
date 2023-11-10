@@ -57,6 +57,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -342,17 +343,21 @@ public class CameraActivity extends AppCompatActivity {
 
         //timer that takes images every 1 seconds for 20 seconds starting 15 seconds before t[c2], then another timer for images every 1s for 20s starting 5s before t[c3]
         //the next line is a testcase to make sure functionality works
-        //startTime = System.currentTimeMillis() + 17000; //TODO: remove for actual app releases
-        //endTime = startTime + 120000; //2 minutes after startTime TODO: remove for actual app releases
-        Date startC2 = new Date(startTime - 15000);
-        Date endC2 = new Date(startTime + 5400);
-        Date startC3 = new Date(endTime - 5000);
-        Date endC3 = new Date(endTime + 15400);
+        startTime = System.currentTimeMillis() + 60000; //TODO: remove for actual app releases
+        endTime = startTime + 60000 * 5; //2 minutes after startTime TODO: remove for actual app releases
+        long midTime = (endTime + startTime) / 2; //set time for midpoint photo for cropping basis
+        Date mid = new Date(midTime);
+        Date startC2 = new Date(startTime - 7000);
+        Date endC2 = new Date(startTime + 3400);
+        Date startC3 = new Date(endTime - 3000);
+        Date endC3 = new Date(endTime + 7400);
         sequenceTimer = new Timer();
         //set timer to start captures at t[c2] - 7
         sequenceTimer.schedule(new StartSequenceTask(),startC2);
         //set timer to stop captures at t[c2] + 3
         sequenceTimer.schedule(new StopSequenceTask(), endC2);
+        //set timer to take a single capture at midpoint
+        sequenceTimer.schedule(new MidpointCaptureTask(), mid);
         //set timer to start captures at t[c3] - 3
         sequenceTimer.schedule(new StartSequenceTask(), startC3);
         //set timer to stop captures at t[c3] + 7
@@ -377,13 +382,13 @@ public class CameraActivity extends AppCompatActivity {
         @Override
         public void run(){
             startStillCaptureRequest();
-            sequenceHandler.postDelayed(this, 1000);//TODO: Lower delay if possible
+            sequenceHandler.postDelayed(this, 500);//TODO: Lower delay if possible
         }
     };
 
     static class StartSequenceTask extends TimerTask {
         public void run(){
-            singleton.sequenceHandler.postDelayed(singleton.sequenceRunnable, 1000);//TODO: Lower delay if possible
+            singleton.sequenceHandler.postDelayed(singleton.sequenceRunnable, 500);//TODO: Lower delay if possible
         }
     }
 
@@ -394,6 +399,14 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    Runnable midpointRunnable = this::startStillCaptureRequest;
+
+    static class MidpointCaptureTask extends TimerTask {
+        public void run(){
+            singleton.sequenceHandler.post(singleton.midpointRunnable);
+            Log.d("MIDPOINT_CAPTURE", "Midpoint photo of eclipse has been taken.");
+        }
+    }
 
     static class SwitchActivityTask extends TimerTask {
         public void run(){

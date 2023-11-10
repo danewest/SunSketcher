@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         long clientID = prefs.getLong("clientID", -1);
         //if the app has not yet gotten a clientID from the server, get one
-        if(clientID == -1){
+        /*if(clientID == -1){
             //connect to server to get ID and upload time
             Thread idTimeThread = new Thread(() -> {
                 try {
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             idTimeThread.start();
-        }
+        }*/
         binding.clientIDText.setText("ClientID: " + clientID);
     }
 
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                     //lon = -102.37163;
 
                     //get actual device location for eclipse timing TODO: use for actual app releases
-                    String[] eclipseData = LocToTime.calculatefor(lat, lon, alt);
+                    //String[] eclipseData = LocToTime.calculatefor(lat, lon, alt);
 
                     //spoof location for eclipse testing; TODO: remove for actual app releases
                     //String[] eclipseData = LocToTime.calculatefor(37.60786, -91.02687, 0); //4/8/2024
@@ -132,12 +132,12 @@ public class MainActivity extends AppCompatActivity {
                     //String[] eclipseData = LocToTime.calculatefor(36.98605, -86.45146, 0); //8/21/2017
 
                     //get actual device location for sunset timing (test stuff) TODO: remove for actual app releases
-                    //String sunsetTime = Sunset.calcSun(lat, -lon); //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
+                    String sunsetTime = Sunset.calcSun(lat, -lon); //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
 
                     //make sure the user is actually in eclipse path before trying to do any scheduling stuff
-                    if(!eclipseData[0].equals("N/A")) {
-                        long[] times = convertTimes(eclipseData);     //TODO: use for actual app releases
-                        //long[] times = convertSunsetTime(new String[]{sunsetTime, sunsetTime});   //TODO: remove for actual app releases
+                    if(/*!eclipseData[0].equals("N/A")*/ true) {
+                        //long[] times = convertTimes(eclipseData);     //TODO: use for actual app releases
+                        long[] times = convertSunsetTime(new String[]{sunsetTime, sunsetTime});   //TODO: remove for actual app releases
                         //long[] times = convertSunsetTime(eclipseData);
 
                         //use the given times to create calendar objects to use in setting alarms
@@ -148,7 +148,8 @@ public class MainActivity extends AppCompatActivity {
                         timeCals[1].setTimeInMillis(times[1] * 1000);
 
                         //for the final app, might want to add something that makes a countdown timer on screen tick down
-                        String details = "You are at lat: " + lat + ", lon: " + lon + "; The solar eclipse will start at the following time at your current location: " + timeCals[0].getTime(); //TODO: use for actual app releases
+                        //String details = "You are at lat: " + lat + ", lon: " + lon + "; The solar eclipse will start at the following time at your current location: " + timeCals[0].getTime(); //TODO: use for actual app releases
+                        String details = "The app will now swap to the camera, where you will have 45 seconds to adjust the phone's position before it starts taking photos."; //TODO: remove for actual app releases
                         //String details = "lat: " + lat + "; lon: " + lon + "; Sunset Time: " + timeCals[0].getTime(); //TODO: remove for actual app releases
                         Log.d("Timing", details);
 
@@ -165,9 +166,9 @@ public class MainActivity extends AppCompatActivity {
                         prefs.apply();
 
                         //go to camera 60 seconds prior, start taking images 15 seconds prior to 5 seconds after, and then at end of eclipse 5 seconds before and 15 after TODO: also for the sunset timing
-                        Date date = new Date((times[0] - 60) * 1000);
+                        //Date date = new Date((times[0] - 60) * 1000); //TODO: use
                         //the next line is a testcase to make sure functionality works for eclipse timing
-                        //Date date = new Date((System.currentTimeMillis()) + 5000);
+                        Date date = new Date((System.currentTimeMillis()) + 5000); //TODO: remove
                         Log.d("SCHEDULE_CAMERA", date.toString());
 
                         if(timer == null) {

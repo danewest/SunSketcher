@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">SunSketcher</string>
     <string name="title_activity_camera">Camera Activity</string>
-    <string name="get_time_and_location">Get Time and Location</string>
+    <string name="get_time_and_location">Start</string>
 </resources>

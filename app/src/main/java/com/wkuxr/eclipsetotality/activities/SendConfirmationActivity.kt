@@ -48,12 +48,12 @@ class SendConfirmationActivity : AppCompatActivity() {
     fun onClick(v: View){
         if(v.id == binding.allowBtn.id){
             prefs.edit().putInt("upload", 1).apply()
-            if(!foregroundServiceRunning()) {
+            /*if(!foregroundServiceRunning()) { //TODO: add for actual releases
                 if(App.getContext() == null)
                     App.setContext(this)
                 val uploadSchedulerIntent = Intent(this, UploadScheduler::class.java)
                 startService(uploadSchedulerIntent)
-            }
+            }*/
         } else {
             prefs.edit().putInt("upload", 0).apply()
         }
