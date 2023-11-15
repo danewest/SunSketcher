@@ -1,4 +1,4 @@
-package com.wkuxr.eclipsetotality.location;
+package com.wkuxr.sunsketcher.location;
 
 //this is being translated from JS to Java; Source is https://gml.noaa.gov/grad/solcalc/sunrise.html (I have a backup of the JS if site goes down for some reason)
 

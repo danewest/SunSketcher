@@ -1,6 +1,6 @@
-package com.wkuxr.eclipsetotality.activities;
+package com.wkuxr.sunsketcher.activities;
 
-import static com.wkuxr.eclipsetotality.activities.SendConfirmationActivity.prefs;
+import static com.wkuxr.sunsketcher.activities.SendConfirmationActivity.prefs;
 
 import android.Manifest;
 import android.content.Context;
@@ -21,9 +21,7 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
-import android.net.InetAddresses;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -36,37 +34,26 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.wkuxr.eclipsetotality.R;
-import com.wkuxr.eclipsetotality.database.Metadata;
-import com.wkuxr.eclipsetotality.database.MetadataDB;
-
-import org.apache.commons.net.ntp.NTPUDPClient;
-import org.apache.commons.net.ntp.TimeInfo;
+import com.wkuxr.sunsketcher.R;
+import com.wkuxr.sunsketcher.database.Metadata;
+import com.wkuxr.sunsketcher.database.MetadataDB;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.sql.Time;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -585,7 +572,6 @@ public class CameraActivity extends AppCompatActivity {
     //private void startStillCaptureRequest(CaptureRequest.Builder builder) {
     private void startStillCaptureRequest() {
         try {
-            //sometimes the cameraDevice just... becomes null??? Have no idea why it happens, but it causes this to crash on my phone (but interestingly, not on Starr's)
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             //mCaptureRequestBuilder = builder;
 
@@ -593,9 +579,12 @@ public class CameraActivity extends AppCompatActivity {
             mCaptureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, mTotalRotation);
             if(aeModeOffAvailable) {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
-                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO);
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF);
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
+                mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, 0.0f);
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, 64);  // 63 ISO
-                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 5000000L); // 1/200s
+                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 5000000L); // 1/8000s
+                //mCaptureRequestBuilder.set(CaptureRequest.JPEG_QUALITY, 100);
             }
 
             CameraCaptureSession.CaptureCallback stillCaptureCallback = new

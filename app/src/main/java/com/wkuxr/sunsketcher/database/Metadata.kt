@@ -1,6 +1,5 @@
-package com.wkuxr.eclipsetotality.database
+package com.wkuxr.sunsketcher.database
 
-import androidx.annotation.NonNull
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 

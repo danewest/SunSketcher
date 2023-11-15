@@ -1,6 +1,6 @@
-package com.wkuxr.eclipsetotality.networking;
+package com.wkuxr.sunsketcher.networking;
 
-import static com.wkuxr.eclipsetotality.activities.MainActivity.singleton;
+import static com.wkuxr.sunsketcher.activities.MainActivity.singleton;
 
 import android.content.Context;
 import android.util.Log;

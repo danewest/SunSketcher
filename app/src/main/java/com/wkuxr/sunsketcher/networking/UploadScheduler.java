@@ -1,4 +1,4 @@
-package com.wkuxr.eclipsetotality.networking;
+package com.wkuxr.sunsketcher.networking;
 
 import android.Manifest;
 import android.app.Notification;
@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -19,14 +18,11 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.wkuxr.eclipsetotality.App;
-import com.wkuxr.eclipsetotality.R;
-import com.wkuxr.eclipsetotality.activities.FinishedInfoActivity;
+import com.wkuxr.sunsketcher.App;
+import com.wkuxr.sunsketcher.R;
+import com.wkuxr.sunsketcher.activities.FinishedInfoActivity;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class UploadScheduler extends Service {
     static UploadScheduler singleton;

@@ -1,4 +1,4 @@
-package com.wkuxr.eclipsetotality.location;
+package com.wkuxr.sunsketcher.location;
 
 import android.util.Log;
 

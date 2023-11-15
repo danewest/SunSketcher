@@ -1,4 +1,4 @@
-package com.wkuxr.eclipsetotality.activities
+package com.wkuxr.sunsketcher.activities
 
 import android.app.ActivityManager
 import android.content.Context
@@ -15,13 +15,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.wkuxr.eclipsetotality.App
-import com.wkuxr.eclipsetotality.R
-import com.wkuxr.eclipsetotality.database.Metadata
-import com.wkuxr.eclipsetotality.database.MetadataDB.Companion.createDB
-import com.wkuxr.eclipsetotality.database.MetadataDB.Companion.db
-import com.wkuxr.eclipsetotality.databinding.ActivitySendConfirmationBinding
-import com.wkuxr.eclipsetotality.networking.UploadScheduler
+import com.wkuxr.sunsketcher.R
+import com.wkuxr.sunsketcher.database.Metadata
+import com.wkuxr.sunsketcher.database.MetadataDB.Companion.createDB
+import com.wkuxr.sunsketcher.database.MetadataDB.Companion.db
+import com.wkuxr.sunsketcher.databinding.ActivitySendConfirmationBinding
+import com.wkuxr.sunsketcher.networking.UploadScheduler
 import java.io.File
 
 

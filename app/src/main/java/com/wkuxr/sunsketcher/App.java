@@ -1,4 +1,4 @@
-package com.wkuxr.eclipsetotality;
+package com.wkuxr.sunsketcher;
 
 import android.app.Application;
 import android.content.Context;

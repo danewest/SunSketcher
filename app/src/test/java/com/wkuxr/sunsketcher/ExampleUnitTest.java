@@ -1,4 +1,4 @@
-package com.wkuxr.eclipsetotality;
+package com.wkuxr.sunsketcher;
 
 import org.junit.Test;
 

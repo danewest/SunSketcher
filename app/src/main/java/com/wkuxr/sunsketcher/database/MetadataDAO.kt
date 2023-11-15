@@ -1,4 +1,4 @@
-package com.wkuxr.eclipsetotality.database
+package com.wkuxr.sunsketcher.database
 
 import androidx.room.Dao
 import androidx.room.Insert

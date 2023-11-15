@@ -1,4 +1,4 @@
-package com.wkuxr.eclipsetotality.activities;
+package com.wkuxr.sunsketcher.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -16,16 +16,13 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
-import com.wkuxr.eclipsetotality.App;
-import com.wkuxr.eclipsetotality.location.LocationAccess;
-import com.wkuxr.eclipsetotality.location.LocToTime;
-import com.wkuxr.eclipsetotality.location.Sunset;
-import com.wkuxr.eclipsetotality.databinding.ActivityMainBinding;
-import com.wkuxr.eclipsetotality.networking.IDRequest;
+import com.wkuxr.sunsketcher.App;
+import com.wkuxr.sunsketcher.location.LocationAccess;
+import com.wkuxr.sunsketcher.location.Sunset;
+import com.wkuxr.sunsketcher.databinding.ActivityMainBinding;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -98,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     Timer timer = null;
+
     @SuppressLint("SetTextI18n")
     public void getLocation(View v) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
