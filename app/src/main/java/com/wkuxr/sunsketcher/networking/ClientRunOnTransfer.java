@@ -118,6 +118,24 @@ public class ClientRunOnTransfer {
                     toServer.writeBytes(byteJustSent + "\n");
                     toServer.flush();
                 }
+
+                //image coruption checking resend function
+                if(fromServer.readLine().equals("retryTransfer\n")) {
+                    Log.d("NetworkTransfer", "Image Corruption Detected, retrying photo send;");
+
+                    fileIn.close();
+                    fileIn = new FileInputStream(file);
+                    fileIn.read(imageData);
+
+                    for (byte imageDatum : imageData) {
+                        byteJustSent = Byte.toString(imageDatum);
+                        toServer.writeBytes(byteJustSent + "\n");
+                        toServer.flush();
+                    }
+                    
+                    //server will now terminate connection if files are still invalid
+                }
+                
                 fileIn.close();
 
                 latitude = metadata.getLatitude();
