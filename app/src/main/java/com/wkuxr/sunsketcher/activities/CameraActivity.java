@@ -17,6 +17,7 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
+import android.hardware.camera2.params.RggbChannelVector;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
@@ -137,15 +138,18 @@ public class CameraActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
+                //create the container file
                 createImageFileName();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
+            //get the byte array data for the image
             ByteBuffer byteBuffer = mImage.getPlanes()[0].getBuffer();
             byte[] bytes = new byte[byteBuffer.remaining()];
             byteBuffer.get(bytes);
 
+            //write the byte array to the file created
             FileOutputStream fileOutputStream = null;
             try {
                 fileOutputStream = new FileOutputStream(mImageFileName);
@@ -298,7 +302,7 @@ public class CameraActivity extends AppCompatActivity {
 
         //get the start and end time of eclipse totality from SharedPreferences, default to Long.MAX_VALUE if not present so the camera sequence doesn't falsely trigger.
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
-        startTime = prefs.getLong("startTime", Long.MAX_VALUE);
+        startTime = prefs.getLong("startTime", Long.MAX_VALUE) + (long)((Math.random() * 500) - 250);
         endTime = prefs.getLong("endTime", Long.MAX_VALUE);
     }
 
@@ -330,28 +334,42 @@ public class CameraActivity extends AppCompatActivity {
 
         //timer that takes images every 1 seconds for 20 seconds starting 15 seconds before t[c2], then another timer for images every 1s for 20s starting 5s before t[c3]
         //the next line is a testcase to make sure functionality works
-        startTime = System.currentTimeMillis() + 60000; //TODO: remove for actual app releases
-        endTime = startTime + 60000 * 5; //2 minutes after startTime TODO: remove for actual app releases
+        startTime = System.currentTimeMillis() + 60000 + (long)((Math.random() * 500) - 250); //TODO: remove for actual app releases
+        endTime = startTime + 60000 * 5; //5 minutes after startTime TODO: remove for actual app releases
         long midTime = (endTime + startTime) / 2; //set time for midpoint photo for cropping basis
-        Date mid = new Date(midTime);
-        Date startC2 = new Date(startTime - 7000);
-        Date endC2 = new Date(startTime + 3400);
-        Date startC3 = new Date(endTime - 3000);
-        Date endC3 = new Date(endTime + 7400);
         sequenceTimer = new Timer();
-        //set timer to start captures at t[c2] - 7
-        sequenceTimer.schedule(new StartSequenceTask(),startC2);
-        //set timer to stop captures at t[c2] + 3
-        sequenceTimer.schedule(new StopSequenceTask(), endC2);
+        //set timer to start captures at t[c2] - 20 at 1 img per 2 seconds
+        Date startC2d1 = new Date(startTime - 20000);
+        sequenceTimer.schedule(new StartSequenceTask(),startC2d1);
+        //switch capture rate to 2 per second
+        Date startC2d2 = new Date(startTime - 10000);
+        sequenceTimer.schedule(new FastSequenceTask(), startC2d2);
+        //switch capture rate to 1 img per 2 seconds
+        Date startC2d3 = new Date(startTime + 10000);
+        sequenceTimer.schedule(new StartSequenceTask(), startC2d3);
+        //set timer to stop captures at t[c2] + 20
+        Date endC2d3 = new Date(startTime + 20000);
+        sequenceTimer.schedule(new StopSequenceTask(), endC2d3);
         //set timer to take a single capture at midpoint
+        Date mid = new Date(midTime);
         sequenceTimer.schedule(new MidpointCaptureTask(), mid);
-        //set timer to start captures at t[c3] - 3
-        sequenceTimer.schedule(new StartSequenceTask(), startC3);
-        //set timer to stop captures at t[c3] + 7
-        sequenceTimer.schedule(new StopSequenceTask(), endC3);
+        //set timer to start captures at t[c3] - 20
+        Date startC3d1 = new Date(endTime - 20000);
+        sequenceTimer.schedule(new StartSequenceTask(), startC3d1);
+        //switch capture rate to 2 per second
+        Date startC3d2 = new Date(endTime - 10000);
+        sequenceTimer.schedule(new FastSequenceTask(), startC3d2);
+        //switch capture rate to 1 img per 2 seconds
+        Date startC3d3 = new Date(endTime + 10000);
+        sequenceTimer.schedule(new StartSequenceTask(), startC3d3);
+        //set timer to stop captures at t[c3] + 20
+        Date endC3d3 = new Date(endTime + 20000);
+        sequenceTimer.schedule(new StopSequenceTask(), endC3d3);
+
+        //make sound to signify image capturing complete
 
         //set timer to switch to SendConfirmationActivity
-        Date activityTimer = new Date(endTime + 20000);
+        Date activityTimer = new Date(endTime + 25000);
         sequenceTimer.schedule(new SwitchActivityTask(), activityTimer);
     }
 
@@ -369,20 +387,37 @@ public class CameraActivity extends AppCompatActivity {
         @Override
         public void run(){
             startStillCaptureRequest();
-            sequenceHandler.postDelayed(this, 500);//TODO: Lower delay if possible
+            sequenceHandler.postDelayed(this, 2000);//TODO: Lower delay if possible
         }
     };
 
     static class StartSequenceTask extends TimerTask {
         public void run(){
-            singleton.sequenceHandler.postDelayed(singleton.sequenceRunnable, 500);//TODO: Lower delay if possible
+            singleton.sequenceHandler.removeCallbacks(singleton.fastSequenceRunnable);
+            singleton.sequenceHandler.postDelayed(singleton.sequenceRunnable, 0);//TODO: Lower delay if possible
+        }
+    }
+
+    Runnable fastSequenceRunnable = new Runnable(){
+        @Override
+        public void run() {
+            startStillCaptureRequest();
+            sequenceHandler.postDelayed(this, 500);
+        }
+    };
+
+    static class FastSequenceTask extends TimerTask {
+        public void run(){
+            singleton.sequenceHandler.removeCallbacks(singleton.sequenceRunnable);
+            singleton.sequenceHandler.postDelayed(singleton.fastSequenceRunnable, 0);
         }
     }
 
     static class StopSequenceTask extends TimerTask {
         public void run(){
             singleton.sequenceHandler.removeCallbacks(singleton.sequenceRunnable);
-            Log.d("STOP_CAPTURES", "Captures have stopped, close app and check gallery.");
+            singleton.sequenceHandler.removeCallbacks(singleton.fastSequenceRunnable);
+            Log.d("STOP_CAPTURES", "Image capture sequence callbacks have been removed.");
         }
     }
 
@@ -441,6 +476,9 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     boolean aeModeOffAvailable = false;
+
+    int imageFormat = ImageFormat.RAW10;
+
     @SuppressWarnings("SuspiciousNameCombination")
     private void setupCamera(int width, int height) {
         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
@@ -501,8 +539,8 @@ public class CameraActivity extends AppCompatActivity {
                 rotatedHeight = width; // this too
             }
             mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), rotatedWidth, rotatedHeight);
-            Size mImageSize = chooseOptimalSize(map.getOutputSizes(ImageFormat.JPEG), rotatedWidth, rotatedHeight);
-            mImageReader = ImageReader.newInstance(mImageSize.getWidth(), mImageSize.getHeight(), ImageFormat.JPEG, 1);
+            Size mImageSize = chooseOptimalSize(map.getOutputSizes(imageFormat), rotatedWidth, rotatedHeight);
+            mImageReader = ImageReader.newInstance(mImageSize.getWidth(), mImageSize.getHeight(), imageFormat, 1);
             mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
             mCameraId = currentLarge;
         } catch (CameraAccessException e) {
@@ -570,7 +608,7 @@ public class CameraActivity extends AppCompatActivity {
 
     // this is the code that actually captures an image. if you need it to take a burst photo, call this function multiple times.
     //private void startStillCaptureRequest(CaptureRequest.Builder builder) {
-    private void startStillCaptureRequest() {
+    private void startStillCaptureRequest(long exposureTime) {
         try {
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             //mCaptureRequestBuilder = builder;
@@ -580,10 +618,12 @@ public class CameraActivity extends AppCompatActivity {
             if(aeModeOffAvailable) {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF);
+                mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE, CaptureRequest.COLOR_CORRECTION_MODE_TRANSFORM_MATRIX);
+                mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, colorTemperature(6600));
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, 0.0f);
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, 64);  // 63 ISO
-                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 5000000L); // 1/8000s
+                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, exposureTime); // 1/50s
                 //mCaptureRequestBuilder.set(CaptureRequest.JPEG_QUALITY, 100);
             }
 
@@ -596,32 +636,69 @@ public class CameraActivity extends AppCompatActivity {
                     };
             //single request
             mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
-
-            //repeating request
-            /*mPreviewCaptureSession.setRepeatingRequest(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        mPreviewCaptureSession.stopRepeating();
-                    } catch (CameraAccessException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            Handler h = new Handler();
-            h.postDelayed(r, 250);*/
-
-            //burst request
-            /*CaptureRequest request = mCaptureRequestBuilder.build();
-            List<CaptureRequest> requests = new ArrayList<>();
-            for(int i = 0; i < 30; i++){
-                requests.add(request);
-            }
-            mPreviewCaptureSession.captureBurst(requests,stillCaptureCallback, null);*/
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    private void startStillCaptureRequest(){
+        startStillCaptureRequest(20000000L); //default exposure time of 1/50s
+    }
+
+    //this rggb converter snippet was written by Francisco Durdin Garcia on stackoverflow
+    //converts kelvin color temperature to color gain matrix
+    public static RggbChannelVector colorTemperature(int whiteBalance) {
+        float temperature = whiteBalance / 100f;
+        float red;
+        float green;
+        float blue;
+
+        //Calculate red
+        if (temperature <= 66)
+            red = 255;
+        else {
+            red = temperature - 60;
+            red = (float) (329.698727446 * (Math.pow(red, -0.1332047592)));
+            if (red < 0)
+                red = 0;
+            if (red > 255)
+                red = 255;
+        }
+
+
+        //Calculate green
+        if (temperature <= 66) {
+            green = temperature;
+            green = (float) (99.4708025861 * Math.log(green) - 161.1195681661);
+            if (green < 0)
+                green = 0;
+            if (green > 255)
+                green = 255;
+        } else {
+            green = temperature - 60;
+            green = (float) (288.1221695283 * (Math.pow(green, -0.0755148492)));
+            if (green < 0)
+                green = 0;
+            if (green > 255)
+                green = 255;
+        }
+
+        //calculate blue
+        if (temperature >= 66)
+            blue = 255;
+        else if (temperature <= 19)
+            blue = 0;
+        else {
+            blue = temperature - 10;
+            blue = (float) (138.5177312231 * Math.log(blue) - 305.0447927307);
+            if (blue < 0)
+                blue = 0;
+            if (blue > 255)
+                blue = 255;
+        }
+
+        Log.v(TAG, "red=" + red + ", green=" + green + ", blue=" + blue);
+        return new RggbChannelVector((red / 255) * 2, (green / 255), (green / 255), (blue / 255) * 2);
     }
 
     // not closing the camera can cause a memory leak. as well as create privacy issues that can
@@ -713,7 +790,7 @@ public class CameraActivity extends AppCompatActivity {
         //String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()); // also saves a timestamp which we can use to
         // create metadata files. Additionally, saves some weird number to the end of the filename. Not sure how to prevent that.
         String prepend = "IMAGE_" + timestamp + "_";
-        File imageFile = File.createTempFile(prepend, ".jpg", mImageFolder);
+        File imageFile = File.createTempFile(prepend, ".raw10", mImageFolder);
         mImageFileName = imageFile.getAbsolutePath();
 
         db.addMetadata(new Metadata(mImageFileName, (double)lat, (double)lon, (double)alt, timestampLong));
@@ -748,7 +825,7 @@ public class CameraActivity extends AppCompatActivity {
 
         // stores the output sizes in JPEG format. im not sure if this will cause an issue if we try to store RAW type files.
         // if errors occur when trying to set up RAW file types try changing this line to ImageFormat.RAW
-        final Size[] choices = map.getOutputSizes(ImageFormat.JPEG);
+        final Size[] choices = map.getOutputSizes(imageFormat);
 
         Arrays.sort(choices, Collections.reverseOrder((lhs, rhs) -> {
             // Cast to ensure the multiplications won't overflow

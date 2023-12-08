@@ -120,7 +120,7 @@ public class ClientRunOnTransfer {
                 }
 
                 //image coruption checking resend function
-                if(fromServer.readLine().equals("retryTransfer\n")) {
+                /*if(fromServer.readLine().equals("retryTransfer\n")) {
                     Log.d("NetworkTransfer", "Image Corruption Detected, retrying photo send;");
 
                     fileIn.close();
@@ -134,7 +134,7 @@ public class ClientRunOnTransfer {
                     }
                     
                     //server will now terminate connection if files are still invalid
-                }
+                }*/
                 
                 fileIn.close();
 
