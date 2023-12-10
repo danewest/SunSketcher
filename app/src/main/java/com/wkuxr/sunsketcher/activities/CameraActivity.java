@@ -19,6 +19,7 @@ import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.RggbChannelVector;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.hardware.camera2.DngCreator;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
@@ -144,10 +145,27 @@ public class CameraActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            //get the byte array data for the image
-            ByteBuffer byteBuffer = mImage.getPlanes()[0].getBuffer();
-            byte[] bytes = new byte[byteBuffer.remaining()];
-            byteBuffer.get(bytes);
+            byte[] bytes;
+            if(mImage.getFormat() == ImageFormat.RAW10){
+                bytes = getCroppedData(mImage, 50, 150, 50, 150);
+            } else {
+                //get the byte array data for the image
+                ByteBuffer byteBuffer = mImage.getPlanes()[0].getBuffer();
+                bytes = new byte[byteBuffer.remaining()];
+                byteBuffer.get(bytes);
+
+                //change the image format to raw10
+                /*imageFormat = ImageFormat.RAW10;
+                setupCamera(mTextureView.getWidth(), mTextureView.getHeight());
+                connectCamera();*/
+            }
+
+            //TODO: implement DngCreator with RAW_SENSOR imageFormat
+            /*try {
+                DngCreator dngCreator = DngCreator(cameraManager.getCameraCharacteristics(mCameraId), )
+            } catch (CameraAccessException e) {
+                throw new RuntimeException(e);
+            }*/
 
             //write the byte array to the file created
             FileOutputStream fileOutputStream = null;
@@ -171,6 +189,53 @@ public class CameraActivity extends AppCompatActivity {
                     }
                 }
             }
+        }
+
+        //TODO: Fix this function as it currently results in an unreadable file
+        byte[] getCroppedData(Image image, int x1, int x2, int y1, int y2){
+            int format = image.getFormat();
+            int width = y2 - y1;
+            int height = x2 - x1;
+
+            byte[] data = null;
+
+            Image.Plane[] planes = image.getPlanes();
+
+            if(format == ImageFormat.RAW10){
+                int bytesPerPixel = ImageFormat.getBitsPerPixel(format) / 8;
+                Log.d("Image_Cropping", "Bytes per pixel: " + bytesPerPixel);
+                //create a new data array with the size necessary to hold the cropped image
+                data = new byte[height * width * bytesPerPixel];
+                Log.d("Image_Cropping", "Output size: " + data.length + "; Dimensions: " + (x2 - x1) + "x" + (y2 - y1));
+                for(int i = 0; i < planes.length; i++){
+                    ByteBuffer buffer = planes[i].getBuffer();
+                    int rowStride = planes[i].getRowStride();
+                    Log.d("Image_Cropping", "Plane " + i + " row stride: " + rowStride);
+                    int w = (i == 0) ? width : width / 2;
+
+                    for(int row = x1; row < x2; row++){
+                        buffer.position((row * rowStride) + y1);
+                        int readSize = w * bytesPerPixel;
+                        if(buffer.remaining() < readSize){
+                            readSize = buffer.remaining();
+                        }
+                        byte[] printData = new byte[w * bytesPerPixel];
+                        buffer.get(printData, 0, readSize);
+                        Log.d("Image_Cropping", "Row " + row + " byte data: " + Arrays.toString(printData));
+                        //set the buffer position to the beginning of the intended cropped row's data
+                        buffer.position((row * rowStride) + y1);
+                        //the segment to read needs to be the cropped segment's number of bytes wide
+                        readSize = w * bytesPerPixel;
+                        if(buffer.remaining() < readSize){
+                            readSize = buffer.remaining();
+                        }
+                        //write readSize bytes from current position in buffer to the correct number of bytes offset in rowData for the current row
+                        Log.d("Image_Cropping", "Row byte length: " + readSize + "; Output array offset: " + ((row - x1) * readSize) + "; Buffer position: " + ((row * rowStride) + y1));
+                        buffer.get(data, (row - x1) * readSize, readSize);
+                    }
+                }
+            }
+            return data;
         }
     }
 
@@ -334,7 +399,7 @@ public class CameraActivity extends AppCompatActivity {
 
         //timer that takes images every 1 seconds for 20 seconds starting 15 seconds before t[c2], then another timer for images every 1s for 20s starting 5s before t[c3]
         //the next line is a testcase to make sure functionality works
-        startTime = System.currentTimeMillis() + 60000 + (long)((Math.random() * 500) - 250); //TODO: remove for actual app releases
+        startTime = System.currentTimeMillis() + 30000 + (long)((Math.random() * 500) - 250); //TODO: remove for actual app releases
         endTime = startTime + 60000 * 5; //5 minutes after startTime TODO: remove for actual app releases
         long midTime = (endTime + startTime) / 2; //set time for midpoint photo for cropping basis
         sequenceTimer = new Timer();
@@ -387,14 +452,14 @@ public class CameraActivity extends AppCompatActivity {
         @Override
         public void run(){
             startStillCaptureRequest();
-            sequenceHandler.postDelayed(this, 2000);//TODO: Lower delay if possible
+            sequenceHandler.postDelayed(this, 2000);
         }
     };
 
     static class StartSequenceTask extends TimerTask {
         public void run(){
             singleton.sequenceHandler.removeCallbacks(singleton.fastSequenceRunnable);
-            singleton.sequenceHandler.postDelayed(singleton.sequenceRunnable, 0);//TODO: Lower delay if possible
+            singleton.sequenceHandler.postDelayed(singleton.sequenceRunnable, 0);
         }
     }
 
@@ -421,10 +486,21 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-    Runnable midpointRunnable = this::startStillCaptureRequest;
+    Runnable midpointRunnable = new Runnable(){
+        @Override
+        public void run(){
+            startStillCaptureRequest();
+        }
+    };
 
     static class MidpointCaptureTask extends TimerTask {
         public void run(){
+            singleton.closeCamera();
+            if (singleton.mTextureView.isAvailable()) {
+                singleton.imageFormat = ImageFormat.JPEG;
+                singleton.setupCamera(singleton.mTextureView.getWidth(), singleton.mTextureView.getHeight());
+                singleton.connectCamera();
+            }
             singleton.sequenceHandler.post(singleton.midpointRunnable);
             Log.d("MIDPOINT_CAPTURE", "Midpoint photo of eclipse has been taken.");
         }
@@ -479,9 +555,11 @@ public class CameraActivity extends AppCompatActivity {
 
     int imageFormat = ImageFormat.RAW10;
 
+    CameraManager cameraManager;
+
     @SuppressWarnings("SuspiciousNameCombination")
     private void setupCamera(int width, int height) {
-        CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+        cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
             // sets the value of the highest resolution camera as the first one on the device, then iterates through every camera,
             // and determines if it is larger than the largest quality camera
@@ -535,7 +613,7 @@ public class CameraActivity extends AppCompatActivity {
             int rotatedWidth = width;
             int rotatedHeight = height;
             if (swapRotation) {
-                rotatedWidth = height; // this is for rotation, it is possible it may call a warning, its no issue
+                rotatedWidth = height; // this is for rotation, it is possible it may throw a warning, its no issue
                 rotatedHeight = width; // this too
             }
             mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), rotatedWidth, rotatedHeight);
@@ -619,11 +697,11 @@ public class CameraActivity extends AppCompatActivity {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE, CaptureRequest.COLOR_CORRECTION_MODE_TRANSFORM_MATRIX);
-                mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, colorTemperature(6600));
+                mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, colorTemperature(2000));
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, 0.0f);
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, 64);  // 63 ISO
-                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, exposureTime); // 1/50s
+                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, exposureTime);
                 //mCaptureRequestBuilder.set(CaptureRequest.JPEG_QUALITY, 100);
             }
 
@@ -642,7 +720,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void startStillCaptureRequest(){
-        startStillCaptureRequest(20000000L); //default exposure time of 1/50s
+        startStillCaptureRequest(125000L); //default exposure time of 1/8000s, 10000000 is 1/100s
     }
 
     //this rggb converter snippet was written by Francisco Durdin Garcia on stackoverflow
@@ -790,7 +868,10 @@ public class CameraActivity extends AppCompatActivity {
         //String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()); // also saves a timestamp which we can use to
         // create metadata files. Additionally, saves some weird number to the end of the filename. Not sure how to prevent that.
         String prepend = "IMAGE_" + timestamp + "_";
-        File imageFile = File.createTempFile(prepend, ".raw10", mImageFolder);
+        //the image format I'm using is actually raw10, but android for some reason throws an
+        // exception if you don't use a supposedly "acceptable" set of filetypes,
+        // so my homemade .raw10 files were causing the app to crash...
+        File imageFile = File.createTempFile(prepend, ".dng", mImageFolder);
         mImageFileName = imageFile.getAbsolutePath();
 
         db.addMetadata(new Metadata(mImageFileName, (double)lat, (double)lon, (double)alt, timestampLong));
@@ -824,8 +905,10 @@ public class CameraActivity extends AppCompatActivity {
         }
 
         // stores the output sizes in JPEG format. im not sure if this will cause an issue if we try to store RAW type files.
-        // if errors occur when trying to set up RAW file types try changing this line to ImageFormat.RAW
+        // if errors occur when trying to set up RAW file types try changing this line to ImageFormat.JPEG
         final Size[] choices = map.getOutputSizes(imageFormat);
+
+        Log.d("Image_Resolution", Arrays.toString(choices));
 
         Arrays.sort(choices, Collections.reverseOrder((lhs, rhs) -> {
             // Cast to ensure the multiplications won't overflow

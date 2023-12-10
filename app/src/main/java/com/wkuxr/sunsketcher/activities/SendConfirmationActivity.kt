@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wkuxr.sunsketcher.R
@@ -64,10 +63,10 @@ class SendConfirmationActivity : AppCompatActivity() {
         db = createDB(this)
         val metadata = db.getMetadata()
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = ItemAdapter(metadata, supportFragmentManager, filesDir.absolutePath)
+        recyclerView.adapter = ItemAdapter(metadata)
     }
 
-    class ItemAdapter(private val metadataList: List<Metadata>, fragManager: FragmentManager, directory: String) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
+    class ItemAdapter(private val metadataList: List<Metadata>) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.recycle_list_item, parent, false)
             return ItemViewHolder(view)
