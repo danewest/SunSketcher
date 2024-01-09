@@ -29,7 +29,7 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
 
     public static MainActivity singleton;   //having a singleton instance of the MainActivity makes so many things significantly easier because it gives us a definite, central reference point for non-static and activity-related functions
-    static ActivityMainBinding binding;
+    ActivityMainBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             default:
         }
 
-        long clientID = prefs.getLong("clientID", -1);
+        //long clientID = prefs.getLong("clientID", -1);
         //if the app has not yet gotten a clientID from the server, get one
         /*if(clientID == -1){
             //connect to server to get ID and upload time
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             });
             idTimeThread.start();
         }*/
-        binding.clientIDText.setText("ClientID: " + clientID);
+        //binding.clientIDText.setText("ClientID: " + clientID);
     }
 
     @Override
@@ -94,6 +94,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(timer != null){
+            timer.cancel();
+        }
+    }
+
+    public void viewTutorial(View v) {
+        Intent intent = new Intent(this, TutorialActivity.class);
+        this.startActivity(intent);
+    }
+
     Timer timer = null;
 
     @SuppressLint("SetTextI18n")
@@ -103,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(new String[]{"android.permission.ACCESS_FINE_LOCATION"}, 1);
         } else {
             v.setEnabled(false);
-            Button button = (Button) v;
+            Button button = binding.startSequenceButton;
             button.setText("Getting GPS Location");
 
             //prevent phone from automatically locking
@@ -202,24 +215,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if(timer != null){
-            timer.cancel();
-        }
-    }
-
     //convert `hh:mm:ss` format string to unix time (this version is specifically for Apr. 8, 2024 eclipse, the first number in startUnix and endUnix will need to be modified to the unix time for the start of Oct. 14, 2023 for that test
     long[] convertTimes(String[] data){
         String[] start = data[0].split(":");
         String[] end = data[1].split(":");
 
         //add actual time to unix time of UTC midnight for start of that day
-        //long startUnix = 1712534400 + ((Integer.parseInt(start[0])) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);   //todo: for april 8
-        //long endUnix = 1712534400 + ((Integer.parseInt(end[0])) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
-        long startUnix = 1697241600 + ((Integer.parseInt(start[0])) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);     //todo: for october 14
-        long endUnix = 1697241600 + ((Integer.parseInt(end[0])) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
+        long startUnix = 1712534400 + ((Integer.parseInt(start[0])) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);   //todo: for april 8
+        long endUnix = 1712534400 + ((Integer.parseInt(end[0])) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
+        //long startUnix = 1697241600 + ((Integer.parseInt(start[0])) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);     //todo: for october 14
+        //long endUnix = 1697241600 + ((Integer.parseInt(end[0])) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
 
         return new long[]{startUnix, endUnix};
     }
