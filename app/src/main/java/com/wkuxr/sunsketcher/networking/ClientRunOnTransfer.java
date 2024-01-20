@@ -77,7 +77,7 @@ public class ClientRunOnTransfer {
         SharedPreferences prefs = App.getContext().getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         int clientID = (int) prefs.getLong("clientID", 9999999);
 
-        toServer.writeBytes(Integer.toString(clientID) + "\n");
+        toServer.writeBytes(clientID + "\n");
         toServer.flush();
 
         toServer.writeBytes(metadataList.size() + "\n");

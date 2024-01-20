@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    tools:context=".activities.TutorialActivity">
+    tools:context=".activities.LearnMoreActivity">
 
     <ImageView
-        android:id="@+id/tutorialBackgroundImage"
+        android:id="@+id/learnMoreBackgroundImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
@@ -19,7 +19,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
-        android:id="@+id/tutorialSunsketcherLogo"
+        android:id="@+id/learnMoreSunsketcherLogo"
         android:layout_width="244dp"
         android:layout_height="66dp"
         android:contentDescription="SunSketcher Logo"
@@ -31,19 +31,19 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/tutorialFragmentContainer"
-        android:name="com.wkuxr.sunsketcher.fragments.TutorialFragment"
+        android:id="@+id/learnMoreFragmentContainer"
+        android:name="com.wkuxr.sunsketcher.fragments.LearnMoreFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="60dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tutorialSunsketcherLogo"
-        tools:layout="@layout/fragment_tutorial" />
+        app:layout_constraintTop_toBottomOf="@+id/learnMoreSunsketcherLogo"
+        tools:layout="@layout/fragment_learn_more" />
 
     <ImageView
-        android:id="@+id/tutorialNext"
+        android:id="@+id/learnMoreNext"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_marginEnd="24dp"
@@ -53,12 +53,12 @@
         android:contentDescription="Next"
         android:focusable="auto"
         android:onClick="changeScreen"
-        app:layout_constraintBottom_toBottomOf="@+id/tutorialFragmentContainer"
+        app:layout_constraintBottom_toBottomOf="@+id/learnMoreFragmentContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/right" />
 
     <ImageView
-        android:id="@+id/tutorialPrevious"
+        android:id="@+id/learnMorePrevious"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_marginStart="24dp"
@@ -69,12 +69,12 @@
         android:focusable="auto"
         android:onClick="changeScreen"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/tutorialFragmentContainer"
+        app:layout_constraintBottom_toBottomOf="@+id/learnMoreFragmentContainer"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/left" />
 
     <ImageView
-        android:id="@+id/tutorialDone"
+        android:id="@+id/learnMoreDone"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_marginEnd="24dp"
@@ -83,19 +83,36 @@
         android:clickable="true"
         android:contentDescription="Done"
         android:focusable="auto"
-        android:onClick="tutorialCompleted"
+        android:onClick="learnMoreCompleted"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/tutorialFragmentContainer"
+        app:layout_constraintBottom_toBottomOf="@+id/learnMoreFragmentContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/check" />
 
     <ImageView
-        android:id="@+id/tutorialBottomLine"
+        android:id="@+id/learnMoreBottomLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:background="#FFFFFF"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/tutorialFragmentContainer"
+        app:layout_constraintBottom_toBottomOf="@+id/learnMoreFragmentContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/learnEvenMoreButton"
+        android:layout_width="340dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="270dp"
+        android:adjustViewBounds="true"
+        android:clickable="true"
+        android:contentDescription="Learn even more"
+        android:focusable="auto"
+        android:onClick="learnEvenMore"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/learnMoreSunsketcherLogo"
+        app:srcCompat="@drawable/learn_even_more_button" />
 </androidx.constraintlayout.widget.ConstraintLayout>

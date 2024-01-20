@@ -102,12 +102,33 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void viewTutorial(View v) {
-        Intent intent = new Intent(this, TutorialActivity.class);
-        this.startActivity(intent);
+    Timer timer = null;
+
+    public void start(View v){
+        SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+
+        if (prefs.getBoolean("completedTutorial", false)) {
+            //TODO: change intent to countdown activity
+        } else {
+            Intent intent = new Intent(this, TutorialPromptActivity.class);
+            this.startActivity(intent);
+        }
     }
 
-    Timer timer = null;
+    public void tutorial(View v){
+        SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEdit = prefs.edit();
+        prefEdit.putInt("next", 0);
+        prefEdit.apply();
+
+        Intent intent = new Intent(this, TutorialActivity.class);
+        startActivity(intent);
+    }
+
+    public void learnMore(View v){
+        Intent intent = new Intent(this, LearnMoreActivity.class);
+        startActivity(intent);
+    }
 
     @SuppressLint("SetTextI18n")
     public void getLocation(View v) {
@@ -116,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(new String[]{"android.permission.ACCESS_FINE_LOCATION"}, 1);
         } else {
             v.setEnabled(false);
-            Button button = binding.startSequenceButton;
+            Button button = binding.oldStartSequenceButton;
             button.setText("Getting GPS Location");
 
             //prevent phone from automatically locking

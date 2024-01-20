@@ -748,18 +748,14 @@ public class CameraActivity extends AppCompatActivity {
         if (temperature <= 66) {
             green = temperature;
             green = (float) (99.4708025861 * Math.log(green) - 161.1195681661);
-            if (green < 0)
-                green = 0;
-            if (green > 255)
-                green = 255;
         } else {
             green = temperature - 60;
             green = (float) (288.1221695283 * (Math.pow(green, -0.0755148492)));
-            if (green < 0)
-                green = 0;
-            if (green > 255)
-                green = 255;
         }
+        if (green < 0)
+            green = 0;
+        if (green > 255)
+            green = 255;
 
         //calculate blue
         if (temperature >= 66)

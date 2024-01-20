@@ -8,7 +8,7 @@
     tools:context=".activities.MainActivity">
 
     <ImageView
-        android:id="@+id/backgroundImage"
+        android:id="@+id/mainBackgroundImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
@@ -19,7 +19,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
-        android:id="@+id/sunsketcherLogo"
+        android:id="@+id/mainSunsketcherLogo"
         android:layout_width="244dp"
         android:layout_height="66dp"
         android:layout_marginTop="16dp"
@@ -31,7 +31,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/startButton"
+        android:id="@+id/mainStartButton"
         android:layout_width="250dp"
         android:layout_height="65dp"
         android:layout_marginTop="148dp"
@@ -46,21 +46,38 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/tutorialButton"
+        android:id="@+id/mainTutorialButton"
         android:layout_width="250dp"
         android:layout_height="65dp"
         android:layout_marginTop="40dp"
         android:clickable="true"
         android:contentDescription="Tutorial"
         android:focusable="auto"
+        android:onClick="tutorial"
         android:src="@drawable/tutorial_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/startButton" />
+        app:layout_constraintTop_toBottomOf="@+id/mainStartButton" />
+
+    <!-- TODO: remove the oldStartSequenceButton component -->
+    <ImageView
+        android:id="@+id/mainLearnMoreButton"
+        android:layout_width="250dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="40dp"
+        android:clickable="true"
+        android:contentDescription="Learn More"
+        android:focusable="auto"
+        android:onClick="learnMore"
+        android:src="@drawable/learn_more_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mainTutorialButton" />
 
     <Button
-        android:id="@+id/startSequenceButton"
+        android:id="@+id/oldStartSequenceButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="96dp"
@@ -71,19 +88,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-        android:id="@+id/learnMoreButton"
-        android:layout_width="250dp"
-        android:layout_height="65dp"
-        android:layout_marginTop="40dp"
-        android:clickable="true"
-        android:contentDescription="Learn More"
-        android:focusable="auto"
-        android:src="@drawable/learn_more_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tutorialButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

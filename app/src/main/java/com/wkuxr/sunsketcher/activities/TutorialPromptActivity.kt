@@ -1,8 +1,9 @@
 package com.wkuxr.sunsketcher.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.wkuxr.sunsketcher.databinding.ActivityTutorialPromptBinding
 
 class TutorialPromptActivity : AppCompatActivity() {
@@ -13,9 +14,14 @@ class TutorialPromptActivity : AppCompatActivity() {
         setContentView(binding.root)
     }
 
-    fun viewTutorial() {
+    fun viewTutorial(v: View) {
+        val prefs = getSharedPreferences("eclipseDetails", MODE_PRIVATE)
+        val prefEdit = prefs.edit()
+        prefEdit.putInt("next", 1)
+        prefEdit.apply()
+        
         val intent = Intent(this, TutorialActivity::class.java)
-        this.startActivity(intent)
+        startActivity(intent)
     }
 
     fun skipTutorial() {
