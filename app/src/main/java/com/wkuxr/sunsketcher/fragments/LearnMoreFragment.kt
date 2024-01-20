@@ -44,7 +44,7 @@ class LearnMoreFragment : Fragment() {
             else -> {
                 binding.learnMoreFragmentTitle.text = "Curious about the finer details?"
                 binding.learnMoreFragmentImage.visibility = View.INVISIBLE
-                binding.learnMoreFragmentText.text = "A more accurate model for the size and shape of the sun would help astrophysicists learn more about the flow of the Sun's interior and its implications for popular models of gravity."
+                binding.learnMoreFragmentText.text = "Awesome! You can check out our full website at sunsketcher.org, or press the button above!"
             }
         }
     }
