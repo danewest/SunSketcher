@@ -27,6 +27,9 @@
         android:theme="@style/Theme.EclipseTotality"
         tools:targetApi="31">
         <activity
+            android:name=".activities.LocationPromptActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.LearnMoreActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />

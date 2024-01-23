@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    tools:context=".activities.TutorialPromptActivity">
+    tools:context=".activities.LocationPromptActivity">
 
     <ImageView
-        android:id="@+id/promptBackgroundImage"
+        android:id="@+id/locationBackgroundImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
@@ -20,7 +20,7 @@
         tools:layout_editor_absoluteY="384dp" />
 
     <ImageView
-        android:id="@+id/promptSunsketcherLogo"
+        android:id="@+id/locationSunsketcherLogo"
         android:layout_width="244dp"
         android:layout_height="66dp"
         android:layout_marginTop="16dp"
@@ -34,57 +34,57 @@
         tools:layout_editor_absoluteY="16dp" />
 
     <ImageView
-        android:id="@+id/promptBackgroundShade"
+        android:id="@+id/locationBackgroundShade"
         android:layout_width="match_parent"
         android:layout_height="708dp"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
         android:background="#DC000000"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/promptBackgroundImage"
+        app:layout_constraintBottom_toBottomOf="@+id/locationBackgroundImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/promptSunsketcherLogo"
+        app:layout_constraintTop_toBottomOf="@+id/locationSunsketcherLogo"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
-        android:id="@+id/promptTopLine"
+        android:id="@+id/locationTopLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:background="#FFFFFF"
         android:contentDescription="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/promptBackgroundShade" />
+        app:layout_constraintTop_toTopOf="@+id/locationBackgroundShade" />
 
     <ImageView
-        android:id="@+id/promptBottomLine"
+        android:id="@+id/locationBottomLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:background="#FFFFFF"
         android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="@+id/locationBackgroundShade"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/promptBackgroundShade" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/promptSkipText"
+        android:id="@+id/locationSkipText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="88dp"
         android:fontFamily="@font/montserrat_medium"
-        android:text="Are you sure you want to skip the tutorial?"
+        android:text="Are you in the location you will be during the eclipse?"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/promptBackgroundShade" />
+        app:layout_constraintTop_toTopOf="@+id/locationBackgroundShade" />
 
     <ImageView
-        android:id="@+id/promptTutorialButton"
+        android:id="@+id/locationTutorialButton"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
@@ -92,15 +92,15 @@
         android:clickable="true"
         android:contentDescription="See tutorial"
         android:focusable="auto"
-        android:onClick="viewTutorial"
+        android:onClick="onClick"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/promptSkipText"
-        app:srcCompat="@drawable/see_tutorial_button" />
+        app:layout_constraintTop_toBottomOf="@+id/locationSkipText"
+        app:srcCompat="@drawable/yes" />
 
     <ImageView
-        android:id="@+id/promptSkipButton"
+        android:id="@+id/locationSkipButton"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
@@ -108,11 +108,11 @@
         android:clickable="true"
         android:contentDescription="Skip tutorial"
         android:focusable="auto"
-        android:onClick="skipTutorial"
-        app:layout_constraintEnd_toEndOf="@+id/promptTutorialButton"
+        android:onClick="onClick"
+        app:layout_constraintEnd_toEndOf="@+id/locationTutorialButton"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/promptTutorialButton"
-        app:layout_constraintTop_toBottomOf="@+id/promptTutorialButton"
-        app:srcCompat="@drawable/skip_tutorial_button" />
+        app:layout_constraintStart_toStartOf="@+id/locationTutorialButton"
+        app:layout_constraintTop_toBottomOf="@+id/locationTutorialButton"
+        app:srcCompat="@drawable/no_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
