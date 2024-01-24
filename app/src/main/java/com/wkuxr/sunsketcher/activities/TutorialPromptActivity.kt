@@ -22,10 +22,12 @@ class TutorialPromptActivity : AppCompatActivity() {
         
         val intent = Intent(this, TutorialActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
-    fun skipTutorial() {
-        //val intent = Intent(this, CountdownActivity::class.java)
-        //this.startActivity(intent)
+    fun skipTutorial(v: View) {
+        val intent = Intent(this, LocationPromptActivity::class.java)
+        this.startActivity(intent)
+        finish()
     }
 }

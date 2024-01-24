@@ -108,10 +108,13 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
 
         if (prefs.getBoolean("completedTutorial", false)) {
-            //TODO: change intent to countdown activity
+            //tutorial has been completed, go to location prompt
+            Intent intent = new Intent(this, LocationPromptActivity.class);
+            startActivity(intent);
         } else {
+            //tutorial has not been completed, suggest viewing tutorial
             Intent intent = new Intent(this, TutorialPromptActivity.class);
-            this.startActivity(intent);
+            startActivity(intent);
         }
     }
 

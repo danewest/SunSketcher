@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    tools:context=".activities.LocationPromptActivity">
+    tools:context=".activities.FinishedInfoDenyActivity">
 
     <ImageView
-        android:id="@+id/locationBackgroundImage"
+        android:id="@+id/finishedInfoDenyBackgroundImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
@@ -20,7 +20,7 @@
         tools:layout_editor_absoluteY="384dp" />
 
     <ImageView
-        android:id="@+id/locationSunsketcherLogo"
+        android:id="@+id/finishedInfoDenySunsketcherLogo"
         android:layout_width="244dp"
         android:layout_height="66dp"
         android:layout_marginTop="16dp"
@@ -30,92 +30,72 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="83dp"
-        tools:layout_editor_absoluteY="16dp" />
+        app:srcCompat="@drawable/sunsketcher" />
 
     <ImageView
-        android:id="@+id/locationBackgroundShade"
+        android:id="@+id/finishedInfoDenyBackgroundShade"
         android:layout_width="match_parent"
         android:layout_height="670dp"
         android:layout_marginTop="30dp"
-        android:layout_marginBottom="60dp"
-        android:adjustViewBounds="true"
+        android:layout_marginBottom="30dp"
         android:background="#DC000000"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/locationBackgroundImage"
+        app:layout_constraintBottom_toBottomOf="@+id/finishedInfoDenyBackgroundImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locationSunsketcherLogo"
+        app:layout_constraintTop_toBottomOf="@+id/finishedInfoDenySunsketcherLogo"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
-        android:id="@+id/locationTopLine"
+        android:id="@+id/finishedInfoDenyTopLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:background="#FFFFFF"
         android:contentDescription="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/locationBackgroundShade" />
+        app:layout_constraintTop_toTopOf="@+id/finishedInfoDenyBackgroundShade" />
 
     <ImageView
-        android:id="@+id/locationBottomLine"
+        android:id="@+id/finishedInfoDenyBottomLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:background="#FFFFFF"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/locationBackgroundShade"
+        app:layout_constraintBottom_toBottomOf="@+id/finishedInfoDenyBackgroundShade"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/locationSkipText"
+        android:id="@+id/finishedInfoDenyTitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:fontFamily="@font/oswald_medium"
+        android:text="Thank you!"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="50sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/finishedInfoDenyBackgroundShade" />
+
+    <TextView
+        android:id="@+id/finishedInfoDenyText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="88dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="24dp"
-        android:fontFamily="@font/montserrat_medium"
-        android:text="Are you in the location you will be during the eclipse?"
+        android:fontFamily="@font/montserrat"
+        android:text="You have made a valuable contribution to science! To make sure your data is transmitted, please do not uninstall the app until you are notified that you can do so.\n\nMake it count! If you're a member of SciStarter, log your participation here to be included in #OneMillionActsofScience."
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="36sp"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/locationBackgroundShade" />
-
-    <ImageView
-        android:id="@+id/locationTutorialButton"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:adjustViewBounds="true"
-        android:clickable="true"
-        android:contentDescription="See tutorial"
-        android:focusable="auto"
-        android:onClick="onClick"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locationSkipText"
-        app:srcCompat="@drawable/yes" />
-
-    <ImageView
-        android:id="@+id/locationSkipButton"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:adjustViewBounds="true"
-        android:clickable="true"
-        android:contentDescription="Skip tutorial"
-        android:focusable="auto"
-        android:onClick="onClick"
-        app:layout_constraintEnd_toEndOf="@+id/locationTutorialButton"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/locationTutorialButton"
-        app:layout_constraintTop_toBottomOf="@+id/locationTutorialButton"
-        app:srcCompat="@drawable/no_button" />
+        app:layout_constraintTop_toBottomOf="@+id/finishedInfoDenyTitleText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

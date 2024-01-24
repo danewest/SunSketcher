@@ -67,9 +67,9 @@ class TutorialActivity : AppCompatActivity() {
         //prefs value of int next is 1 when tutorial was selected from prompt after pressing start button, and completion will send to countdown activity
         when (prefs.getInt("next", 0)) {
             1 -> {
-                //TODO: go to countdown intent
-                var intent = Intent(this, CameraActivity::class.java)
+                var intent = Intent(this, LocationPromptActivity::class.java)
                 startActivity(intent)
+                finish()
             }
             else -> {
                 finish()

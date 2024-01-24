@@ -511,6 +511,7 @@ public class CameraActivity extends AppCompatActivity {
             Log.d("ACTIVITYSWITCH", "To " + SendConfirmationActivity.class.getName());
             Intent intent = new Intent(CameraActivity.singleton, SendConfirmationActivity.class);
             CameraActivity.singleton.startActivity(intent);
+            CameraActivity.singleton.finish();
         }
     }
 

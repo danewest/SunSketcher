@@ -1,10 +1,12 @@
 package com.wkuxr.sunsketcher.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import com.wkuxr.sunsketcher.R
 import com.wkuxr.sunsketcher.databinding.ActivityLocationPromptBinding
+import kotlin.system.exitProcess
 
 class LocationPromptActivity : AppCompatActivity() {
     lateinit var binding: ActivityLocationPromptBinding
@@ -18,7 +20,9 @@ class LocationPromptActivity : AppCompatActivity() {
         if(v.id == binding.locationTutorialButton.id){
             //TODO: go to countdown
         } else {
-            //TODO: go to location warning
+            var intent = Intent(this, LocationWarningActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 }

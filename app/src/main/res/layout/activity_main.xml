@@ -38,7 +38,7 @@
         android:clickable="true"
         android:contentDescription="Start"
         android:focusable="auto"
-        android:onClick="getLocation"
+        android:onClick="start"
         android:src="@drawable/start_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
