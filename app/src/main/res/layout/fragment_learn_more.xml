@@ -63,7 +63,7 @@
         android:layout_height="300dp"
         android:layout_marginTop="32dp"
         android:fontFamily="@font/montserrat"
-        android:text="SunSketcher is a collaborative, crowd-sourced experiment to collect observations during the 2024 solar eclipse that will determine the exact shape of the sun."
+        android:text="SunSketcher is a collaborative, crowd-sourced experiment to collect observations during the 2024 solar eclipse that will determine the exact shape of the Sun."
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="20sp"

@@ -12,4 +12,7 @@ interface MetadataDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addImageMeta(metadata: Metadata): Long
+
+    @Query("UPDATE Metadata SET filepath = :value1 WHERE id = :id")
+    fun updateRow(id: Int, value1: String): Int
 }

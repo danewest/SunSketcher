@@ -35,6 +35,10 @@ abstract class MetadataDB : RoomDatabase() {
         return metadataDao().getAllImageMetas()
     }
 
+    fun updateRowFilepath(id: Int, filepath: String): Int {
+        return metadataDao().updateRow(id, filepath)
+    }
+
     override fun clearAllTables() {
         TODO("Not yet implemented")
     }

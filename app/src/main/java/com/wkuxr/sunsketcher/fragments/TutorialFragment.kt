@@ -1,10 +1,14 @@
 package com.wkuxr.sunsketcher.fragments
 
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.bold
 import com.wkuxr.sunsketcher.R
 import com.wkuxr.sunsketcher.databinding.FragmentTutorialBinding
 
@@ -28,7 +32,8 @@ class TutorialFragment : Fragment() {
             1 -> {
                 binding.tutorialFragmentTitle.text = "Step one"
                 binding.tutorialFragmentImage.setImageResource(R.drawable.main_screen_tutorial)
-                binding.tutorialFragmentText.text = "Approximately 5 minutes before totality, press the start button on the main screen. Do not press start until you are at the location you will view the eclipse from!"
+                var str = SpannableStringBuilder("Approximately 5 minutes before totality, press the start button on the main screen. ").bold{append("Do not")}.append(" press start until you are at the location you will view the eclipse from!")
+                binding.tutorialFragmentText.text = str
             }
             2 -> {
                 binding.tutorialFragmentTitle.text = "Step two"
@@ -43,7 +48,7 @@ class TutorialFragment : Fragment() {
             else -> {
                 binding.tutorialFragmentTitle.text = "Step four"
                 binding.tutorialFragmentImage.setImageResource(R.drawable.confirm_deny_tutorial)
-                binding.tutorialFragmentText.text = "Press \"yes\" when asked if you would like to upload your photos for data collection, in which case you will have contributed to our study of the sun!"
+                binding.tutorialFragmentText.text = "Press \"yes\" when asked if you would like to upload your photos for data collection, in which case you will have contributed to our study of the Sun!"
             }
         }
     }
