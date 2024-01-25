@@ -4,7 +4,116 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
     tools:context=".activities.FinishedInfoActivity">
+
+    <ImageView
+        android:id="@+id/finishedInfoBackgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:contentDescription="Background image of Baily's Bead"
+        android:src="@drawable/eclipse_image"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="384dp" />
+
+    <ImageView
+        android:id="@+id/finishedInfoSunsketcherLogo"
+        android:layout_width="244dp"
+        android:layout_height="66dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="SunSketcher Logo"
+        android:src="@drawable/sunsketcher"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/sunsketcher" />
+
+    <ImageView
+        android:id="@+id/finishedInfoBackgroundShade"
+        android:layout_width="match_parent"
+        android:layout_height="670dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        android:background="#DC000000"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="@+id/finishedInfoBackgroundImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/finishedInfoSunsketcherLogo"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/finishedInfoTopLine"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#FFFFFF"
+        android:contentDescription="@null"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/finishedInfoBackgroundShade" />
+
+    <ImageView
+        android:id="@+id/finishedInfoBottomLine"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#FFFFFF"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="@+id/finishedInfoBackgroundShade"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/finishedInfoTitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:fontFamily="@font/oswald_medium"
+        android:text="Thank you!"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="50sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/finishedInfoBackgroundShade" />
+
+    <TextView
+        android:id="@+id/finishedInfoText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/montserrat"
+        android:text="You have made a valuable contribution to science! You may now restore your device's settings. To make sure your data is transmitted, please do not uninstall the app until you are notified that you can do so."
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/finishedInfoTitleText" />
+
+    <TextView
+        android:id="@+id/finishedInfoSciStarterText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/montserrat"
+        android:text="Make it count! If you're a member of SciStarter, log your participation here to be included in #OneMillionActsofScience."
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/finishedInfoText" />
 
     <TextView
         android:id="@+id/infoText"
@@ -12,6 +121,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
         android:text="Your images are scheduled to be uploaded to our server for analysis. Please allow up to a month for them to be uploaded, as we also have many other users to get to. Thank you for your contribution and patience!"
+        android:textColor="#FF7070"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -28,7 +138,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-<!--
+    <!--
     <TextView
         android:id="@+id/testInfoText"
         android:layout_width="333dp"
@@ -45,9 +155,33 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="ClientID"
+        android:textColor="#FF0000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.044"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/sciStarterButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:clickable="true"
+        android:focusable="auto"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/finishedInfoBackgroundImage"
+        app:layout_constraintTop_toBottomOf="@+id/finishedInfoSciStarterText"
+        app:srcCompat="@drawable/scistarter" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sciStarterButton"
+        app:srcCompat="@drawable/learn_more_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

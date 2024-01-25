@@ -84,7 +84,7 @@ class FinishedInfoActivity : AppCompatActivity() {
             out += meta.filepath + "," + meta.latitude + "," + meta.longitude + "," + meta.altitude + "," + meta.captureTime + "\n"
         }
 
-        //save the file to the same folder as the images, or to the documents folder if the image folder directory somehow wasn't saved to shared preferences
+        //save the file to the documents folder
         val documents = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath
 
         val csvFileName = "SunSketcher Database Dump ${System.currentTimeMillis()}.csv"
