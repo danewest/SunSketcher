@@ -48,7 +48,7 @@ class TutorialFragment : Fragment() {
             else -> {
                 binding.tutorialFragmentTitle.text = "Step four"
                 binding.tutorialFragmentImage.setImageResource(R.drawable.confirm_deny_tutorial)
-                binding.tutorialFragmentText.text = "Press \"yes\" when asked if you would like to upload your photos for data collection, in which case you will have contributed to our study of the Sun!"
+                binding.tutorialFragmentText.text = "Press \"yes\" when asked if you would like to upload your photos for data collection, in which case you will have contributed to our study of the Sun! To make sure we receive your data, please don't delete the app until you are notified that your images have been sent."
             }
         }
     }

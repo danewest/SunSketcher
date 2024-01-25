@@ -90,12 +90,43 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="24dp"
         android:fontFamily="@font/montserrat"
-        android:text="You have made a valuable contribution to science! To make sure your data is transmitted, please do not uninstall the app until you are notified that you can do so.\n\nMake it count! If you're a member of SciStarter, log your participation here to be included in #OneMillionActsofScience."
+        android:text="Your photos will not be sent for analysis.\n\nYou may now return your phone to its prior settings and uninstall the SunSketcher app!"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/finishedInfoDenyTitleText" />
+
+    <TextView
+        android:id="@+id/finishedInfoDenySciStarterText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/montserrat"
+        android:text="Make it count! If you're a member of SciStarter, log your participation here to be included in #OneMillionActsofScience."
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/finishedInfoDenyText" />
+
+    <ImageView
+        android:id="@+id/finishedInfoDenySciStarterButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:clickable="true"
+        android:contentDescription="SciStarter Website Link"
+        android:focusable="auto"
+        android:onClick="onSciStarterClick"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/finishedInfoDenyBackgroundImage"
+        app:layout_constraintTop_toBottomOf="@+id/finishedInfoDenySciStarterText"
+        app:srcCompat="@drawable/scistarter" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

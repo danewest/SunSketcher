@@ -3,6 +3,7 @@ package com.wkuxr.sunsketcher.activities
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -155,5 +156,16 @@ class FinishedInfoActivity : AppCompatActivity() {
             }
         }
         return false
+    }
+
+    fun onSciStarterClick(v: View){
+        val uri = Uri.parse("https://scistarter.org/form/180")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(intent)
+    }
+
+    fun onLearnMoreClick(v: View){
+        val intent = Intent(this, LearnMoreActivity::class.java)
+        startActivity(intent)
     }
 }

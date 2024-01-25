@@ -93,7 +93,7 @@
         android:text="You have made a valuable contribution to science! You may now restore your device's settings. To make sure your data is transmitted, please do not uninstall the app until you are notified that you can do so."
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="24sp"
+        android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/finishedInfoTitleText" />
@@ -109,7 +109,7 @@
         android:text="Make it count! If you're a member of SciStarter, log your participation here to be included in #OneMillionActsofScience."
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="18sp"
+        android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -162,26 +162,30 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/sciStarterButton"
+        android:id="@+id/finishedInfoSciStarterButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="18dp"
         android:clickable="true"
+        android:contentDescription="SciStarter Website Link"
         android:focusable="auto"
+        android:onClick="onSciStarterClick"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/finishedInfoBackgroundImage"
         app:layout_constraintTop_toBottomOf="@+id/finishedInfoSciStarterText"
         app:srcCompat="@drawable/scistarter" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/finishedInfoLearnMoreButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="18dp"
+        android:contentDescription="Learn more"
+        android:onClick="onLearnMoreClick"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sciStarterButton"
+        app:layout_constraintTop_toBottomOf="@+id/finishedInfoSciStarterButton"
         app:srcCompat="@drawable/learn_more_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
