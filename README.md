@@ -4,5 +4,5 @@ NASA-funded Android app to crowdsource image data of Baily's Beads of 4/8/2024 t
 # Development Software Requirements
 Android Studio Flamingo 2022.2.1 Patch 2, using Gradle 8.0.4
 
-# Deployment Hardware Requirements
+# Deployment Firmware Requirements
 Android 12 or greater

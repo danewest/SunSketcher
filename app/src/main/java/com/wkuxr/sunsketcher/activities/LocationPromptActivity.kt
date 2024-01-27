@@ -17,12 +17,12 @@ class LocationPromptActivity : AppCompatActivity() {
     }
 
     fun onClick(v: View){
-        if(v.id == binding.locationTutorialButton.id){
-            //TODO: go to countdown
+        val intent: Intent = if(v.id == binding.locationTutorialButton.id){
+            Intent(this, CountdownActivity::class.java)
         } else {
-            var intent = Intent(this, LocationWarningActivity::class.java)
-            startActivity(intent)
-            finish()
+            Intent(this, LocationWarningActivity::class.java)
         }
+        startActivity(intent)
+        finish()
     }
 }

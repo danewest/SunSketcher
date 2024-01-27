@@ -4,6 +4,190 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
     tools:context=".activities.CountdownActivity">
+
+    <ImageView
+        android:id="@+id/countdownBackgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:contentDescription="Background image of Baily's Bead"
+        android:src="@drawable/eclipse_image"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="384dp" />
+
+    <ImageView
+        android:id="@+id/countdownSunsketcherLogo"
+        android:layout_width="244dp"
+        android:layout_height="66dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="SunSketcher Logo"
+        android:src="@drawable/sunsketcher"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="83dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <ImageView
+        android:id="@+id/countdownBackgroundShade"
+        android:layout_width="match_parent"
+        android:layout_height="670dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="60dp"
+        android:adjustViewBounds="true"
+        android:background="#DC000000"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="@+id/countdownBackgroundImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/countdownSunsketcherLogo"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/countdownTopLine"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#FFFFFF"
+        android:contentDescription="@null"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/countdownBackgroundShade" />
+
+    <ImageView
+        android:id="@+id/countdownBottomLine"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#FFFFFF"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="@+id/countdownBackgroundShade"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/countdownLocationDetailsText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="36dp"
+        android:fontFamily="@font/montserrat"
+        android:text="Your location:\nLatitude: 37.141562\nLongitude: -88.669294"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/countdownTopLine" />
+
+    <ImageView
+        android:id="@+id/countdownDoNotDisturbImage"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:adjustViewBounds="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/countdownTopLine"
+        app:srcCompat="@drawable/do_not_disturb_countdown" />
+
+    <TextView
+        android:id="@+id/countdownInfoText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/montserrat"
+        android:text="Please turn your ringer off and Do Not Disturb on!"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/countdownDoNotDisturbImage" />
+
+    <TextView
+        android:id="@+id/countdownTimeText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="92dp"
+        android:fontFamily="@font/montserrat"
+        android:text="Waiting for eclipse start time to be calculated..."
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/countdownBottomLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/countdownArrowRight"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:adjustViewBounds="true"
+        android:clickable="true"
+        android:contentDescription="Next page"
+        android:focusable="auto"
+        android:onClick="onArrowClick"
+        app:layout_constraintBottom_toTopOf="@+id/countdownBottomLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/right" />
+
+    <ImageView
+        android:id="@+id/countdownArrowLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="24dp"
+        android:adjustViewBounds="true"
+        android:clickable="true"
+        android:contentDescription="Previous page"
+        android:focusable="auto"
+        android:onClick="onArrowClick"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/countdownBottomLine"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/left" />
+
+    <ImageView
+        android:id="@+id/countdownPhoneStandImage"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:layout_marginTop="20dp"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/countdownTopLine"
+        app:srcCompat="@drawable/phone_stand_tutorial" />
+
+    <TextView
+        android:id="@+id/countdownInfoPage2Text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/montserrat"
+        android:text="Set the phone down with the REAR CAMERA facing the Sun. Enjoy totality, you can check your phone again 5 minutes after totality ends."
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/countdownPhoneStandImage" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
