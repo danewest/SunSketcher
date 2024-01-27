@@ -41,18 +41,26 @@ public class MainActivity extends AppCompatActivity {
         reqPerm(new String[]{"android.permission.CAMERA","android.permission.ACCESS_FINE_LOCATION","android.permission.WRITE_EXTERNAL_STORAGE","android.permission.INTERNET","android.permission.POST_NOTIFICATIONS"});
 
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
-        int hasConfirmDeny = prefs.getInt("upload", -1);
+        int hasConfirmDeny = prefs.getInt("upload", -1); //if -1, hasn't taken images yet
+        Intent intent = null;
         switch(hasConfirmDeny){
-            case -2:
-                Intent intent = new Intent(this, SendConfirmationActivity.class);
-                this.startActivity(intent);
+            case -2: //not yet confirmed or denied
+                intent = new Intent(this, SendConfirmationActivity.class);
                 break;
-            case 0:
-            case 1:
-                intent = new Intent(this, FinishedInfoActivity.class);
-                this.startActivity(intent);
+            case 0: //denied upload
+                intent = new Intent(this, FinishedInfoDenyActivity.class);
+                break;
+            case 1: //allowed upload
+                if(prefs.getBoolean("uploadSuccessful", false)){ //allowed upload and upload already finished
+                    //intent = new Intent(this, FinishedCompleteActivity.class);
+                } else {
+                    intent = new Intent(this, FinishedInfoActivity.class);
+                }
                 break;
             default:
+        }
+        if(intent != null) {
+            this.startActivity(intent);
         }
 
         //long clientID = prefs.getLong("clientID", -1);
@@ -80,17 +88,25 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         int hasConfirmDeny = prefs.getInt("upload", -1);
+        Intent intent = null;
         switch(hasConfirmDeny){
-            case -2:
-                Intent intent = new Intent(this, SendConfirmationActivity.class);
-                this.startActivity(intent);
+            case -2: //not yet confirmed or denied
+                intent = new Intent(this, SendConfirmationActivity.class);
                 break;
-            case 0:
-            case 1:
-                intent = new Intent(this, FinishedInfoActivity.class);
-                this.startActivity(intent);
+            case 0: //denied upload
+                intent = new Intent(this, FinishedInfoDenyActivity.class);
+                break;
+            case 1: //allowed upload
+                if(prefs.getBoolean("uploadSuccessful", false)){ //allowed upload and upload already finished
+                    intent = new Intent(this, FinishedCompleteActivity.class);
+                } else {
+                    intent = new Intent(this, FinishedInfoActivity.class);
+                }
                 break;
             default:
+        }
+        if(intent != null) {
+            this.startActivity(intent);
         }
     }
 
@@ -131,148 +147,6 @@ public class MainActivity extends AppCompatActivity {
     public void learnMore(View v){
         Intent intent = new Intent(this, LearnMoreActivity.class);
         startActivity(intent);
-    }
-
-    @SuppressLint("SetTextI18n")
-    public void getLocation(View v) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //request permission again if it wasn't given
-            requestPermissions(new String[]{"android.permission.ACCESS_FINE_LOCATION"}, 1);
-        } else {
-            v.setEnabled(false);
-            Button button = binding.oldStartSequenceButton;
-            button.setText("Getting GPS Location");
-
-            //prevent phone from automatically locking
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-            LocationAccess locAccess = new LocationAccess(this);
-            locAccess.getCurrentLocation(new LocationAccess.LocationResultCallback() {
-                @Override
-                public void onLocationResult(Location location) {
-                    double lat = location.getLatitude();
-                    double lon = location.getLongitude();
-                    double alt = location.getAltitude();
-
-                    //todo: for testing
-                    //lat = 31.86361;
-                    //lon = -102.37163;
-
-                    //get actual device location for eclipse timing TODO: use for actual app releases
-                    //String[] eclipseData = LocToTime.calculatefor(lat, lon, alt);
-
-                    //spoof location for eclipse testing; TODO: remove for actual app releases
-                    //String[] eclipseData = LocToTime.calculatefor(37.60786, -91.02687, 0); //4/8/2024
-                    //String[] eclipseData = LocToTime.calculatefor(31.86361, -102.37163, 0); //10/14/2023
-                    //String[] eclipseData = LocToTime.calculatefor(36.98605, -86.45146, 0); //8/21/2017
-
-                    //get actual device location for sunset timing (test stuff) TODO: remove for actual app releases
-                    String sunsetTime = Sunset.calcSun(lat, -lon); //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
-
-                    //make sure the user is actually in eclipse path before trying to do any scheduling stuff
-                    if(/*!eclipseData[0].equals("N/A")*/ true) {
-                        //long[] times = convertTimes(eclipseData);     //TODO: use for actual app releases
-                        long[] times = convertSunsetTime(new String[]{sunsetTime, sunsetTime});   //TODO: remove for actual app releases
-                        //long[] times = convertSunsetTime(eclipseData);
-
-                        //use the given times to create calendar objects to use in setting alarms
-                        Calendar[] timeCals = new Calendar[2];
-                        timeCals[0] = Calendar.getInstance();
-                        timeCals[0].setTimeInMillis(times[0] * 1000);
-                        timeCals[1] = Calendar.getInstance();
-                        timeCals[1].setTimeInMillis(times[1] * 1000);
-
-                        //for the final app, might want to add something that makes a countdown timer on screen tick down
-                        //String details = "You are at lat: " + lat + ", lon: " + lon + "; The solar eclipse will start at the following time at your current location: " + timeCals[0].getTime(); //TODO: use for actual app releases
-                        String details = "The app will now swap to the camera, where you will have 45 seconds to adjust the phone's position before it starts taking photos."; //TODO: remove for actual app releases
-                        //String details = "lat: " + lat + "; lon: " + lon + "; Sunset Time: " + timeCals[0].getTime(); //TODO: remove for actual app releases
-                        Log.d("Timing", details);
-
-                        button.setText(details);
-                        //--------made it visible that something is happening--------
-
-                        //store the unix time for the start and end of totality in SharedPreferences
-                        SharedPreferences.Editor prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE).edit();
-                        prefs.putLong("startTime",times[0] * 1000);
-                        prefs.putLong("endTime",times[1] * 1000);
-                        prefs.putFloat("lat", (float)lat);
-                        prefs.putFloat("lon", (float)lon);
-                        prefs.putFloat("alt", (float)alt);
-                        prefs.apply();
-
-                        //go to camera 60 seconds prior, start taking images 15 seconds prior to 5 seconds after, and then at end of eclipse 5 seconds before and 15 after TODO: also for the sunset timing
-                        //Date date = new Date((times[0] - 60) * 1000); //TODO: use
-                        //the next line is a testcase to make sure functionality works for eclipse timing
-                        Date date = new Date((System.currentTimeMillis()) + 5000); //TODO: remove
-                        Log.d("SCHEDULE_CAMERA", date.toString());
-
-                        if(timer == null) {
-                            Log.d("Timing", "Creating timer.");
-                            timer = new Timer();
-                            TimeTask cameraActivitySchedulerTask = new TimeTask();
-                            timer.schedule(cameraActivitySchedulerTask, date);
-                        }
-                    } else {
-                        button.setText("Not in eclipse path.");
-                    }
-                }
-
-                @Override
-                public void onLocationFailed() {
-                    button.setText("Unable to get location");
-                }
-            });
-        }
-    }
-
-    //TimerTask subclass that opens the CameraActivity at the specified time
-    static class TimeTask extends TimerTask{
-        Context context;
-
-        public TimeTask(){
-            context = MainActivity.singleton;
-        }
-
-        public void run(){
-            Intent intent = new Intent(context, CameraActivity.class);
-            context.startActivity(intent);
-        }
-    }
-
-    //convert `hh:mm:ss` format string to unix time (this version is specifically for Apr. 8, 2024 eclipse, the first number in startUnix and endUnix will need to be modified to the unix time for the start of Oct. 14, 2023 for that test
-    long[] convertTimes(String[] data){
-        String[] start = data[0].split(":");
-        String[] end = data[1].split(":");
-
-        //add actual time to unix time of UTC midnight for start of that day
-        long startUnix = 1712534400 + ((Integer.parseInt(start[0])) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);   //todo: for april 8
-        long endUnix = 1712534400 + ((Integer.parseInt(end[0])) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
-        //long startUnix = 1697241600 + ((Integer.parseInt(start[0])) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);     //todo: for october 14
-        //long endUnix = 1697241600 + ((Integer.parseInt(end[0])) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
-
-        return new long[]{startUnix, endUnix};
-    }
-
-    long[] convertSunsetTime(String[] data){
-        //0 -> hour; 1 -> minute; 2 -> second
-        String[] start = data[0].split(":");
-        String[] end = data[1].split(":");
-
-        //get current time in seconds, remove a day if it is past UTC midnight for the date that your timezone is currently in
-        long currentDateUnix = (System.currentTimeMillis() / 1000);
-        long currentTimeUnix = currentDateUnix % 86400;
-        if(currentTimeUnix > 0 && currentTimeUnix < 5 * 60 * 60){
-            Log.d("SunsetTiming", "Current time is past UTC midnight; Subtracting a day from time estimate");
-            currentDateUnix -= 86400;
-        }
-
-        long currentDateTimezoneCorrectedUnix = (currentDateUnix - (currentDateUnix % (60 * 60 * 24)));// - (-5 * 60 * 60); //add this +5 hours back for sunset tests
-
-        //convert the given time to seconds, add it to the start of the day as calculated by
-        long startUnix = currentDateTimezoneCorrectedUnix + (Integer.parseInt(start[0]) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);
-        long endUnix = currentDateTimezoneCorrectedUnix + (Integer.parseInt(end[0]) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
-
-        return new long[]{startUnix, endUnix};
     }
 
     public void reqPerm(String[] permissions){

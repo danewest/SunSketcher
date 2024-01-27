@@ -11,7 +11,7 @@ public class LocToTime {
 // License (http://www.gnu.org/copyleft/gpl.html).
 // The source code this file is based on was created by
 // chris@obyrne.com  and  fred.espenak@nasa.gov
-// If you would like to use or modify the code from either version, send them,
+// If you would like to use or modify this code, send them,
 // as well as travis.peden194@topper.wku.edu, an email about it.
 //
 // Code obtained from http://eclipse.gsfc.nasa.gov/JSEX/JSEX-index.html
@@ -20,11 +20,11 @@ public class LocToTime {
 //
 /*
 Java Solar Eclipse Explorer
-Java port by Travis Peden - 2022.
+Java Version 1 by Travis Peden - 2022.
 Javascript Version 1 by Chris O'Byrne and Fred Espenak - 2007.
 (based on "Eclipse Calculator" by Chris O'Byrne and Stephen McCann - 2003)
 
-This program is free software; you can redistribute it and/or
+This file (LocToTime.java) is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation; either version 2
 of the License, or (at your option) any later version.

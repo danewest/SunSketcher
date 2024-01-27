@@ -4,71 +4,143 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
     tools:context=".activities.SendConfirmationActivity">
+
+    <ImageView
+        android:id="@+id/sendConfirmationBackgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:contentDescription="Background image of Baily's Bead"
+        android:src="@drawable/eclipse_image"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="384dp" />
+
+    <ImageView
+        android:id="@+id/sendConfirmationSunsketcherLogo"
+        android:layout_width="244dp"
+        android:layout_height="66dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="SunSketcher Logo"
+        android:src="@drawable/sunsketcher"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="83dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <ImageView
+        android:id="@+id/sendConfirmationBackgroundShade"
+        android:layout_width="match_parent"
+        android:layout_height="670dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="60dp"
+        android:adjustViewBounds="true"
+        android:background="#DC000000"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="@+id/sendConfirmationBackgroundImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sendConfirmationSunsketcherLogo"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/sendConfirmationTopLine"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#FFFFFF"
+        android:contentDescription="@null"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/sendConfirmationBackgroundShade" />
+
+    <ImageView
+        android:id="@+id/sendConfirmationBottomLine"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#FFFFFF"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="@+id/sendConfirmationBackgroundShade"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/sendConfirmationSkipText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/oswald_medium"
+        android:text="Ok to share photos?"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/sendConfirmationBackgroundShade" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/imageRecycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="160dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/warningBackground"
-        android:layout_width="284dp"
-        android:layout_height="198dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginBottom="4dp"
-        android:background="#ccc"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:id="@+id/sendConfirmationYesBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:adjustViewBounds="true"
+        android:clickable="true"
+        android:contentDescription="Yes"
+        android:focusable="auto"
+        android:onClick="onClick"
+        app:layout_constraintBottom_toTopOf="@+id/sendConfirmationNoBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/big_yes" />
 
-    <TextView
-        android:id="@+id/uploadDisclaimer"
-        android:layout_width="285dp"
-        android:layout_height="70dp"
-        android:text="By pressing the &quot;Allow&quot; button, you agree to having these photos uploaded to a remote storage device for analysis. (Scroll down to see more.)"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/warningBackground"
-        app:layout_constraintTop_toTopOf="@+id/warningBackground" />
-
-    <TextView
-        android:id="@+id/redWarningText"
-        android:layout_width="283dp"
-        android:layout_height="35dp"
+    <ImageView
+        android:id="@+id/sendConfirmationNoBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="THE IMAGES WILL BE PUBLICLY AVAILABLE!"
+        android:layout_marginBottom="12dp"
+        android:clickable="true"
+        android:contentDescription="No"
+        android:focusable="auto"
+        android:onClick="onClick"
+        app:layout_constraintBottom_toTopOf="@+id/sendConfirmationBottomLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/small_no_button" />
+
+    <TextView
+        android:id="@+id/sendConfirmationInfoText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/montserrat"
+        android:text="Scroll left and right for more images.\n\nEven the ones that look boring hold scientific value!"
         android:textAlignment="center"
-        android:textColor="#ff0000"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/warningBackground"
-        app:layout_constraintEnd_toEndOf="@+id/warningBackground"
-        app:layout_constraintHorizontal_bias="0.875"
-        app:layout_constraintStart_toStartOf="@+id/warningBackground"
-        app:layout_constraintTop_toTopOf="@+id/warningBackground"
-        app:layout_constraintVertical_bias="0.398" />
-
-    <Button
-        android:id="@+id/allowBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="76dp"
-        android:layout_marginBottom="32dp"
-        android:backgroundTint="#005EA6"
-        android:onClick="onClick"
-        android:text="Allow"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/denyBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="76dp"
-        android:layout_marginBottom="32dp"
-        android:backgroundTint="#AE0000"
-        android:onClick="onClick"
-        android:text="Deny"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/allowBtn" />
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sendConfirmationSkipText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

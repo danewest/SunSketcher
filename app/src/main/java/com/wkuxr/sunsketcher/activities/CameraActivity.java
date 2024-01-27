@@ -367,8 +367,9 @@ public class CameraActivity extends AppCompatActivity {
 
         //get the start and end time of eclipse totality from SharedPreferences, default to Long.MAX_VALUE if not present so the camera sequence doesn't falsely trigger.
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
-        startTime = prefs.getLong("startTime", Long.MAX_VALUE) + (long)((Math.random() * 500) - 250);
-        endTime = prefs.getLong("endTime", Long.MAX_VALUE);
+        long randomizer = (long)((Math.random() * 500) - 250);
+        startTime = prefs.getLong("startTime", Long.MAX_VALUE) + randomizer;
+        endTime = prefs.getLong("endTime", Long.MAX_VALUE) + randomizer;
     }
 
     /*Runnable ntpClientRunnable = () -> {
@@ -398,9 +399,10 @@ public class CameraActivity extends AppCompatActivity {
         prefs.edit().putInt("upload", -2).apply();
 
         //timer that takes images every 1 seconds for 20 seconds starting 15 seconds before t[c2], then another timer for images every 1s for 20s starting 5s before t[c3]
-        //the next line is a testcase to make sure functionality works
-        startTime = System.currentTimeMillis() + 30000 + (long)((Math.random() * 500) - 250); //TODO: remove for actual app releases
-        endTime = startTime + 60000 * 5; //5 minutes after startTime TODO: remove for actual app releases
+        //the next three lines are a testcase to make sure functionality works
+        long randomizer = (long)((Math.random() * 500) - 250);
+        startTime = System.currentTimeMillis() + 30000 + randomizer; //TODO: remove for actual app releases
+        endTime = startTime + 60000 * 5 + randomizer; //5 minutes after startTime TODO: remove for actual app releases
         long midTime = (endTime + startTime) / 2; //set time for midpoint photo for cropping basis
         sequenceTimer = new Timer();
         //set timer to start captures at t[c2] - 20 at 1 img per 2 seconds
@@ -509,9 +511,10 @@ public class CameraActivity extends AppCompatActivity {
     static class SwitchActivityTask extends TimerTask {
         public void run(){
             Log.d("ACTIVITYSWITCH", "To " + SendConfirmationActivity.class.getName());
-            Intent intent = new Intent(CameraActivity.singleton, SendConfirmationActivity.class);
-            CameraActivity.singleton.startActivity(intent);
-            CameraActivity.singleton.finish();
+            Intent intent = new Intent(singleton, SendConfirmationActivity.class);
+            singleton.closeCamera();
+            singleton.startActivity(intent);
+            singleton.finish();
         }
     }
 
@@ -554,7 +557,8 @@ public class CameraActivity extends AppCompatActivity {
 
     boolean aeModeOffAvailable = false;
 
-    int imageFormat = ImageFormat.RAW10;
+    //changing this will change the output image format, but we've been having trouble with saving and cropping raw images, so unfortunately we are using a lossy format
+    int imageFormat = ImageFormat.JPEG;
 
     CameraManager cameraManager;
 
@@ -703,7 +707,7 @@ public class CameraActivity extends AppCompatActivity {
                 mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, 0.0f);
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, 64);  // 63 ISO
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, exposureTime);
-                //mCaptureRequestBuilder.set(CaptureRequest.JPEG_QUALITY, 100);
+                mCaptureRequestBuilder.set(CaptureRequest.JPEG_QUALITY, (byte)100);
             }
 
             CameraCaptureSession.CaptureCallback stillCaptureCallback = new
@@ -865,12 +869,9 @@ public class CameraActivity extends AppCompatActivity {
         //String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()); // also saves a timestamp which we can use to
         // create metadata files. Additionally, saves some weird number to the end of the filename. Not sure how to prevent that.
         String prepend = "IMAGE_" + timestamp + "_";
-        //the image format I'm using is actually raw10, but android for some reason throws an
-        // exception if you don't use a supposedly "acceptable" set of filetypes,
-        // so my homemade .raw10 files were causing the app to crash...
-        File imageFile = File.createTempFile(prepend, ".dng", mImageFolder);
+        //File imageFile = File.createTempFile(prepend, ".jpg", mImageFolder);
+        File imageFile = new File(mImageFolder, prepend + ".jpg");
         mImageFileName = imageFile.getAbsolutePath();
-
         db.addMetadata(new Metadata(mImageFileName, (double)lat, (double)lon, (double)alt, timestampLong));
     }
 

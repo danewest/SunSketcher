@@ -28,6 +28,14 @@
         android:theme="@style/Theme.EclipseTotality"
         tools:targetApi="31">
         <activity
+            android:name=".activities.UploadDenyConfirmationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.FinishedCompleteActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
+        <activity
             android:name=".activities.FinishedInfoDenyActivity"
             android:exported="false"
             android:screenOrientation="portrait"

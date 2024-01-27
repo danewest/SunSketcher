@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    tools:context=".activities.FinishedInfoDenyActivity">
+    tools:context=".activities.UploadDenyConfirmationActivity">
 
     <ImageView
-        android:id="@+id/finishedInfoDenyBackgroundImage"
+        android:id="@+id/uploadDenyConfirmationBackgroundImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
@@ -20,7 +20,7 @@
         tools:layout_editor_absoluteY="384dp" />
 
     <ImageView
-        android:id="@+id/finishedInfoDenySunsketcherLogo"
+        android:id="@+id/uploadDenyConfirmationSunsketcherLogo"
         android:layout_width="244dp"
         android:layout_height="66dp"
         android:layout_marginTop="16dp"
@@ -30,116 +30,108 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/sunsketcher" />
+        tools:layout_editor_absoluteX="83dp"
+        tools:layout_editor_absoluteY="16dp" />
 
     <ImageView
-        android:id="@+id/finishedInfoDenyBackgroundShade"
+        android:id="@+id/uploadDenyConfirmationBackgroundShade"
         android:layout_width="match_parent"
         android:layout_height="670dp"
         android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="60dp"
+        android:adjustViewBounds="true"
         android:background="#DC000000"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/finishedInfoDenyBackgroundImage"
+        app:layout_constraintBottom_toBottomOf="@+id/uploadDenyConfirmationBackgroundImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/finishedInfoDenySunsketcherLogo"
+        app:layout_constraintTop_toBottomOf="@+id/uploadDenyConfirmationSunsketcherLogo"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
-        android:id="@+id/finishedInfoDenyTopLine"
+        android:id="@+id/uploadDenyConfirmationTopLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:background="#FFFFFF"
         android:contentDescription="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/finishedInfoDenyBackgroundShade" />
+        app:layout_constraintTop_toTopOf="@+id/uploadDenyConfirmationBackgroundShade" />
 
     <ImageView
-        android:id="@+id/finishedInfoDenyBottomLine"
+        android:id="@+id/uploadDenyConfirmationBottomLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:background="#FFFFFF"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/finishedInfoDenyBackgroundShade"
+        app:layout_constraintBottom_toBottomOf="@+id/uploadDenyConfirmationBackgroundShade"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/finishedInfoDenyTitleText"
-        android:layout_width="wrap_content"
+        android:id="@+id/uploadDenyConfirmationTitle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="88dp"
+        android:layout_marginEnd="24dp"
         android:fontFamily="@font/oswald_medium"
-        android:text="Thank you!"
+        android:text="Are you sure?"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="50sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/finishedInfoDenyBackgroundShade" />
+        app:layout_constraintTop_toTopOf="@+id/uploadDenyConfirmationBackgroundShade" />
 
     <TextView
-        android:id="@+id/finishedInfoDenyText"
+        android:id="@+id/uploadDenyConfirmationInfoText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="3dp"
         android:layout_marginEnd="24dp"
         android:fontFamily="@font/montserrat"
-        android:text="Your photos will not be sent for analysis.\n\nYou may now return your phone to its prior settings and uninstall the SunSketcher app!"
+        android:text="Without the images, we will not be able to analyze the solar eclipse data you captured!"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/finishedInfoDenyTitleText" />
-
-    <TextView
-        android:id="@+id/finishedInfoDenySciStarterText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="24dp"
-        android:fontFamily="@font/montserrat"
-        android:text="Make it count! If you're a member of SciStarter, log your participation here to be included in #OneMillionActsofScience."
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textSize="22sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/finishedInfoDenyText" />
+        app:layout_constraintTop_toBottomOf="@+id/uploadDenyConfirmationTitle" />
 
     <ImageView
-        android:id="@+id/finishedInfoDenySciStarterButton"
-        android:layout_width="wrap_content"
+        android:id="@+id/uploadDenyConfirmationSendButton"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="24dp"
+        android:adjustViewBounds="true"
         android:clickable="true"
-        android:contentDescription="SciStarter Website Link"
+        android:contentDescription="See tutorial"
         android:focusable="auto"
-        android:onClick="onSciStarterClick"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/finishedInfoDenyBackgroundImage"
-        app:layout_constraintTop_toBottomOf="@+id/finishedInfoDenySciStarterText"
-        app:srcCompat="@drawable/scistarter" />
-
-    <ImageView
-        android:id="@+id/finishedInfoLearnMoreButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:contentDescription="Learn more"
-        android:onClick="onLearnMoreClick"
+        android:onClick="onClick"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/finishedInfoDenySciStarterButton"
-        app:srcCompat="@drawable/learn_more_button" />
+        app:layout_constraintTop_toBottomOf="@+id/uploadDenyConfirmationInfoText"
+        app:srcCompat="@drawable/send" />
+
+    <ImageView
+        android:id="@+id/uploadDenyConfirmationDenyButton"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:adjustViewBounds="true"
+        android:clickable="true"
+        android:contentDescription="Skip tutorial"
+        android:focusable="auto"
+        android:onClick="onClick"
+        app:layout_constraintEnd_toEndOf="@+id/uploadDenyConfirmationSendButton"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/uploadDenyConfirmationSendButton"
+        app:layout_constraintTop_toBottomOf="@+id/uploadDenyConfirmationSendButton"
+        app:srcCompat="@drawable/do_not_send" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,13 +6,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import com.wkuxr.sunsketcher.R
-import com.wkuxr.sunsketcher.databinding.ActivityFinishedInfoDenyBinding
+import com.wkuxr.sunsketcher.databinding.ActivityFinishedCompleteBinding
 
-class FinishedInfoDenyActivity : AppCompatActivity() {
-    lateinit var binding: ActivityFinishedInfoDenyBinding
+class FinishedCompleteActivity : AppCompatActivity() {
+    lateinit var binding: ActivityFinishedCompleteBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityFinishedInfoDenyBinding.inflate(layoutInflater)
+        binding = ActivityFinishedCompleteBinding.inflate(layoutInflater)
         setContentView(binding.root)
     }
 

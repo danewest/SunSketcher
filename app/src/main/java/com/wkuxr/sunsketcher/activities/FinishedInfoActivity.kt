@@ -58,6 +58,10 @@ class FinishedInfoActivity : AppCompatActivity() {
         /*if(!prefs.getBoolean("DBIsDumped", false)) {
             dumpDBtoCSV()
         }*/
+
+        if (prefs.getBoolean("uploadSuccessful", false)) { //upload already finished
+            Intent(this, FinishedCompleteActivity::class.java)
+        }
     }
 
     override fun onResume() {
@@ -67,6 +71,10 @@ class FinishedInfoActivity : AppCompatActivity() {
         if(hasFinishedUpload){
             binding.uploadBtn.isEnabled = false
             binding.uploadBtn.text = "Your images have been uploaded successfully. You can now uninstall the SunSketcher app."
+        }
+
+        if (prefs.getBoolean("uploadSuccessful", false)) { //upload already finished
+            Intent(this, FinishedCompleteActivity::class.java)
         }
     }
 

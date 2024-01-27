@@ -115,52 +115,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/finishedInfoText" />
 
-    <TextView
-        android:id="@+id/infoText"
-        android:layout_width="308dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:text="Your images are scheduled to be uploaded to our server for analysis. Please allow up to a month for them to be uploaded, as we also have many other users to get to. Thank you for your contribution and patience!"
-        android:textColor="#FF7070"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <Button
-        android:id="@+id/uploadBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="88dp"
-        android:onClick="onUploadClick"
-        android:text="upload"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <!--
-    <TextView
-        android:id="@+id/testInfoText"
-        android:layout_width="333dp"
-        android:layout_height="115dp"
-        android:text="TEST INFO: The button below will start the upload scheduler foreground service if it is not already running. If it is already running, the button will be grayed out and disabled."
-        app:layout_constraintBottom_toTopOf="@+id/uploadBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
--->
-
-    <TextView
-        android:id="@+id/clientIDText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="ClientID"
-        android:textColor="#FF0000"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.044"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageView
         android:id="@+id/finishedInfoSciStarterButton"
         android:layout_width="wrap_content"
@@ -187,5 +141,52 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/finishedInfoSciStarterButton"
         app:srcCompat="@drawable/learn_more_button" />
+
+    <TextView
+        android:id="@+id/clientIDText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="ClientID"
+        android:textColor="#FF0000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/uploadBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:onClick="onUploadClick"
+        android:text="upload"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/infoText"
+        android:layout_width="308dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:text="Your images are scheduled to be uploaded to our server for analysis. Please allow up to a month for them to be uploaded, as we also have many other users to get to. Thank you for your contribution and patience!"
+        android:textColor="#FF7070"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <!--
+    <TextView
+        android:id="@+id/testInfoText"
+        android:layout_width="333dp"
+        android:layout_height="115dp"
+        android:text="TEST INFO: The button below will start the upload scheduler foreground service if it is not already running. If it is already running, the button will be grayed out and disabled."
+        app:layout_constraintBottom_toTopOf="@+id/uploadBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

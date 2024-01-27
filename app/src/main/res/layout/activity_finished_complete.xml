@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    tools:context=".activities.FinishedInfoDenyActivity">
+    tools:context=".activities.FinishedCompleteActivity">
 
     <ImageView
-        android:id="@+id/finishedInfoDenyBackgroundImage"
+        android:id="@+id/finishedCompleteBackgroundImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
@@ -20,7 +20,7 @@
         tools:layout_editor_absoluteY="384dp" />
 
     <ImageView
-        android:id="@+id/finishedInfoDenySunsketcherLogo"
+        android:id="@+id/finishedCompleteSunsketcherLogo"
         android:layout_width="244dp"
         android:layout_height="66dp"
         android:layout_marginTop="16dp"
@@ -33,42 +33,42 @@
         app:srcCompat="@drawable/sunsketcher" />
 
     <ImageView
-        android:id="@+id/finishedInfoDenyBackgroundShade"
+        android:id="@+id/finishedCompleteBackgroundShade"
         android:layout_width="match_parent"
         android:layout_height="670dp"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
         android:background="#DC000000"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/finishedInfoDenyBackgroundImage"
+        app:layout_constraintBottom_toBottomOf="@+id/finishedCompleteBackgroundImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/finishedInfoDenySunsketcherLogo"
+        app:layout_constraintTop_toBottomOf="@+id/finishedCompleteSunsketcherLogo"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
-        android:id="@+id/finishedInfoDenyTopLine"
+        android:id="@+id/finishedCompleteTopLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:background="#FFFFFF"
         android:contentDescription="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/finishedInfoDenyBackgroundShade" />
+        app:layout_constraintTop_toTopOf="@+id/finishedCompleteBackgroundShade" />
 
     <ImageView
-        android:id="@+id/finishedInfoDenyBottomLine"
+        android:id="@+id/finishedCompleteBottomLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:background="#FFFFFF"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/finishedInfoDenyBackgroundShade"
+        app:layout_constraintBottom_toBottomOf="@+id/finishedCompleteBackgroundShade"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/finishedInfoDenyTitleText"
+        android:id="@+id/finishedCompleteTitleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
@@ -80,30 +80,30 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/finishedInfoDenyBackgroundShade" />
+        app:layout_constraintTop_toTopOf="@+id/finishedCompleteBackgroundShade" />
 
     <TextView
-        android:id="@+id/finishedInfoDenyText"
+        android:id="@+id/finishedCompleteText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="24dp"
         android:fontFamily="@font/montserrat"
-        android:text="Your photos will not be sent for analysis.\n\nYou may now return your phone to its prior settings and uninstall the SunSketcher app!"
+        android:text="Your data has been received! Thank you for participating in SunSketcher! You can now delete the SunSketcher app."
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="24sp"
+        android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/finishedInfoDenyTitleText" />
+        app:layout_constraintTop_toBottomOf="@+id/finishedCompleteTitleText" />
 
     <TextView
-        android:id="@+id/finishedInfoDenySciStarterText"
+        android:id="@+id/finishedCompleteSciStarterText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="80dp"
         android:layout_marginEnd="24dp"
         android:fontFamily="@font/montserrat"
         android:text="Make it count! If you're a member of SciStarter, log your participation here to be included in #OneMillionActsofScience."
@@ -113,33 +113,33 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/finishedInfoDenyText" />
+        app:layout_constraintTop_toBottomOf="@+id/finishedCompleteText" />
 
     <ImageView
-        android:id="@+id/finishedInfoDenySciStarterButton"
+        android:id="@+id/finishedCompleteSciStarterButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="18dp"
         android:clickable="true"
         android:contentDescription="SciStarter Website Link"
         android:focusable="auto"
         android:onClick="onSciStarterClick"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/finishedInfoDenyBackgroundImage"
-        app:layout_constraintTop_toBottomOf="@+id/finishedInfoDenySciStarterText"
+        app:layout_constraintStart_toStartOf="@+id/finishedCompleteBackgroundImage"
+        app:layout_constraintTop_toBottomOf="@+id/finishedCompleteSciStarterText"
         app:srcCompat="@drawable/scistarter" />
 
     <ImageView
-        android:id="@+id/finishedInfoLearnMoreButton"
+        android:id="@+id/finishedCompleteLearnMoreButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="18dp"
         android:contentDescription="Learn more"
         android:onClick="onLearnMoreClick"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/finishedInfoDenySciStarterButton"
+        app:layout_constraintTop_toBottomOf="@+id/finishedCompleteSciStarterButton"
         app:srcCompat="@drawable/learn_more_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

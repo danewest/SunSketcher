@@ -20,6 +20,7 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.wkuxr.sunsketcher.App;
 import com.wkuxr.sunsketcher.R;
+import com.wkuxr.sunsketcher.activities.FinishedCompleteActivity;
 import com.wkuxr.sunsketcher.activities.FinishedInfoActivity;
 
 import java.io.IOException;
@@ -42,11 +43,14 @@ public class UploadScheduler extends Service {
         );
 
         //create the foreground service persistent notification
+        Intent finishedInfoIntent = new Intent(App.getContext(), FinishedInfoActivity.class);
+        PendingIntent pendingInProgressIntent = PendingIntent.getActivity(App.getContext(), 0, finishedInfoIntent, PendingIntent.FLAG_IMMUTABLE);
         getSystemService(NotificationManager.class).createNotificationChannel(channel);
         Notification.Builder notification = new Notification.Builder(this, CHANNELID)
                 .setContentText("Waiting to upload images, please do not force close.")
                 .setContentTitle("SunSketcher Upload Scheduler")
-                .setSmallIcon(R.drawable.ic_stat_name);
+                .setSmallIcon(R.drawable.ic_stat_name)
+                .setContentIntent(pendingInProgressIntent);
 
         //start the foreground service
         startForeground(1001, notification.build());
@@ -94,8 +98,8 @@ public class UploadScheduler extends Service {
 
                 //create a push notification that says that the user's images have been uploaded, and direct it to FinishedInfoActivity
                 createNotificationChannel();
-                Intent finishedInfoIntent = new Intent(App.getContext(), FinishedInfoActivity.class);
-                PendingIntent pendingIntent = PendingIntent.getActivity(App.getContext(), 0, finishedInfoIntent, PendingIntent.FLAG_IMMUTABLE);
+                Intent finishedCompleteIntent = new Intent(App.getContext(), FinishedCompleteActivity.class);
+                PendingIntent pendingIntent = PendingIntent.getActivity(App.getContext(), 0, finishedCompleteIntent, PendingIntent.FLAG_IMMUTABLE);
                 final Notification.Builder doneNotification = new Notification.Builder(this, "UploadInfo")
                         .setContentText("Your images have been uploaded! Feel free to delete the SunSketcher app.")
                         .setContentTitle("SunSketcher")
