@@ -31,7 +31,6 @@ import javax.crypto.spec.SecretKeySpec;
 public class IDRequest {
     public static boolean clientTransferSequence() throws Exception {
 
-        MetadataDB.Companion.createDB(App.getContext());
         Socket socket = new Socket("161.6.109.198", 443);
 
         //continue only if client is from the US
