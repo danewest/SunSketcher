@@ -5,6 +5,8 @@ import static com.wkuxr.sunsketcher.activities.MainActivity.singleton;
 import android.content.Context;
 import android.util.Log;
 
+import com.wkuxr.sunsketcher.App;
+
 import java.net.*;
 import java.io.*;
 
@@ -56,7 +58,7 @@ public class IDRequest {
         toServer.flush();
 
         String transferID = fromThreadManager.readLine();
-        singleton.getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE).edit().putLong("clientID", Long.parseLong(transferID)).apply();
+        App.getContext().getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE).edit().putLong("clientID", Long.parseLong(transferID)).apply();
 
         ssocket.close();
         Log.d("NetworkTransfer","Program Complete. Closing...");

@@ -57,10 +57,10 @@ class SendConfirmationActivity : AppCompatActivity() {
         var intent: Intent? = null
         when (hasConfirmDeny) {
             0 -> intent = Intent(this, FinishedInfoDenyActivity::class.java)
-            1 -> if (prefs.getBoolean("uploadSuccessful", false)) { //allowed upload and upload already finished
-                //intent = Intent(this, FinishedCompleteActivity::class.java)
+            1 -> intent = if (prefs.getBoolean("uploadSuccessful", false)) { //allowed upload and upload already finished
+                Intent(this, FinishedCompleteActivity::class.java)
             } else {
-                intent = Intent(this, FinishedInfoActivity::class.java)
+                Intent(this, FinishedInfoActivity::class.java)
             }
 
             else -> {}
@@ -69,7 +69,7 @@ class SendConfirmationActivity : AppCompatActivity() {
             this.startActivity(intent)
         }
 
-        if(!prefs.getBoolean("hasNotified", false)){
+        /*if(!prefs.getBoolean("hasNotified", false)){
             cameraProvider = ProcessCameraProvider.getInstance(this).get()
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
             val preview = Preview.Builder().build()
@@ -82,19 +82,19 @@ class SendConfirmationActivity : AppCompatActivity() {
             val cameraActivitySchedulerTask = TimeTask()
             timer = Timer()
             timer.schedule(cameraActivitySchedulerTask, 1000)
-        }
+        }*/
 
         displayImageList()
     }
 
-    private lateinit var timer: Timer
+    /*private lateinit var timer: Timer
 
     internal class TimeTask : TimerTask() {
         override fun run() {
             singleton.cam.cameraControl.enableTorch(false)
             singleton.cameraProvider.unbindAll()
         }
-    }
+    }*/
 
     override fun onResume() {
         super.onResume()
