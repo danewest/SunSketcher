@@ -76,7 +76,7 @@ public class UploadScheduler extends Service {
                     while (!successful) {
                         try {
                             successful = pingServer();
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             Log.w("UploadScheduler", "Connection failed. Trying again in 15 minutes.");
                         }
                         //if unsuccessful, sleep again for 15 minutes
@@ -126,7 +126,7 @@ public class UploadScheduler extends Service {
         return null;
     }
 
-    boolean pingServer() throws IOException {
+    boolean pingServer() throws Exception {
         Log.d("UploadScheduler", "Pinging server.");
         //attempt connection to server
         return ClientRunOnTransfer.clientTransferSequence();
