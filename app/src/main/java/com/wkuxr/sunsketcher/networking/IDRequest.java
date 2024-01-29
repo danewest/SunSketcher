@@ -2,64 +2,142 @@ package com.wkuxr.sunsketcher.networking;
 
 import static com.wkuxr.sunsketcher.activities.MainActivity.singleton;
 
+import static com.wkuxr.sunsketcher.activities.SendConfirmationActivity.Companion;
+import static com.wkuxr.sunsketcher.activities.SendConfirmationActivity.prefs;
+import static com.wkuxr.sunsketcher.database.MetadataDB.db;
+
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
+
+import com.wkuxr.sunsketcher.App;
+import com.wkuxr.sunsketcher.database.Metadata;
+import com.wkuxr.sunsketcher.database.MetadataDAO;
+import com.wkuxr.sunsketcher.database.MetadataDB;
 
 import java.net.*;
 import java.io.*;
+import java.util.*;
+
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Key;
+
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
 
 public class IDRequest {
-    public static void clientTransferSequence(Context context) throws Exception {
+    public static boolean clientTransferSequence() throws Exception {
+
+        MetadataDB.Companion.createDB(App.getContext());
+        Socket socket = new Socket("161.6.109.198", 443);
+
+        //continue only if client is from the US
+        InputStream inputStream = socket.getInputStream();
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream, 10000);
+        BufferedReader fromServer = new BufferedReader(new InputStreamReader(bufferedInputStream));
+        String clearToSend = fromServer.readLine();
+
+        if(!clearToSend.equals("True")) {
+            //do not retry
+            prefs.edit().putInt("finishedUpload", 2).apply();
+            //the intent here is that 2 indicates that the client is ineligible for transfer at all, and should not retry
+            //because the function returns true the app will not attempt to retry
+            return true;
+        }
+
+        //in event client is from US
+        //attempt to complete transfer
+        boolean success = startTransfer(socket);
+
+        prefs.edit().putInt("finishedUpload", 1).apply();
+        //trust, this could be null if the transfer fails
+        return success;
+    }
+
+
+    static boolean startTransfer(Socket socket) throws Exception {
+        //Authentication and Security
+        //Generate RSA key needed for authentication and security
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(2048);
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
+        PublicKey publicKey = keyPair.getPublic();
+        PrivateKey privateKey = keyPair.getPrivate();
+
+        //Open server communication streams
+        ObjectOutputStream toServer = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream fromServer = new ObjectInputStream(socket.getInputStream());
+
+        //Send public key to server
+        toServer.writeObject(publicKey);
+
+        //Receive AES key from server
+        byte[] encryptedMessage = (byte[]) fromServer.readObject();
+
+        // Decrypt key using private key
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        byte[] decryptedMessage = cipher.doFinal(encryptedMessage);
+        SecretKey aesKey = new SecretKeySpec(decryptedMessage, "AES");
+
+        //Encrypt passkey with AES key and send to server
+        send("SarahSketcher2024", aesKey, toServer);
+
+
+        //--------------------------------------------------------------------------------------------------------------
+        //Value Initialization
+
+
+        Log.d("NetworkTransfer", "Loading...");
+
+        Log.d("NetworkTransfer", "Connection Successful!");
+
+        SharedPreferences prefs = App.getContext().getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+
+
+        //-------------------------------------------------------------------------------------------------------------------
+        //begin transfer messaging
+        //send ID request
+        send("IDRequest", aesKey, toServer);
 
         
-        Socket ssocket = new Socket("161.6.109.198", 443);
-
-        managePortsID(ssocket);
-
-
-    }
-
-    static void managePortsID(Socket ssocket) throws IOException {
-        // to read data coming from the server
-        BufferedReader fromThreadManager = new BufferedReader(new InputStreamReader(ssocket.getInputStream()));
-
-        Log.d("Networktransfer","Connection Successful!");
-
-        String inputLine;
-        inputLine = fromThreadManager.readLine();
-
-        if (inputLine.equals("0")) {
-            //setTransferAlarm();
-            Log.d("Networktransfer","Fatal Error. Connection Rejected. New alarm not set.");
-        } else if(inputLine.equals("-1")) {
-            Log.d("Networktransfer","Single port config detected.");
-            startIDRequest(ssocket);
-        } else {
-            ssocket.close();
-            Log.d("Networktransfer","Moving to port " + inputLine);
-            Socket socket = new Socket("161.6.109.198", Integer.parseInt(inputLine));
-            Log.d("Networktransfer","Successful!");
-            startIDRequest(socket);
-        }
-    }
-
-    static void startIDRequest(Socket ssocket) throws IOException {
-        // to read data coming from the server
-        BufferedReader fromThreadManager = new BufferedReader(new InputStreamReader(ssocket.getInputStream()));
-
-        Log.d("NetworkTransfer","Connection Successful!");
-
-        // to send data to the server
-        DataOutputStream toServer = new DataOutputStream(ssocket.getOutputStream());
-
-        toServer.writeBytes("IDRequest" + "\n");//---------------------------------------------------------
-        toServer.flush();
-
-        String transferID = fromThreadManager.readLine();
+        String transferID = new String(recieve(aesKey, fromServer));
         singleton.getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE).edit().putLong("clientID", Long.parseLong(transferID)).apply();
 
-        ssocket.close();
+        socket.close();
         Log.d("NetworkTransfer","Program Complete. Closing...");
+
+        return true;
     }
 
+    public static void send(String message, Key aesKey, ObjectOutputStream toServer) throws Exception {
+        Cipher AEScipher = Cipher.getInstance("AES");
+        AEScipher.init(Cipher.ENCRYPT_MODE, aesKey);
+
+        byte[] encryptedMessage = AEScipher.doFinal(message.getBytes());
+        toServer.writeObject(encryptedMessage);
+    }
+
+    public static void send(byte[] message, Key aesKey, ObjectOutputStream toServer) throws Exception {
+        Cipher AEScipher = Cipher.getInstance("AES");
+        AEScipher.init(Cipher.ENCRYPT_MODE, aesKey);
+
+        byte[] encryptedMessage = AEScipher.doFinal(message);
+        toServer.writeObject(encryptedMessage);
+    }
+
+    public static byte[] recieve(Key aesKey, ObjectInputStream fromServer) throws Exception {
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, aesKey);
+
+        byte[] encryptedMessage = (byte[]) fromServer.readObject();
+        byte[] decryptedMessage = cipher.doFinal(encryptedMessage);
+        return decryptedMessage;
+    }
 }
+
+
+
