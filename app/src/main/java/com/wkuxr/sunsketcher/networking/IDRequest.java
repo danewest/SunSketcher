@@ -30,14 +30,16 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class IDRequest {
     public static boolean clientTransferSequence() throws Exception {
-
+        Log.d("NetworkTransfer", "Loading...");
         Socket socket = new Socket("161.6.109.198", 443);
 
         //continue only if client is from the US
         InputStream inputStream = socket.getInputStream();
         BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream, 10000);
         BufferedReader fromServer = new BufferedReader(new InputStreamReader(bufferedInputStream));
+        
         String clearToSend = fromServer.readLine();
+        Log.d("NetworkTransfer", "Clear to send recieved.");
 
         if(!clearToSend.equals("True")) {
             //do not retry
@@ -47,17 +49,20 @@ public class IDRequest {
             return true;
         }
 
+        Log.d("NetworkTransfer", "Clear to send is true.");
+
         //in event client is from US
         //attempt to complete transfer
         boolean success = startTransfer(socket);
 
-        prefs.edit().putInt("finishedUpload", 1).apply();
+        //prefs.edit().putInt("finishedUpload", 1).apply();
         //trust, this could be null if the transfer fails
         return success;
     }
 
 
     static boolean startTransfer(Socket socket) throws Exception {
+        Log.d("NetworkTransfer", "Starting ID request...");
         //Authentication and Security
         //Generate RSA key needed for authentication and security
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -69,12 +74,16 @@ public class IDRequest {
         //Open server communication streams
         ObjectOutputStream toServer = new ObjectOutputStream(socket.getOutputStream());
         ObjectInputStream fromServer = new ObjectInputStream(socket.getInputStream());
+        Log.d("NetworkTransfer", "Communication streams open");
 
         //Send public key to server
         toServer.writeObject(publicKey);
+        Log.d("NetworkTransfer", "Public key sent");
 
         //Receive AES key from server
         byte[] encryptedMessage = (byte[]) fromServer.readObject();
+
+        Log.d("NetworkTransfer", "Aes key recieved.");
 
         // Decrypt key using private key
         Cipher cipher = Cipher.getInstance("RSA");
@@ -86,11 +95,7 @@ public class IDRequest {
         send("SarahSketcher2024", aesKey, toServer);
 
 
-        //--------------------------------------------------------------------------------------------------------------
-        //Value Initialization
-
-
-        Log.d("NetworkTransfer", "Loading...");
+        
 
         Log.d("NetworkTransfer", "Connection Successful!");
 
