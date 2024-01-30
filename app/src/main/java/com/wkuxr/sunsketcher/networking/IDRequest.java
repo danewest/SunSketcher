@@ -37,9 +37,11 @@ public class IDRequest {
         BufferedReader fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         
         String clearToSend = fromServer.readLine();
-        Log.d("NetworkTransfer", "Clear to send recieved.");
 
-        if(!clearToSend.equals("True")) {
+        Log.d("NetworkTransfer", "Clear to send recieved.");
+        Log.d("NetworkTransfer", clearToSend);
+
+        if(!clearToSend.contains("True")) {
             //do not retry
             Log.d("NetworkTransfer", "Clear to send is false.");
             prefs.edit().putInt("finishedUpload", 2).apply();
