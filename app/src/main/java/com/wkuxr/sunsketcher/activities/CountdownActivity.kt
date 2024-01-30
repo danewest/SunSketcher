@@ -1,7 +1,6 @@
 package com.wkuxr.sunsketcher.activities
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -25,12 +24,15 @@ import java.util.Timer
 import java.util.TimerTask
 
 class CountdownActivity : AppCompatActivity() {
+    companion object {
+        lateinit var singleton: CountdownActivity
+    }
     lateinit var binding: ActivityCountdownBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCountdownBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        singleton = this
         var str = SpannableStringBuilder("Please turn your ringer ").bold{append("off")}.append(" and Do Not Disturb ").bold{append("on!")}
         binding.countdownInfoText.text = str
 
@@ -40,7 +42,6 @@ class CountdownActivity : AppCompatActivity() {
 
     }
 
-    //TODO: make countdown functionality
     var timer: Timer? = null
 
     private fun getLocation() {
@@ -144,7 +145,7 @@ class CountdownActivity : AppCompatActivity() {
 
     //TimerTask subclass that opens the CameraActivity at the specified time
     internal class TimeTask : TimerTask() {
-        var context: Context = MainActivity.singleton
+        var context: Context = singleton
 
         override fun run() {
             val intent = Intent(context, CameraActivity::class.java)

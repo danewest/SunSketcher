@@ -12,11 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.Camera
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wkuxr.sunsketcher.R
@@ -26,8 +21,6 @@ import com.wkuxr.sunsketcher.database.MetadataDB.Companion.db
 import com.wkuxr.sunsketcher.databinding.ActivitySendConfirmationBinding
 import com.wkuxr.sunsketcher.networking.UploadScheduler
 import java.io.File
-import java.util.Timer
-import java.util.TimerTask
 
 
 class SendConfirmationActivity : AppCompatActivity() {
@@ -38,10 +31,6 @@ class SendConfirmationActivity : AppCompatActivity() {
         lateinit var prefs: SharedPreferences
         lateinit var singleton: SendConfirmationActivity
     }
-
-
-    lateinit var cameraProvider: ProcessCameraProvider
-    private lateinit var cam: Camera
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,32 +58,8 @@ class SendConfirmationActivity : AppCompatActivity() {
             this.startActivity(intent)
         }
 
-        /*if(!prefs.getBoolean("hasNotified", false)){
-            cameraProvider = ProcessCameraProvider.getInstance(this).get()
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-            val preview = Preview.Builder().build()
-            cam = cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, preview)
-
-            if (cam.cameraInfo.hasFlashUnit()) {
-                cam.cameraControl.enableTorch(true) // or false
-            }
-
-            val cameraActivitySchedulerTask = TimeTask()
-            timer = Timer()
-            timer.schedule(cameraActivitySchedulerTask, 1000)
-        }*/
-
         displayImageList()
     }
-
-    /*private lateinit var timer: Timer
-
-    internal class TimeTask : TimerTask() {
-        override fun run() {
-            singleton.cam.cameraControl.enableTorch(false)
-            singleton.cameraProvider.unbindAll()
-        }
-    }*/
 
     override fun onResume() {
         super.onResume()
