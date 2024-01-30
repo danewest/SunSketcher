@@ -41,6 +41,7 @@ public class IDRequest {
 
         if(!clearToSend.equals("True")) {
             //do not retry
+            Log.d("NetworkTransfer", "Clear to send is false.");
             prefs.edit().putInt("finishedUpload", 2).apply();
             //the intent here is that 2 indicates that the client is ineligible for transfer at all, and should not retry
             //because the function returns true the app will not attempt to retry
