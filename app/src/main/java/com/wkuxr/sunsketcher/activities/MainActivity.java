@@ -20,6 +20,7 @@ import com.wkuxr.sunsketcher.App;
 import com.wkuxr.sunsketcher.location.LocationAccess;
 import com.wkuxr.sunsketcher.location.Sunset;
 import com.wkuxr.sunsketcher.databinding.ActivityMainBinding;
+import com.wkuxr.sunsketcher.networking.IDRequest;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -63,22 +64,20 @@ public class MainActivity extends AppCompatActivity {
             this.startActivity(intent);
         }
 
-        //long clientID = prefs.getLong("clientID", -1);
+        long clientID = prefs.getLong("clientID", -1);
         //if the app has not yet gotten a clientID from the server, get one
-        /*if(clientID == -1){
+        if(clientID == -1){
             //connect to server to get ID and upload time
             Thread idTimeThread = new Thread(() -> {
                 try {
-                    IDRequest.clientTransferSequence(App.getContext());
+                    IDRequest.clientTransferSequence();
                     Log.d("ClientID", "ClientID: " + prefs.getLong("clientID", -1));
-                    long clientIDNew = prefs.getLong("clientID", -1);
-                    runOnUiThread(() -> binding.clientIDText.setText("ClientID: " + clientIDNew));
                 } catch (Exception e) {
                     Log.e("ClientID", "Could not connect to server to obtain client ID.");
                 }
             });
             idTimeThread.start();
-        }*/
+        }
         //binding.clientIDText.setText("ClientID: " + clientID);
     }
 
