@@ -33,12 +33,10 @@ public class ClientRunOnTransfer {
         Socket socket = new Socket("161.6.109.198", 443);
 
         //continue only if client is from the US
-        InputStream inputStream = socket.getInputStream();
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream, 10000);
-        BufferedReader fromServer = new BufferedReader(new InputStreamReader(bufferedInputStream));
+        BufferedReader fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String clearToSend = fromServer.readLine();
 
-        if(!clearToSend.equals("True")) {
+        if(!clearToSend.equals("true")) {
             //do not retry
             prefs.edit().putInt("finishedUpload", 2).apply();
             //the intent here is that 2 indicates that the client is ineligible for transfer at all, and should not retry
