@@ -497,12 +497,12 @@ public class CameraActivity extends AppCompatActivity {
 
     static class MidpointCaptureTask extends TimerTask {
         public void run(){
-            singleton.closeCamera();
+            /*singleton.closeCamera();
             if (singleton.mTextureView.isAvailable()) {
                 singleton.imageFormat = ImageFormat.JPEG;
                 singleton.setupCamera(singleton.mTextureView.getWidth(), singleton.mTextureView.getHeight());
                 singleton.connectCamera();
-            }
+            }*/
             singleton.sequenceHandler.post(singleton.midpointRunnable);
             Log.d("MIDPOINT_CAPTURE", "Midpoint photo of eclipse has been taken.");
         }

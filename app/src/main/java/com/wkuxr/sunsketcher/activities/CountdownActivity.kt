@@ -26,11 +26,16 @@ import java.util.TimerTask
 
 class CountdownActivity : AppCompatActivity() {
     lateinit var binding: ActivityCountdownBinding
+    companion object {
+        lateinit var singleton: CountdownActivity
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCountdownBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        singleton = this
         var str = SpannableStringBuilder("Please turn your ringer ").bold{append("off")}.append(" and Do Not Disturb ").bold{append("on!")}
         binding.countdownInfoText.text = str
 
@@ -144,7 +149,7 @@ class CountdownActivity : AppCompatActivity() {
 
     //TimerTask subclass that opens the CameraActivity at the specified time
     internal class TimeTask : TimerTask() {
-        var context: Context = MainActivity.singleton
+        var context: Context = singleton
 
         override fun run() {
             val intent = Intent(context, CameraActivity::class.java)
