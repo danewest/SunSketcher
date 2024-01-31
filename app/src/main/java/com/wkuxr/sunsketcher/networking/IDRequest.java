@@ -67,7 +67,6 @@ public class IDRequest {
         //Authentication and Security
         //Generate RSA key needed for authentication and security
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, ANDROID_KEYSTORE);
-            Log.d("NetworkTransfer", "checkpoint 1");
 
         keyPairGenerator.initialize(2048);
             Log.d("NetworkTransfer", "Key Generator Initialized");
@@ -79,9 +78,15 @@ public class IDRequest {
         PrivateKey privateKey = keyPair.getPrivate();
             Log.d("NetworkTransfer", "keys initialized");
 
+        OutputStream ops = socket.getOutputStream();
+        Log.d("NetworkTransfer", "checkpoint 1");
+
+        InputStream ips = socket.getInputStream();
+        Log.d("NetworkTransfer", "checkpoint ");
+
         //Open server communication streams
-        ObjectOutputStream toServer = new ObjectOutputStream(socket.getOutputStream());
-        ObjectInputStream fromServer = new ObjectInputStream(socket.getInputStream());
+        ObjectOutputStream toServer = new ObjectOutputStream(ops);
+        ObjectInputStream fromServer = new ObjectInputStream(ips);
         Log.d("NetworkTransfer", "Communication streams open");
 
         //Send public key to server
