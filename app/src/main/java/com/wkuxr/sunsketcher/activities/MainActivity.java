@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("ClientID", "ClientID: " + prefs.getLong("clientID", -1));
                 } catch (Exception e) {
                     Log.e("ClientID", "Could not connect to server to obtain client ID.");
+                    e.printStackTrace();
                 }
             });
             idTimeThread.start();
