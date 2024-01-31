@@ -67,7 +67,7 @@ public class IDRequest {
         Log.d("NetworkTransfer", "Starting ID request...");
         //Authentication and Security
         //Generate RSA key needed for authentication and security
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA);
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");//KeyProperties.KEY_ALGORITHM_RSA);
 
         keyPairGenerator.initialize(2048);
             Log.d("NetworkTransfer", "Key Generator Initialized");
