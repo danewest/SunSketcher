@@ -86,19 +86,17 @@ public class IDRequest {
         Log.d("NetworkTransfer", "checkpoint 2");
 
         //Open server communication streams
-        try{
         ObjectOutputStream toServer = new ObjectOutputStream(ops);
         Log.d("NetworkTransfer", "checkpoint 3");
         toServer.flush();
         Log.d("NetworkTransfer", "checkpoint 4");
         ObjectInputStream fromServer = new ObjectInputStream(ips);
         Log.d("NetworkTransfer", "Communication streams open");
-        } catch (Exception e) {
-            Log.d("NetworkTransfer", "it broken :(");
-        }
 
         //Send public key to server
-        toServer.writeObject(publicKey);
+        Base64.Encoder encoder = Base64.getEncoder();
+        String publicKeyString = new String(encoder.encode(publicKey.getEncoded()));
+        toServer.writeObject(publicKeyString);
         Log.d("NetworkTransfer", "Public key sent");
 
         //Receive AES key from server
