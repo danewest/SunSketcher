@@ -8,6 +8,7 @@ import static com.wkuxr.sunsketcher.database.MetadataDB.db;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.security.keystore.KeyProperties;
 import android.util.Log;
 
 import com.wkuxr.sunsketcher.App;
