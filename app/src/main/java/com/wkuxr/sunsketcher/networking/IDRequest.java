@@ -68,9 +68,12 @@ public class IDRequest {
         //Generate RSA key needed for authentication and security
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
+        Log.d("NetworkTransfer", "Key Generator Initialized");
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
+        Log.d("NetworkTransfer", "Generating Keys");
         PublicKey publicKey = keyPair.getPublic();
         PrivateKey privateKey = keyPair.getPrivate();
+        Log.d("NetworkTransfer", "Keys Generated");
 
         //Open server communication streams
         ObjectOutputStream toServer = new ObjectOutputStream(socket.getOutputStream());
