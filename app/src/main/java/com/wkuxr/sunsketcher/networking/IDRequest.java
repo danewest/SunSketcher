@@ -83,11 +83,14 @@ public class IDRequest {
         Log.d("NetworkTransfer", "checkpoint 1");
 
         InputStream ips = socket.getInputStream();
-        Log.d("NetworkTransfer", "checkpoint ");
+        Log.d("NetworkTransfer", "checkpoint 2");
 
         //Open server communication streams
         try{
         ObjectOutputStream toServer = new ObjectOutputStream(ops);
+        Log.d("NetworkTransfer", "checkpoint 3");
+        toServer.flush();
+        Log.d("NetworkTransfer", "checkpoint 4");
         ObjectInputStream fromServer = new ObjectInputStream(ips);
         Log.d("NetworkTransfer", "Communication streams open");
         } catch (Exception e) {
