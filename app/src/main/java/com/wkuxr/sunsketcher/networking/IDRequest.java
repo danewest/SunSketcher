@@ -41,7 +41,7 @@ public class IDRequest {
         Log.d("NetworkTransfer", "Clear to send recieved.");
         Log.d("NetworkTransfer", clearToSend);
 
-        if(!clearToSend.contains("True")) {
+        if(!clearToSend.contains("true")) {
             //do not retry
             Log.d("NetworkTransfer", "Clear to send is false.");
             prefs.edit().putInt("finishedUpload", 2).apply();
