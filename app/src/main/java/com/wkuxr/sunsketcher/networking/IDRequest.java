@@ -8,6 +8,7 @@ import static com.wkuxr.sunsketcher.database.MetadataDB.db;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.security.keystore.KeyProperties;
 import android.util.Log;
 
 import com.wkuxr.sunsketcher.App;
@@ -66,7 +67,8 @@ public class IDRequest {
         Log.d("NetworkTransfer", "Starting ID request...");
         //Authentication and Security
         //Generate RSA key needed for authentication and security
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, ANDROID_KEYSTORE);
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA);
+        Log.d("NetworkTransfer", "checkpoint 1");
 
         keyPairGenerator.initialize(2048);
             Log.d("NetworkTransfer", "Key Generator Initialized");

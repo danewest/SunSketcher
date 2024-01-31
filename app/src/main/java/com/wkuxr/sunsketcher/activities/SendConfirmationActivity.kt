@@ -14,6 +14,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.wkuxr.sunsketcher.App
 import com.wkuxr.sunsketcher.R
 import com.wkuxr.sunsketcher.database.Metadata
 import com.wkuxr.sunsketcher.database.MetadataDB.Companion.createDB
@@ -87,12 +88,12 @@ class SendConfirmationActivity : AppCompatActivity() {
     fun onClick(v: View) {
         val intent: Intent = if (v.id == binding.sendConfirmationYesBtn.id) {
             prefs.edit().putInt("upload", 1).apply()
-            /*if(!foregroundServiceRunning()) { //TODO: add for actual releases
+            if(!foregroundServiceRunning()) { //TODO: add for actual releases
                 if(App.getContext() == null)
                     App.setContext(this)
                 val uploadSchedulerIntent = Intent(this, UploadScheduler::class.java)
                 startService(uploadSchedulerIntent)
-            }*/
+            }
             Intent(this, FinishedInfoActivity::class.java)
         } else {
             Intent(this, UploadDenyConfirmationActivity::class.java)
