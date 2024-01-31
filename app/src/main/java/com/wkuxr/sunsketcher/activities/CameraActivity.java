@@ -20,6 +20,7 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.RggbChannelVector;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.hardware.camera2.DngCreator;
+import android.media.ExifInterface;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
@@ -30,6 +31,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 import android.util.Range;
+import android.util.Rational;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
@@ -497,13 +499,13 @@ public class CameraActivity extends AppCompatActivity {
 
     static class MidpointCaptureTask extends TimerTask {
         public void run(){
-            singleton.closeCamera();
+            /*singleton.closeCamera();
             if (singleton.mTextureView.isAvailable()) {
                 singleton.imageFormat = ImageFormat.JPEG;
                 singleton.setupCamera(singleton.mTextureView.getWidth(), singleton.mTextureView.getHeight());
                 singleton.connectCamera();
             }
-            singleton.sequenceHandler.post(singleton.midpointRunnable);
+            singleton.sequenceHandler.post(singleton.midpointRunnable);*/
             Log.d("MIDPOINT_CAPTURE", "Midpoint photo of eclipse has been taken.");
         }
     }
@@ -868,11 +870,12 @@ public class CameraActivity extends AppCompatActivity {
 
         //String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()); // also saves a timestamp which we can use to
         // create metadata files. Additionally, saves some weird number to the end of the filename. Not sure how to prevent that.
-        String prepend = "IMAGE_" + timestamp + "_";
+        String prepend = "IMAGE_" + timestamp;
         //File imageFile = File.createTempFile(prepend, ".jpg", mImageFolder);
         File imageFile = new File(mImageFolder, prepend + ".jpg");
         mImageFileName = imageFile.getAbsolutePath();
-        db.addMetadata(new Metadata(mImageFileName, (double)lat, (double)lon, (double)alt, timestampLong));
+
+        db.addMetadata(new Metadata(mImageFileName, (double)lat, (double)lon, (double)alt, timestampLong, 0, 0, 0, 0, ""));
     }
 
     private void lockFocus() {

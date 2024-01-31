@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
+import android.media.ExifInterface
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -100,8 +101,10 @@ class SendConfirmationActivity : AppCompatActivity() {
     }
 
     fun cropImages(){
+        System.loadLibrary("opencv_java4")
+
         // initialize database as an object
-        val db : MetadataDB = MetadataDB.createDB(this)
+        val db : MetadataDB = createDB(this)
 
         // get list of all rows (user's images) in metadata
         val metadataList : List<Metadata> = db.getMetadata()
@@ -149,8 +152,24 @@ class SendConfirmationActivity : AppCompatActivity() {
                     // write the cropped image to the cropped image file
                     Imgcodecs.imwrite(imgCroppedFile.absolutePath, imgMatCropped)
 
+                    val exif = ExifInterface(imgOriginal.absolutePath)
+                    var fstop = exif.getAttribute(ExifInterface.TAG_F_NUMBER)?.toDouble()
+                    val iso = Integer.parseInt(exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS))
+                    val whiteBalance = Integer.parseInt(exif.getAttribute(ExifInterface.TAG_WHITE_BALANCE))
+                    var exposure = exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME)?.toDouble()
+                    var focalDistance = exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
+
+                    if (fstop == null){
+                        fstop = 0.0
+                    }
+                    if (exposure == null){
+                        exposure = 0.0
+                    }
+                    if (focalDistance == null){
+                        focalDistance = ""
+                    }
                     // save crop img file path to img metadata in database
-                    db.updateRowFilepath(metadataRow.id, imgCroppedFile.absolutePath)
+                    db.updateRowFilepath(metadataRow.id, imgCroppedFile.absolutePath, fstop, iso, whiteBalance, exposure, focalDistance)
 
 
                 } else {
