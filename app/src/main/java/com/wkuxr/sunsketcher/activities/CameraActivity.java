@@ -493,7 +493,7 @@ public class CameraActivity extends AppCompatActivity {
     Runnable midpointRunnable = new Runnable(){
         @Override
         public void run(){
-            startStillCaptureRequest();
+            startStillCaptureRequest(10000000);
         }
     };
 
@@ -504,8 +504,8 @@ public class CameraActivity extends AppCompatActivity {
                 singleton.imageFormat = ImageFormat.JPEG;
                 singleton.setupCamera(singleton.mTextureView.getWidth(), singleton.mTextureView.getHeight());
                 singleton.connectCamera();
-            }
-            singleton.sequenceHandler.post(singleton.midpointRunnable);*/
+            }*/
+            singleton.sequenceHandler.post(singleton.midpointRunnable);
             Log.d("MIDPOINT_CAPTURE", "Midpoint photo of eclipse has been taken.");
         }
     }
@@ -563,6 +563,8 @@ public class CameraActivity extends AppCompatActivity {
     int imageFormat = ImageFormat.JPEG;
 
     CameraManager cameraManager;
+
+    float hyperfocus;
 
     @SuppressWarnings("SuspiciousNameCombination")
     private void setupCamera(int width, int height) {
@@ -628,6 +630,10 @@ public class CameraActivity extends AppCompatActivity {
             mImageReader = ImageReader.newInstance(mImageSize.getWidth(), mImageSize.getHeight(), imageFormat, 1);
             mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
             mCameraId = currentLarge;
+            CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(mCameraId);
+            hyperfocus = characteristics.get(CameraCharacteristics.LENS_INFO_HYPERFOCAL_DISTANCE);
+
+            Log.d("CameraSetting", "Hyperfocus: " + hyperfocus);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -706,7 +712,7 @@ public class CameraActivity extends AppCompatActivity {
                 mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE, CaptureRequest.COLOR_CORRECTION_MODE_TRANSFORM_MATRIX);
                 mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, colorTemperature(2000));
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
-                mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, 0.0f);
+                mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, hyperfocus);
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, 64);  // 63 ISO
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, exposureTime);
                 mCaptureRequestBuilder.set(CaptureRequest.JPEG_QUALITY, (byte)100);
