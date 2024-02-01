@@ -106,10 +106,13 @@ public class IDRequest {
 
         // Decrypt key using private key
         Cipher cipher = Cipher.getInstance("RSA");
+        Log.d("NetworkTransfer", "Cipher created");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        Log.d("NetworkTransfer", "cipher initialized");
         byte[] decryptedMessage = cipher.doFinal(encryptedMessage);
+        Log.d("NetworkTransfer", "key decrypted");
         SecretKey aesKey = new SecretKeySpec(decryptedMessage, "AES");
-
+        Log.d("NetworkTransfer", "Aes key aquired");
         //Encrypt passkey with AES key and send to server
         send("SarahSketcher2024", aesKey, toServer);
 
