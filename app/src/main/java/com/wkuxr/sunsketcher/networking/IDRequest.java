@@ -32,7 +32,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class IDRequest {
     public static boolean clientTransferSequence() throws Exception {
         Log.d("NetworkTransfer", "Loading...");
-        Socket socket = new Socket("161.6.109.198", 3306);
+        Socket socket = new Socket("161.6.109.198", 443);
 
         //continue only if client is from the US
         BufferedReader fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -79,40 +79,60 @@ public class IDRequest {
         PrivateKey privateKey = keyPair.getPrivate();
             Log.d("NetworkTransfer", "keys initialized");
 
-        OutputStream ops = socket.getOutputStream();
+        //OutputStream ops = socket.getOutputStream();
+        BufferedReader fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         Log.d("NetworkTransfer", "checkpoint 1");
 
-        InputStream ips = socket.getInputStream();
+        DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
+        //toServer.flush();
+        //InputStream ips = socket.getInputStream();
+        
         Log.d("NetworkTransfer", "checkpoint 2");
 
-        //Open server communication streams
-        ObjectOutputStream toServer = new ObjectOutputStream(ops);
-        Log.d("NetworkTransfer", "checkpoint 3");
-        toServer.flush();
-        Log.d("NetworkTransfer", "checkpoint 4");
-        ObjectInputStream fromServer = new ObjectInputStream(ips);
-        Log.d("NetworkTransfer", "Communication streams open");
+        
 
+        //Open server communication streams
+        
+        //ObjectOutputStream toServer = new ObjectOutputStream(ops);
+        
+        
+        //Log.d("NetworkTransfer", "checkpoint 4");
+        //ObjectInputStream fromServer = new ObjectInputStream(ips);
+        Log.d("NetworkTransfer", "Communication streams open");
+        
         //Send public key to server
         Base64.Encoder encoder = Base64.getEncoder();
         String publicKeyString = new String(encoder.encode(publicKey.getEncoded()));
+        Log.d("NetworkTransfer", "checkpoint 3");
         toServer.writeObject(publicKeyString);
         Log.d("NetworkTransfer", "Public key sent");
 
         //Receive AES key from server
-        byte[] encryptedMessage = (byte[]) fromServer.readObject();
+        byte[] encryptedMessage = (byte[]) fromServer.readLine();
+
+
+        byte[] decodedBytes = Base64.getDecoder().decode(encryptedMessage);
+
+        
+        encryptedMessage = cipher.doFinal(decodedBytes);
+
+
+
+
+
+
 
         Log.d("NetworkTransfer", "Aes key recieved.");
 
         // Decrypt key using private key
         Cipher cipher = Cipher.getInstance("RSA");
-        Log.d("NetworkTransfer", "Cipher created");
+            Log.d("NetworkTransfer", "Cipher created");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        Log.d("NetworkTransfer", "cipher initialized");
+            Log.d("NetworkTransfer", "cipher initialized");
         byte[] decryptedMessage = cipher.doFinal(encryptedMessage);
-        Log.d("NetworkTransfer", "key decrypted");
+            Log.d("NetworkTransfer", "key decrypted");
         SecretKey aesKey = new SecretKeySpec(decryptedMessage, "AES");
-        Log.d("NetworkTransfer", "Aes key aquired");
+            Log.d("NetworkTransfer", "Aes key aquired");
         //Encrypt passkey with AES key and send to server
         send("SarahSketcher2024", aesKey, toServer);
 
@@ -139,30 +159,81 @@ public class IDRequest {
         return true;
     }
 
-    public static void send(String message, Key aesKey, ObjectOutputStream toServer) throws Exception {
+
+
+
+
+
+
+
+    public static void send(String message, Key aesKey, DataOutputStream toServer) throws Exception {
         Cipher AEScipher = Cipher.getInstance("AES");
         AEScipher.init(Cipher.ENCRYPT_MODE, aesKey);
-
+        
         byte[] encryptedMessage = AEScipher.doFinal(message.getBytes());
-        toServer.writeObject(encryptedMessage);
+
+        Base64.Encoder encoder = Base64.getEncoder();
+        String encryptedEncodedMessage = new String(encoder.encodeToString(encryptedMessage));
+
+        toClient.writeBytes(encryptedEncodedMessage + '\n');
+        toClient.flush();
     }
 
-    public static void send(byte[] message, Key aesKey, ObjectOutputStream toServer) throws Exception {
+    public static void send(byte[] message, Key aesKey, DataOutputStream toServer) throws Exception {
         Cipher AEScipher = Cipher.getInstance("AES");
         AEScipher.init(Cipher.ENCRYPT_MODE, aesKey);
-
+        
         byte[] encryptedMessage = AEScipher.doFinal(message);
-        toServer.writeObject(encryptedMessage);
+
+        Base64.Encoder encoder = Base64.getEncoder();
+        String encryptedEncodedMessage = new String(encoder.encodeToString(encryptedMessage));
+
+        toClient.writeBytes(encryptedEncodedMessage + '\n');
+        toClient.flush();
     }
 
-    public static byte[] recieve(Key aesKey, ObjectInputStream fromServer) throws Exception {
+    public static byte[] recieveBytes(BufferedReader fromServer) throws Exception {
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, aesKey);
 
-        byte[] encryptedMessage = (byte[]) fromServer.readObject();
-        byte[] decryptedMessage = cipher.doFinal(encryptedMessage);
+        String encryptedEncodedMessage = fromClient.readLine();//check to make sure no included \n character 
+        
+        byte[] decodedBytes = Base64.getDecoder().decode(encryptedEncodedMessage);
+
+        byte[] decryptedMessage;
+        decryptedMessage = cipher.doFinal(decodedBytes);
         return decryptedMessage;
     }
+
+    public static String recieve(BufferedReader fromServer) throws Exception {
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, aesKey);
+
+        String encryptedEncodedMessage = fromClient.readLine();//check to make sure no included \n character 
+        
+        byte[] decodedBytes = Base64.getDecoder().decode(encryptedEncodedMessage);
+
+        byte[] decryptedMessage;
+        decryptedMessage = cipher.doFinal(decodedBytes);
+        return new String(decryptedMessage);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 
