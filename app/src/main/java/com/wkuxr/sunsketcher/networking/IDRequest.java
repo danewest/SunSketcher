@@ -32,7 +32,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class IDRequest {
     public static boolean clientTransferSequence() throws Exception {
         Log.d("NetworkTransfer", "Loading...");
-        Socket socket = new Socket("161.6.109.198", 443);
+        Socket socket = new Socket("161.6.109.198", 3306);
 
         //continue only if client is from the US
         BufferedReader fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
