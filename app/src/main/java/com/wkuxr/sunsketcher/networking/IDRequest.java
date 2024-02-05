@@ -114,7 +114,7 @@ public class IDRequest {
         byte[] decodedBytes = Base64.getDecoder().decode(encryptedMessage);
 
         
-        encryptedMessage = cipher.doFinal(decodedBytes);
+
 
 
 
@@ -129,7 +129,7 @@ public class IDRequest {
             Log.d("NetworkTransfer", "Cipher created");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
             Log.d("NetworkTransfer", "cipher initialized");
-        byte[] decryptedMessage = cipher.doFinal(encryptedMessage);
+        byte[] decryptedMessage = cipher.doFinal(decodedBytes);
             Log.d("NetworkTransfer", "key decrypted");
         SecretKey aesKey = new SecretKeySpec(decryptedMessage, "AES");
             Log.d("NetworkTransfer", "Aes key aquired");
@@ -175,8 +175,8 @@ public class IDRequest {
         Base64.Encoder encoder = Base64.getEncoder();
         String encryptedEncodedMessage = new String(encoder.encodeToString(encryptedMessage));
 
-        toClient.writeBytes(encryptedEncodedMessage + '\n');
-        toClient.flush();
+        toServer.writeBytes(encryptedEncodedMessage + '\n');
+        toServer.flush();
     }
 
     public static void send(byte[] message, Key aesKey, DataOutputStream toServer) throws Exception {
@@ -188,15 +188,15 @@ public class IDRequest {
         Base64.Encoder encoder = Base64.getEncoder();
         String encryptedEncodedMessage = new String(encoder.encodeToString(encryptedMessage));
 
-        toClient.writeBytes(encryptedEncodedMessage + '\n');
-        toClient.flush();
+        toServer.writeBytes(encryptedEncodedMessage + '\n');
+        toServer.flush();
     }
 
-    public static byte[] recieveBytes(BufferedReader fromServer) throws Exception {
+    public static byte[] recieveBytes(Key aesKey, BufferedReader fromServer) throws Exception {
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, aesKey);
 
-        String encryptedEncodedMessage = fromClient.readLine();//check to make sure no included \n character 
+        String encryptedEncodedMessage = fromServer.readLine();//check to make sure no included \n character
         
         byte[] decodedBytes = Base64.getDecoder().decode(encryptedEncodedMessage);
 
@@ -205,11 +205,11 @@ public class IDRequest {
         return decryptedMessage;
     }
 
-    public static String recieve(BufferedReader fromServer) throws Exception {
+    public static String recieve(Key aesKey, BufferedReader fromServer) throws Exception {
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, aesKey);
 
-        String encryptedEncodedMessage = fromClient.readLine();//check to make sure no included \n character 
+        String encryptedEncodedMessage = fromServer.readLine();//check to make sure no included \n character
         
         byte[] decodedBytes = Base64.getDecoder().decode(encryptedEncodedMessage);
 
