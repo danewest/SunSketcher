@@ -104,11 +104,11 @@ public class IDRequest {
         Base64.Encoder encoder = Base64.getEncoder();
         String publicKeyString = new String(encoder.encode(publicKey.getEncoded()));
         Log.d("NetworkTransfer", "checkpoint 3");
-        toServer.writeObject(publicKeyString);
+        toServer.writeBytes(publicKeyString);
         Log.d("NetworkTransfer", "Public key sent");
 
         //Receive AES key from server
-        byte[] encryptedMessage = (byte[]) fromServer.readLine();
+        String encryptedMessage = fromServer.readLine();
 
 
         byte[] decodedBytes = Base64.getDecoder().decode(encryptedMessage);
