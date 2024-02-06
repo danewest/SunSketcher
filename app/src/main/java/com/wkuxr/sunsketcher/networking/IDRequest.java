@@ -32,7 +32,9 @@ import javax.crypto.spec.SecretKeySpec;
 public class IDRequest {
     public static boolean clientTransferSequence() throws Exception {
         Log.d("NetworkTransfer", "Loading...");
+        Log.d("NetworkTransfer", "Checkpoint 0");
         Socket socket = new Socket("161.6.109.198", 443);
+        Log.d("NetworkTransfer", "Created Socket");
 
         //continue only if client is from the US
         BufferedReader fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -104,23 +106,20 @@ public class IDRequest {
         Base64.Encoder encoder = Base64.getEncoder();
         String publicKeyString = new String(encoder.encode(publicKey.getEncoded()));
         Log.d("NetworkTransfer", "checkpoint 3");
-        toServer.writeBytes(publicKeyString);
+        Log.d("NetworkTransfer", publicKeyString);
+        toServer.writeBytes(publicKeyString + '\n');
+        toServer.flush();
         Log.d("NetworkTransfer", "Public key sent");
 
         //Receive AES key from server
         String encryptedMessage = fromServer.readLine();
 
+        Log.d("NetworkTransfer", encryptedMessage);
+
 
         byte[] decodedBytes = Base64.getDecoder().decode(encryptedMessage);
 
         
-
-
-
-
-
-
-
 
         Log.d("NetworkTransfer", "Aes key recieved.");
 
@@ -151,7 +150,7 @@ public class IDRequest {
 
         
         String transferID = new String(recieve(aesKey, fromServer));
-        singleton.getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE).edit().putLong("clientID", Long.parseLong(transferID)).apply();
+        //singleton.getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE).edit().putLong("clientID", Long.parseLong(transferID)).apply();
 
         socket.close();
         Log.d("NetworkTransfer","Program Complete. Closing...");
