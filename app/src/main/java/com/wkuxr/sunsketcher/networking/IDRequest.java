@@ -3,7 +3,6 @@ package com.wkuxr.sunsketcher.networking;
 import static com.wkuxr.sunsketcher.activities.MainActivity.singleton;
 
 import static com.wkuxr.sunsketcher.activities.SendConfirmationActivity.Companion;
-import static com.wkuxr.sunsketcher.activities.SendConfirmationActivity.prefs;
 import static com.wkuxr.sunsketcher.database.MetadataDB.db;
 
 import android.content.Context;
@@ -30,7 +29,9 @@ import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 
 public class IDRequest {
+    static SharedPreferences prefs;
     public static boolean clientTransferSequence() throws Exception {
+        prefs = App.getContext().getSharedPreferences("eclipseDetails",Context.MODE_PRIVATE);
         Log.d("NetworkTransfer", "Loading...");
         Log.d("NetworkTransfer", "Checkpoint 0");
         Socket socket = new Socket("161.6.109.198", 443);

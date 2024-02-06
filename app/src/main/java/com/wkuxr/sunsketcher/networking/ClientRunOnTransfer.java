@@ -1,7 +1,6 @@
 package com.wkuxr.sunsketcher.networking;
 
 import static com.wkuxr.sunsketcher.activities.SendConfirmationActivity.Companion;
-import static com.wkuxr.sunsketcher.activities.SendConfirmationActivity.prefs;
 import static com.wkuxr.sunsketcher.database.MetadataDB.db;
 
 import android.content.Context;
@@ -27,7 +26,9 @@ import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 
 public class ClientRunOnTransfer {
+    static SharedPreferences prefs;
     public static boolean clientTransferSequence() throws Exception {
+        prefs = App.getContext().getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
 
         MetadataDB.Companion.createDB(App.getContext());
         Socket socket = new Socket("161.6.109.198", 443);
