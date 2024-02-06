@@ -59,7 +59,7 @@ public class IDRequest {
         //attempt to complete transfer
         boolean success = startTransfer(socket);
 
-        //prefs.edit().putInt("finishedUpload", 1).apply();
+        prefs.edit().putInt("finishedUpload", 1).apply();
         //trust, this could be null if the transfer fails
         return success;
     }
@@ -80,26 +80,18 @@ public class IDRequest {
         PublicKey publicKey = keyPair.getPublic();
         PrivateKey privateKey = keyPair.getPrivate();
             Log.d("NetworkTransfer", "keys initialized");
+        Log.d("NetworkTransfer", "public key value: " + Arrays.toString(publicKey.getEncoded()));
 
-        //OutputStream ops = socket.getOutputStream();
+
         BufferedReader fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         Log.d("NetworkTransfer", "checkpoint 1");
 
         DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
-        //toServer.flush();
-        //InputStream ips = socket.getInputStream();
+
         
         Log.d("NetworkTransfer", "checkpoint 2");
 
-        
 
-        //Open server communication streams
-        
-        //ObjectOutputStream toServer = new ObjectOutputStream(ops);
-        
-        
-        //Log.d("NetworkTransfer", "checkpoint 4");
-        //ObjectInputStream fromServer = new ObjectInputStream(ips);
         Log.d("NetworkTransfer", "Communication streams open");
         
         //Send public key to server
@@ -118,20 +110,28 @@ public class IDRequest {
 
 
         byte[] decodedBytes = Base64.getDecoder().decode(encryptedMessage);
-
+        Log.d("NetworkTransfer", "Encrypted key value " + Arrays.toString(decodedBytes));
         
 
         Log.d("NetworkTransfer", "Aes key received.");
 
         // Decrypt key using private key
-        Cipher cipher = Cipher.getInstance("RSA");
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             Log.d("NetworkTransfer", "Cipher created");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
             Log.d("NetworkTransfer", "cipher initialized");
         byte[] decryptedMessage = cipher.doFinal(decodedBytes);
             Log.d("NetworkTransfer", "key decrypted");
-        SecretKey aesKey = new SecretKeySpec(decryptedMessage, "AES");
+        Log.d("NetworkTransfer", "Decrypted key value " + Arrays.toString(decryptedMessage));
+        SecretKey aesKey = new SecretKeySpec(decryptedMessage,  "AES");
             Log.d("NetworkTransfer", "Aes key acquired");
+
+
+
+
+
+
+
         //Encrypt passkey with AES key and send to server
         send("SarahSketcher2024", aesKey, toServer);
 
@@ -150,7 +150,8 @@ public class IDRequest {
 
         
         String transferID = new String(recieve(aesKey, fromServer));
-        //singleton.getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE).edit().putLong("clientID", Long.parseLong(transferID)).apply();
+        Log.d("NetworkTransfer", "Received ID " + transferID);
+        singleton.getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE).edit().putLong("clientID", Long.parseLong(transferID)).apply();
 
         socket.close();
         Log.d("NetworkTransfer","Program Complete. Closing...");
