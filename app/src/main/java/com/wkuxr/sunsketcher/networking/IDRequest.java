@@ -41,7 +41,7 @@ public class IDRequest {
         
         String clearToSend = fromServer.readLine();
 
-        Log.d("NetworkTransfer", "Clear to send recieved.");
+        Log.d("NetworkTransfer", "Clear to send received.");
         Log.d("NetworkTransfer", clearToSend);
 
         if(!clearToSend.contains("true")) {
@@ -121,7 +121,7 @@ public class IDRequest {
 
         
 
-        Log.d("NetworkTransfer", "Aes key recieved.");
+        Log.d("NetworkTransfer", "Aes key received.");
 
         // Decrypt key using private key
         Cipher cipher = Cipher.getInstance("RSA");
