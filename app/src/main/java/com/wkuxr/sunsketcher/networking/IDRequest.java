@@ -131,7 +131,7 @@ public class IDRequest {
         byte[] decryptedMessage = cipher.doFinal(decodedBytes);
             Log.d("NetworkTransfer", "key decrypted");
         SecretKey aesKey = new SecretKeySpec(decryptedMessage, "AES");
-            Log.d("NetworkTransfer", "Aes key aquired");
+            Log.d("NetworkTransfer", "Aes key acquired");
         //Encrypt passkey with AES key and send to server
         send("SarahSketcher2024", aesKey, toServer);
 
