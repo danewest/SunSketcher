@@ -142,6 +142,8 @@ class SendConfirmationActivity : AppCompatActivity() {
                 var imgMatCropped = Mat()
                 Utils.bitmapToMat(newImgBitmap, imgMatCropped)
 
+                Imgproc.cvtColor(imgMatCropped, imgMatCropped, Imgproc.COLOR_BGR2RGB)
+
                 if (!cropBox.empty()) {
                     // crop the image using crop box
                     imgMatCropped = Mat(imgMatCropped, cropBox)
