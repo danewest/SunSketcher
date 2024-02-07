@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    tools:context=".activities.TermsAndConditionsActivity">
+
+    <ImageView
+        android:id="@+id/tacBackgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:contentDescription="Background image of Baily's Bead"
+        android:src="@drawable/eclipse_image"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="384dp" />
+
+    <ImageView
+        android:id="@+id/tacSunsketcherLogo"
+        android:layout_width="244dp"
+        android:layout_height="66dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="SunSketcher Logo"
+        android:src="@drawable/sunsketcher"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="83dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <ImageView
+        android:id="@+id/tacBackgroundShade"
+        android:layout_width="match_parent"
+        android:layout_height="670dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        android:background="#DC000000"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="@+id/tacBackgroundImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tacSunsketcherLogo"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/tacTopLine"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#FFFFFF"
+        android:contentDescription="@null"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tacBackgroundShade" />
+
+    <ImageView
+        android:id="@+id/tacBottomLine"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#FFFFFF"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="@+id/tacBackgroundShade"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="128dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/tacBottomLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tacTopLine">
+
+
+        <TextView
+            android:id="@+id/tacText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textColor="#FFFFFF" />
+    </ScrollView>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_marginBottom="24dp"
+        android:adjustViewBounds="true"
+        android:clickable="true"
+        android:focusable="auto"
+        android:onClick="onClick"
+        app:layout_constraintBottom_toTopOf="@+id/tacBottomLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/check" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

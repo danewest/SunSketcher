@@ -148,6 +148,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void tac(View v){
+        Intent intent = new Intent(this, TermsAndConditionsActivity.class);
+        startActivity(intent);
+    }
+
     public void reqPerm(String[] permissions){
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(permissions, 1);
