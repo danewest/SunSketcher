@@ -30,6 +30,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class IDRequest {
     static SharedPreferences prefs;
+
     public static boolean clientTransferSequence() throws Exception {
         prefs = App.getContext().getSharedPreferences("eclipseDetails",Context.MODE_PRIVATE);
         Log.d("NetworkTransfer", "Loading...");
@@ -53,6 +54,10 @@ public class IDRequest {
             //because the function returns true the app will not attempt to retry
             return true;
         }
+
+        DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
+        toServer.write("IDRequest\n");
+        toServer.flush();
 
         Log.d("NetworkTransfer", "Clear to send is true.");
 
@@ -88,7 +93,7 @@ public class IDRequest {
         Log.d("NetworkTransfer", "checkpoint 1");
 
         DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
-
+        toServer.flush();
         
         Log.d("NetworkTransfer", "checkpoint 2");
 
@@ -146,9 +151,7 @@ public class IDRequest {
 
         //-------------------------------------------------------------------------------------------------------------------
         //begin transfer messaging
-        //send ID request
-        send("IDRequest", aesKey, toServer);
-
+        
         
         String transferID = new String(recieve(aesKey, fromServer));
         Log.d("NetworkTransfer", "Received ID " + transferID);

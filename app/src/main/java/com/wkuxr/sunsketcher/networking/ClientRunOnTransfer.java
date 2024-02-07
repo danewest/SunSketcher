@@ -1,6 +1,7 @@
 package com.wkuxr.sunsketcher.networking;
 
 import static com.wkuxr.sunsketcher.activities.SendConfirmationActivity.Companion;
+import static com.wkuxr.sunsketcher.activities.SendConfirmationActivity.prefs;
 import static com.wkuxr.sunsketcher.database.MetadataDB.db;
 
 import android.content.Context;
@@ -27,23 +28,38 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class ClientRunOnTransfer {
     static SharedPreferences prefs;
+    
     public static boolean clientTransferSequence() throws Exception {
-        prefs = App.getContext().getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
-
+        Log.d("NetworkTransfer", "Loading...");
+        prefs = App.getContext().getSharedPreferences("eclipseDetails",Context.MODE_PRIVATE);
         MetadataDB.Companion.createDB(App.getContext());
+        
+        Log.d("NetworkTransfer", "Checkpoint 0");
         Socket socket = new Socket("161.6.109.198", 443);
+        Log.d("NetworkTransfer", "Created Socket");
 
         //continue only if client is from the US
         BufferedReader fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        
         String clearToSend = fromServer.readLine();
 
-        if(!clearToSend.equals("true")) {
+        Log.d("NetworkTransfer", "Clear to send received.");
+        Log.d("NetworkTransfer", clearToSend);
+
+        if(!clearToSend.contains("true")) {
             //do not retry
+            Log.d("NetworkTransfer", "Clear to send is false.");
             prefs.edit().putInt("finishedUpload", 2).apply();
             //the intent here is that 2 indicates that the client is ineligible for transfer at all, and should not retry
-            //because the function returns true the app will nto attempt to retry
+            //because the function returns true the app will not attempt to retry
             return true;
         }
+
+        DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
+        toServer.write("0\n");
+        toServer.flush();
+
+        Log.d("NetworkTransfer", "Clear to send is true.");
 
         //in event client is from US
         //attempt to complete transfer
@@ -56,32 +72,87 @@ public class ClientRunOnTransfer {
 
 
     static boolean startTransfer(Socket socket) throws Exception {
+        Log.d("NetworkTransfer", "Starting Transfer request...");
         //Authentication and Security
         //Generate RSA key needed for authentication and security
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");//KeyProperties.KEY_ALGORITHM_RSA);
+
         keyPairGenerator.initialize(2048);
+            Log.d("NetworkTransfer", "Key Generator Initialized");
+
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
+            Log.d("NetworkTransfer", "Keys Generated");
+
         PublicKey publicKey = keyPair.getPublic();
         PrivateKey privateKey = keyPair.getPrivate();
+            Log.d("NetworkTransfer", "keys initialized");
+        Log.d("NetworkTransfer", "public key value: " + Arrays.toString(publicKey.getEncoded()));
 
-        //Open server communication streams
-        ObjectOutputStream toServer = new ObjectOutputStream(socket.getOutputStream());
-        ObjectInputStream fromServer = new ObjectInputStream(socket.getInputStream());
 
+        BufferedReader fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        Log.d("NetworkTransfer", "checkpoint 1");
+
+        DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
+        toServer.flush();
+        
+        Log.d("NetworkTransfer", "checkpoint 2");
+
+
+        Log.d("NetworkTransfer", "Communication streams open");
+        
         //Send public key to server
-        toServer.writeObject(publicKey);
+        Base64.Encoder encoder = Base64.getEncoder();
+        String publicKeyString = new String(encoder.encode(publicKey.getEncoded()));
+        Log.d("NetworkTransfer", "checkpoint 3");
+        Log.d("NetworkTransfer", publicKeyString);
+        toServer.writeBytes(publicKeyString + '\n');
+        toServer.flush();
+        Log.d("NetworkTransfer", "Public key sent");
 
         //Receive AES key from server
-        byte[] encryptedMessage = (byte[]) fromServer.readObject();
+        String encryptedMessage = fromServer.readLine();
+
+        Log.d("NetworkTransfer", encryptedMessage);
+
+
+        byte[] decodedBytes = Base64.getDecoder().decode(encryptedMessage);
+        Log.d("NetworkTransfer", "Encrypted key value " + Arrays.toString(decodedBytes));
+        
+
+        Log.d("NetworkTransfer", "Aes key received.");
 
         // Decrypt key using private key
-        Cipher cipher = Cipher.getInstance("RSA");
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Log.d("NetworkTransfer", "Cipher created");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        byte[] decryptedMessage = cipher.doFinal(encryptedMessage);
-        SecretKey aesKey = new SecretKeySpec(decryptedMessage, "AES");
+            Log.d("NetworkTransfer", "cipher initialized");
+        byte[] decryptedMessage = cipher.doFinal(decodedBytes);
+            Log.d("NetworkTransfer", "key decrypted");
+        Log.d("NetworkTransfer", "Decrypted key value " + Arrays.toString(decryptedMessage));
+        SecretKey aesKey = new SecretKeySpec(decryptedMessage,  "AES");
+            Log.d("NetworkTransfer", "Aes key acquired");
+
+
+
+
+
+
 
         //Encrypt passkey with AES key and send to server
         send("SarahSketcher2024", aesKey, toServer);
+
+
+        
+
+        Log.d("NetworkTransfer", "Connection Successful!");
+
+        SharedPreferences prefs = App.getContext().getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+
+
+        //-------------------------------------------------------------------------------------------------------------------
+        //begin transfer messaging
+        //send transfer request
+        send("TransferRequest", aesKey, toServer);
 
 
         //--------------------------------------------------------------------------------------------------------------
@@ -91,6 +162,9 @@ public class ClientRunOnTransfer {
         double longitude = 0;
         double altitude = 0;
         long time = 0;
+        double aperture;
+        double iso;
+        double focallength;
 
         db.initialize();
         MetadataDAO metadataDao = db.metadataDao();
@@ -102,7 +176,7 @@ public class ClientRunOnTransfer {
 
         Log.d("NetworkTransfer", "Connection Successful!");
 
-        SharedPreferences prefs = App.getContext().getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+        
         int clientID = (int) prefs.getLong("clientID", 9999999);
 
 
@@ -159,12 +233,22 @@ public class ClientRunOnTransfer {
                 longitude = metadata.getLongitude();
                 altitude = metadata.getAltitude();
                 time = metadata.getCaptureTime();
+                aperture = metadata.getAperture();
+                iso = metadata.getISO();
+                focallength = metadata.getFocallength();
 
                 // send metadata to server
                 send(Double.toString(latitude), aesKey, toServer);
                 send(Double.toString(longitude), aesKey, toServer);
                 send(Double.toString(altitude), aesKey, toServer);
                 send(Long.toString(time), aesKey, toServer);
+                send(Double.toString(aperture), aesKey, toServer);
+                send(Double.toString(iso), aesKey, toServer);
+                send(Double.toString(focallength), aesKey, toServer);
+                
+
+
+
                 Log.d("NetworkTransfer", "Transfer Successful!");
                 SharedPreferences.Editor prefEdit = prefs.edit();
 
@@ -183,28 +267,55 @@ public class ClientRunOnTransfer {
         return true;
     }
 
-    public static void send(String message, Key aesKey, ObjectOutputStream toServer) throws Exception {
+    public static void send(String message, Key aesKey, DataOutputStream toServer) throws Exception {
         Cipher AEScipher = Cipher.getInstance("AES");
         AEScipher.init(Cipher.ENCRYPT_MODE, aesKey);
-
+        
         byte[] encryptedMessage = AEScipher.doFinal(message.getBytes());
-        toServer.writeObject(encryptedMessage);
+
+        Base64.Encoder encoder = Base64.getEncoder();
+        String encryptedEncodedMessage = new String(encoder.encodeToString(encryptedMessage));
+
+        toServer.writeBytes(encryptedEncodedMessage + '\n');
+        toServer.flush();
     }
 
-    public static void send(byte[] message, Key aesKey, ObjectOutputStream toServer) throws Exception {
+    public static void send(byte[] message, Key aesKey, DataOutputStream toServer) throws Exception {
         Cipher AEScipher = Cipher.getInstance("AES");
         AEScipher.init(Cipher.ENCRYPT_MODE, aesKey);
-
+        
         byte[] encryptedMessage = AEScipher.doFinal(message);
-        toServer.writeObject(encryptedMessage);
+
+        Base64.Encoder encoder = Base64.getEncoder();
+        String encryptedEncodedMessage = new String(encoder.encodeToString(encryptedMessage));
+
+        toServer.writeBytes(encryptedEncodedMessage + '\n');
+        toServer.flush();
     }
 
-    public static byte[] recieve(Key aesKey, ObjectInputStream fromServer) throws Exception {
+    public static byte[] recieveBytes(Key aesKey, BufferedReader fromServer) throws Exception {
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, aesKey);
 
-        byte[] encryptedMessage = (byte[]) fromServer.readObject();
-        byte[] decryptedMessage = cipher.doFinal(encryptedMessage);
+        String encryptedEncodedMessage = fromServer.readLine();//check to make sure no included \n character
+        
+        byte[] decodedBytes = Base64.getDecoder().decode(encryptedEncodedMessage);
+
+        byte[] decryptedMessage;
+        decryptedMessage = cipher.doFinal(decodedBytes);
         return decryptedMessage;
+    }
+
+    public static String recieve(Key aesKey, BufferedReader fromServer) throws Exception {
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, aesKey);
+
+        String encryptedEncodedMessage = fromServer.readLine();//check to make sure no included \n character
+        
+        byte[] decodedBytes = Base64.getDecoder().decode(encryptedEncodedMessage);
+
+        byte[] decryptedMessage;
+        decryptedMessage = cipher.doFinal(decodedBytes);
+        return new String(decryptedMessage);
     }
 }
