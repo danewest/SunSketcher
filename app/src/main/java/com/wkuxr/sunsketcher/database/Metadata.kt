@@ -1,5 +1,6 @@
 package com.wkuxr.sunsketcher.database
 
+import android.util.Rational
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -13,7 +14,17 @@ class Metadata(
 
     var altitude: Double = 0.0,
 
-    var captureTime: Long = 0
+    var captureTime: Long = 0,
+
+    var fstop: Double = 0.0,
+
+    var iso: Int = 0,
+
+    var whiteBalance: Int = 0,
+
+    var exposure: Double = 0.0,
+
+    var focalDistance: String = ""
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0

@@ -86,11 +86,11 @@ class FinishedInfoActivity : AppCompatActivity() {
 
         val prefEdit = prefs.edit()
 
-        var out = "Filepath,Latitude,Longitude,Altitude,Saved Time\n"
+        var out = "Filepath,Latitude,Longitude,Altitude,Saved Time,f-stop,iso,white balance,exposure,focal distance\n"
 
         for(meta in metas){
             //val splitFilepath = meta.filepath.split("/")
-            out += meta.filepath + "," + meta.latitude + "," + meta.longitude + "," + meta.altitude + "," + meta.captureTime + "\n"
+            out += meta.filepath + "," + meta.latitude + "," + meta.longitude + "," + meta.altitude + "," + meta.captureTime + "," + meta.fstop + "," + meta.iso + "," + meta.whiteBalance + "," + meta.exposure + "," + meta.focalDistance + "\n"
         }
 
         //save the file to the documents folder
