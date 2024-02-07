@@ -222,8 +222,8 @@ class SendConfirmationActivity : AppCompatActivity() {
         println("Max Location- X: $maxLocX Y: $maxLocY")
 
         // get the image's dimensions based off mat rows and columns
-        val imgMaxX: Int = img.cols()
-        val imgMaxY: Int = img.rows()
+        val imgMaxX: Int = img.rows()
+        val imgMaxY: Int = img.cols()
 
         // side length of box relative to image size, ~2% of original image size
         val side = (Math.sqrt((imgMaxX * imgMaxY).toDouble()) * 0.02)
