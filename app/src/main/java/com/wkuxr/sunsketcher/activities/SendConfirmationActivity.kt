@@ -188,13 +188,13 @@ class SendConfirmationActivity : AppCompatActivity() {
 
     // creates folder in SunSketchers directory for cropped images. Returns created folder
     private fun createCroppedImageFolder(): File {
-        val picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+        val picturesDir = filesDir
 
         // reference to original image folder in pictures directory (should already be made)
-        val mImageFolder: File = File(picturesDir, "SunSketcher")
+        //val mImageFolder: File = File(picturesDir, "SunSketcher")
 
         // create the cropped image folder in Pictures/SunSketcher/CroppedImages
-        val mCropImageFolder = File(mImageFolder, "CroppedImages")
+        val mCropImageFolder = File(picturesDir, "CroppedImages")
         mCropImageFolder.mkdirs()
 
         return mCropImageFolder
