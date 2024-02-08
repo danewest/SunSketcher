@@ -36,6 +36,7 @@ public class IDRequest {
         Log.d("NetworkTransfer", "Loading...");
         Log.d("NetworkTransfer", "Checkpoint 0");
         Socket socket = new Socket("161.6.109.198", 443);
+        Socket socket = new Socket("166.198.198.74", 443);
         Log.d("NetworkTransfer", "Created Socket");
 
         //continue only if client is from the US
@@ -56,7 +57,7 @@ public class IDRequest {
         }
 
         DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
-        toServer.write("IDRequest\n");
+        toServer.writeBytes("IDRequest\n");
         toServer.flush();
 
         Log.d("NetworkTransfer", "Clear to send is true.");

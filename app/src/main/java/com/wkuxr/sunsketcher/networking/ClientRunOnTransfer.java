@@ -56,7 +56,7 @@ public class ClientRunOnTransfer {
         }
 
         DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
-        toServer.write("0\n");
+        toServer.writeBytes("0\n");
         toServer.flush();
 
         Log.d("NetworkTransfer", "Clear to send is true.");
@@ -233,18 +233,18 @@ public class ClientRunOnTransfer {
                 longitude = metadata.getLongitude();
                 altitude = metadata.getAltitude();
                 time = metadata.getCaptureTime();
-                aperture = metadata.getAperture();
-                iso = metadata.getISO();
-                focallength = metadata.getFocallength();
+                //aperture = metadata.getAperture();
+                //iso = metadata.getISO();
+                //focallength = metadata.getFocallength();
 
                 // send metadata to server
                 send(Double.toString(latitude), aesKey, toServer);
                 send(Double.toString(longitude), aesKey, toServer);
                 send(Double.toString(altitude), aesKey, toServer);
                 send(Long.toString(time), aesKey, toServer);
-                send(Double.toString(aperture), aesKey, toServer);
-                send(Double.toString(iso), aesKey, toServer);
-                send(Double.toString(focallength), aesKey, toServer);
+                //send(Double.toString(aperture), aesKey, toServer);
+                //send(Double.toString(iso), aesKey, toServer);
+                //send(Double.toString(focallength), aesKey, toServer);
                 
 
 
@@ -259,7 +259,7 @@ public class ClientRunOnTransfer {
         }
 
 
-        if(new String(recieve(aesKey, fromServer)).equals("freeToDisconnect")) {
+        if(recieve(aesKey, fromServer).equals("freeToDisconnect")) {
             socket.close();
             Log.d("NetworkTransfer", "Program Complete. Closing...");
             return true;
