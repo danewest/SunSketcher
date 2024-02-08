@@ -56,7 +56,7 @@ public class ClientRunOnTransfer {
         }
 
         DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
-        toServer.writeBytes("0\n");
+        toServer.writeBytes("TransferRequest\n");
         toServer.flush();
 
         Log.d("NetworkTransfer", "Clear to send is true.");
@@ -91,7 +91,6 @@ public class ClientRunOnTransfer {
 
         BufferedReader fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         Log.d("NetworkTransfer", "checkpoint 1");
-
         DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
         toServer.flush();
         
@@ -151,8 +150,8 @@ public class ClientRunOnTransfer {
 
         //-------------------------------------------------------------------------------------------------------------------
         //begin transfer messaging
-        //send transfer request
-        send("TransferRequest", aesKey, toServer);
+
+
 
 
         //--------------------------------------------------------------------------------------------------------------
