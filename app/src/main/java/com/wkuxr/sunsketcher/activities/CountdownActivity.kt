@@ -65,8 +65,8 @@ class CountdownActivity : AppCompatActivity() {
                     val alt = location.altitude
 
                     //todo: for testing
-                    lat = 37.60786
-                    lon = -91.02687
+                    lat = 25.7750
+                    lon = -103.5
 
                     //get actual device location for eclipse timing TODO: use for actual app releases
                     val eclipseData = LocToTime.calculatefor(lat, lon, alt)
@@ -81,8 +81,8 @@ class CountdownActivity : AppCompatActivity() {
 
                     //make sure the user is actually in eclipse path before trying to do any scheduling stuff
                     if (!eclipseData[0].equals("N/A")) {
-                        val times = convertTimes(eclipseData);     //TODO: use for actual app releases
-                        //val times = testConvertTimes(eclipseData) //TODO: remove for actual app releases
+                        //val times = convertTimes(eclipseData)     //TODO: use for actual app releases
+                        val times = testConvertTimes(eclipseData) //TODO: remove for actual app releases
 
                         //use the given times to create calendar objects to use in setting alarms
                         val timeCals = arrayOfNulls<Calendar>(2)

@@ -57,65 +57,62 @@ public class UploadScheduler extends Service {
 
         //grab client ID, later used to determine first upload attempt time
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
-        long clientID = prefs.getLong("clientID", -1);
+        final long[] clientID = {prefs.getLong("clientID", -1)};
 
-        if (clientID != -1) {
-            Thread thread = new Thread(() -> {
-                if (!prefs.getBoolean("uploadSuccessful", false)) {
-                    Log.d("UploadScheduler", "This device has not yet successfully uploaded. Scheduling...");
-                    boolean successful = false;
+        Thread thread = new Thread(() -> {
+            if (!prefs.getBoolean("uploadSuccessful", false)) {
+                Log.d("UploadScheduler", "This device has not yet successfully uploaded. Scheduling...");
+                boolean successful = false;
+
+                //keep attempting every 15 minutes indefinitely until upload finishes successfully
+                while (!successful) {
                     try {
-                        //sleep until time for first upload attempt
-                        long firstScheduleTime = (clientID * (15 * 60 * 1000)) + (60 * 60 * 1000);
-                        Thread.sleep(firstScheduleTime);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    //keep attempting every 15 minutes indefinitely until upload finishes successfully
-                    while (!successful) {
-                        try {
+                        if (clientID[0] != -1) {
                             successful = pingServer();
-                        } catch (Exception e) {
-                            Log.w("UploadScheduler", "Connection failed. Trying again in 15 minutes.");
+                        } else {
+                            IDRequest.clientTransferSequence();
+                            clientID[0] = prefs.getLong("clientID", -1);
                         }
-                        //if unsuccessful, sleep again for 15 minutes
-                        if (!successful) {
-                            try {
-                                Thread.sleep(15 * 60 * 1000);
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            }
+                    } catch (Exception e) {
+                        Log.w("UploadScheduler", "Connection failed. Trying again in 15 minutes.");
+                    }
+                    //if unsuccessful, sleep again for 15 minutes
+                    if (!successful) {
+                        try {
+                            Thread.sleep(5 * 60 * 1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
                         }
                     }
                 }
+            }
 
-                Log.d("UploadScheduler", "Upload successful. Stopping UploadScheduler foreground service.");
+            Log.d("UploadScheduler", "Upload successful. Stopping UploadScheduler foreground service.");
 
-                SharedPreferences.Editor prefEdit = prefs.edit();
-                prefEdit.putBoolean("uploadSuccessful", true);
-                prefEdit.apply();
+            SharedPreferences.Editor prefEdit = prefs.edit();
+            prefEdit.putBoolean("uploadSuccessful", true);
+            prefEdit.apply();
 
-                //create a push notification that says that the user's images have been uploaded, and direct it to FinishedInfoActivity
-                createNotificationChannel();
-                Intent finishedCompleteIntent = new Intent(App.getContext(), FinishedCompleteActivity.class);
-                PendingIntent pendingIntent = PendingIntent.getActivity(App.getContext(), 0, finishedCompleteIntent, PendingIntent.FLAG_IMMUTABLE);
-                final Notification.Builder doneNotification = new Notification.Builder(this, "UploadInfo")
-                        .setContentText("Your images have been uploaded! Feel free to delete the SunSketcher app.")
-                        .setContentTitle("SunSketcher")
-                        .setSmallIcon(R.drawable.ic_stat_name)
-                        .setContentIntent(pendingIntent);
-                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                    //theoretically it's impossible for it to not have this permission at this point, so just ignore
-                }
-                notificationManager.notify(1002, doneNotification.build());
+            //create a push notification that says that the user's images have been uploaded, and direct it to FinishedInfoActivity
+            createNotificationChannel();
+            Intent finishedCompleteIntent = new Intent(App.getContext(), FinishedCompleteActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(App.getContext(), 0, finishedCompleteIntent, PendingIntent.FLAG_IMMUTABLE);
+            final Notification.Builder doneNotification = new Notification.Builder(this, "UploadInfo")
+                    .setContentText("Your images have been uploaded! Feel free to delete the SunSketcher app.")
+                    .setContentTitle("SunSketcher")
+                    .setSmallIcon(R.drawable.ic_stat_name)
+                    .setContentIntent(pendingIntent);
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                //theoretically it's impossible for it to not have this permission at this point, so just ignore
+            }
+            notificationManager.notify(1002, doneNotification.build());
 
-                //stop the foreground service
-                stopSelf();
-            });
-            thread.start();
-        }
+            //stop the foreground service
+            stopSelf();
+        });
+        thread.start();
+
 
         return super.onStartCommand(intent, flags, startId);
     }

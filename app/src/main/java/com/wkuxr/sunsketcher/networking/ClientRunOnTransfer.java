@@ -35,7 +35,7 @@ public class ClientRunOnTransfer {
         MetadataDB.Companion.createDB(App.getContext());
         
         Log.d("NetworkTransfer", "Checkpoint 0");
-        Socket socket = new Socket("161.6.109.198", 443);
+        Socket socket = new Socket("161.6.109.198", 10000);
         Log.d("NetworkTransfer", "Created Socket");
 
         //continue only if client is from the US
@@ -274,7 +274,7 @@ public class ClientRunOnTransfer {
         byte[] encryptedMessage = AEScipher.doFinal(message.getBytes());
 
         Base64.Encoder encoder = Base64.getEncoder();
-        String encryptedEncodedMessage = new String(encoder.encodeToString(encryptedMessage));
+        String encryptedEncodedMessage = encoder.encodeToString(encryptedMessage);
 
         toServer.writeBytes(encryptedEncodedMessage + '\n');
         toServer.flush();
@@ -287,7 +287,7 @@ public class ClientRunOnTransfer {
         byte[] encryptedMessage = AEScipher.doFinal(message);
 
         Base64.Encoder encoder = Base64.getEncoder();
-        String encryptedEncodedMessage = new String(encoder.encodeToString(encryptedMessage));
+        String encryptedEncodedMessage = encoder.encodeToString(encryptedMessage);
 
         toServer.writeBytes(encryptedEncodedMessage + '\n');
         toServer.flush();

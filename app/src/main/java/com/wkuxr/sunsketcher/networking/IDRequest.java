@@ -35,8 +35,7 @@ public class IDRequest {
         prefs = App.getContext().getSharedPreferences("eclipseDetails",Context.MODE_PRIVATE);
         Log.d("NetworkTransfer", "Loading...");
         Log.d("NetworkTransfer", "Checkpoint 0");
-        Socket socket = new Socket("161.6.109.198", 443);
-        Socket socket = new Socket("166.198.198.74", 443);
+        Socket socket = new Socket("161.6.109.198", 10000); //TODO: change working port to 10000 because AT&T NAT has issues with 443 (possibly use 443 as a fallback if 10000 fails to connect [Set up a more robust system to obtain client ID {Try to obtain it over 10000 and then 443 if that fails and then try both again in a few minutes (Do the same for when actually trying to transfer files)}])
         Log.d("NetworkTransfer", "Created Socket");
 
         //continue only if client is from the US
