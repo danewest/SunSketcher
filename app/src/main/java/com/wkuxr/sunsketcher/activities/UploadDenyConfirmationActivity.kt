@@ -1,13 +1,16 @@
 package com.wkuxr.sunsketcher.activities
 
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.wkuxr.sunsketcher.App
 import com.wkuxr.sunsketcher.R
 import com.wkuxr.sunsketcher.activities.SendConfirmationActivity.Companion.prefs
 import com.wkuxr.sunsketcher.databinding.ActivityUploadDenyConfirmationBinding
+import com.wkuxr.sunsketcher.networking.UploadScheduler
 
 class UploadDenyConfirmationActivity : AppCompatActivity() {
     lateinit var binding: ActivityUploadDenyConfirmationBinding
@@ -62,17 +65,27 @@ class UploadDenyConfirmationActivity : AppCompatActivity() {
         prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE)
         val intent: Intent = if (v.id == binding.uploadDenyConfirmationSendButton.id) {
             prefs.edit().putInt("upload", 1).apply()
-            /*if(!foregroundServiceRunning()) { //TODO: add for actual releases
+            if(!foregroundServiceRunning()) { //TODO: add for actual releases
                 if(App.getContext() == null)
                     App.setContext(this)
                 val uploadSchedulerIntent = Intent(this, UploadScheduler::class.java)
                 startService(uploadSchedulerIntent)
-            }*/
+            }
             Intent(this, FinishedInfoActivity::class.java)
         } else {
             prefs.edit().putInt("upload", 0).apply()
             Intent(this, FinishedInfoDenyActivity::class.java)
         }
         this.startActivity(intent)
+    }
+
+    fun foregroundServiceRunning(): Boolean {
+        val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        for (service in activityManager.getRunningServices(Int.MAX_VALUE)) {
+            if (UploadScheduler::class.java.name == service.service.className) {
+                return true
+            }
+        }
+        return false
     }
 }

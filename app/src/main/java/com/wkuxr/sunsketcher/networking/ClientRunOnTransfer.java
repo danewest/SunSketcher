@@ -17,47 +17,154 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Key;
+
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
+
 public class ClientRunOnTransfer {
-    public static boolean clientTransferSequence() throws IOException {
-
+    static SharedPreferences prefs;
+    
+    public static boolean clientTransferSequence() throws Exception {
+        Log.d("NetworkTransfer", "Loading...");
+        prefs = App.getContext().getSharedPreferences("eclipseDetails",Context.MODE_PRIVATE);
         MetadataDB.Companion.createDB(App.getContext());
-        Socket ssocket = new Socket("161.6.109.198", 443);
+        
+        Log.d("NetworkTransfer", "Checkpoint 0");
+        Socket socket = new Socket("161.6.109.198", 10000);
+        Log.d("NetworkTransfer", "Created Socket");
 
-        boolean success = startTransfer(ssocket);
+        //continue only if client is from the US
+        BufferedReader fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        
+        String clearToSend = fromServer.readLine();
+
+        Log.d("NetworkTransfer", "Clear to send received.");
+        Log.d("NetworkTransfer", clearToSend);
+
+        if(!clearToSend.contains("true")) {
+            //do not retry
+            Log.d("NetworkTransfer", "Clear to send is false.");
+            prefs.edit().putInt("finishedUpload", 2).apply();
+            //the intent here is that 2 indicates that the client is ineligible for transfer at all, and should not retry
+            //because the function returns true the app will not attempt to retry
+            return true;
+        }
+
+        DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
+        toServer.writeBytes("0\n");
+        toServer.flush();
+
+        Log.d("NetworkTransfer", "Clear to send is true.");
+
+        //in event client is from US
+        //attempt to complete transfer
+        boolean success = startTransfer(socket);
 
         prefs.edit().putInt("finishedUpload", 1).apply();
         //trust, this could be null if the transfer fails
         return success;
     }
 
-    static void managePorts(Socket ssocket) throws IOException {
-        // to read data coming from the server
-        BufferedReader fromThreadManager = new BufferedReader(new InputStreamReader(ssocket.getInputStream()));
 
-        Log.d("Networktransfer", "Connection Successful!");
+    static boolean startTransfer(Socket socket) throws Exception {
+        Log.d("NetworkTransfer", "Starting Transfer request...");
+        //Authentication and Security
+        //Generate RSA key needed for authentication and security
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");//KeyProperties.KEY_ALGORITHM_RSA);
 
-        String inputLine;
-        inputLine = fromThreadManager.readLine();
+        keyPairGenerator.initialize(2048);
+            Log.d("NetworkTransfer", "Key Generator Initialized");
 
-        if (inputLine.equals("0")) {
-            Log.d("Networktransfer", "Transfer Rejected. Setting New Alarm.");
-        } else if (inputLine.equals("-1")) {
-            Log.d("Networktransfer", "Single port config detected.");
-            startTransfer(ssocket);
-        } else {
-            ssocket.close();
-            Log.d("Networktransfer", "Moving to port " + inputLine);
-            Socket socket = new Socket("161.6.109.198", Integer.parseInt(inputLine));
-            Log.d("Networktransfer", "Successful!");
-            startTransfer(socket);
-        }
-    }
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
+            Log.d("NetworkTransfer", "Keys Generated");
 
-    static boolean startTransfer(Socket ssocket) throws IOException {
+        PublicKey publicKey = keyPair.getPublic();
+        PrivateKey privateKey = keyPair.getPrivate();
+            Log.d("NetworkTransfer", "keys initialized");
+        Log.d("NetworkTransfer", "public key value: " + Arrays.toString(publicKey.getEncoded()));
+
+
+        BufferedReader fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        Log.d("NetworkTransfer", "checkpoint 1");
+
+        DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
+        toServer.flush();
+        
+        Log.d("NetworkTransfer", "checkpoint 2");
+
+
+        Log.d("NetworkTransfer", "Communication streams open");
+        
+        //Send public key to server
+        Base64.Encoder encoder = Base64.getEncoder();
+        String publicKeyString = new String(encoder.encode(publicKey.getEncoded()));
+        Log.d("NetworkTransfer", "checkpoint 3");
+        Log.d("NetworkTransfer", publicKeyString);
+        toServer.writeBytes(publicKeyString + '\n');
+        toServer.flush();
+        Log.d("NetworkTransfer", "Public key sent");
+
+        //Receive AES key from server
+        String encryptedMessage = fromServer.readLine();
+
+        Log.d("NetworkTransfer", encryptedMessage);
+
+
+        byte[] decodedBytes = Base64.getDecoder().decode(encryptedMessage);
+        Log.d("NetworkTransfer", "Encrypted key value " + Arrays.toString(decodedBytes));
+        
+
+        Log.d("NetworkTransfer", "Aes key received.");
+
+        // Decrypt key using private key
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Log.d("NetworkTransfer", "Cipher created");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            Log.d("NetworkTransfer", "cipher initialized");
+        byte[] decryptedMessage = cipher.doFinal(decodedBytes);
+            Log.d("NetworkTransfer", "key decrypted");
+        Log.d("NetworkTransfer", "Decrypted key value " + Arrays.toString(decryptedMessage));
+        SecretKey aesKey = new SecretKeySpec(decryptedMessage,  "AES");
+            Log.d("NetworkTransfer", "Aes key acquired");
+
+
+
+
+
+
+
+        //Encrypt passkey with AES key and send to server
+        send("SarahSketcher2024", aesKey, toServer);
+
+
+        
+
+        Log.d("NetworkTransfer", "Connection Successful!");
+
+        SharedPreferences prefs = App.getContext().getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+
+
+        //-------------------------------------------------------------------------------------------------------------------
+        //begin transfer messaging
+        //send transfer request
+        send("TransferRequest", aesKey, toServer);
+
+
+        //--------------------------------------------------------------------------------------------------------------
+        //Value Initialization
+
         double latitude = 0;
         double longitude = 0;
         double altitude = 0;
         long time = 0;
+        double aperture;
+        double iso;
+        double focallength;
 
         db.initialize();
         MetadataDAO metadataDao = db.metadataDao();
@@ -69,89 +176,78 @@ public class ClientRunOnTransfer {
 
         Log.d("NetworkTransfer", "Connection Successful!");
 
-        DataOutputStream toServer = new DataOutputStream(ssocket.getOutputStream());
-
-        toServer.writeBytes("transferRequest" + "\n");
-        toServer.flush();
-
-        SharedPreferences prefs = App.getContext().getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+        
         int clientID = (int) prefs.getLong("clientID", 9999999);
 
-        toServer.writeBytes(clientID + "\n");
-        toServer.flush();
 
-        toServer.writeBytes(metadataList.size() + "\n");
-        toServer.flush();
+
+        //-------------------------------------------------------------------------------------------------------------------
+        //begin transfer messaging
+        //send transfer request
+        send("transferRequest", aesKey, toServer);
+
+
+        //send client ID
+        send(Integer.toString(clientID), aesKey, toServer);
+
+        //send total number of photos
+        send(Integer.toString(metadataList.size()), aesKey, toServer);
 
         for (Metadata metadata : metadataList) {
             Context context = App.getContext();
             prefs = context.getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
             if(metadata.getId() > (prefs.getInt("numUploaded", -1) + 1)) {
-                Log.d("NetworkTransfer", "Importing Photo " + currentPhoto + " ...");
 
+                //initialize values
                 String[] filepathSplit = metadata.getFilepath().split("/");
                 currentName = filepathSplit[filepathSplit.length - 1];
 
                 File file = new File(metadata.getFilepath());
                 byte[] imageData = new byte[(int) file.length()];
 
-                Log.d("NetworkTransfer", "File length = " + (int) file.length());
-                toServer.writeBytes((int) file.length() + "\n");
-                toServer.flush();
+                //---------------------------------------------------------------------------------------------------------
+                //send pseudometadata
 
                 Log.d("NetworkTransfer", "current name = " + currentName);
-                toServer.writeBytes(currentName + "\n");
-                toServer.flush();
+                send(currentName, aesKey, toServer);
 
+                Log.d("NetworkTransfer", "File length = " + (int) file.length());
+                send(Integer.toString((int) file.length()), aesKey, toServer);
+
+                //---------------------------------------------------------------------------------------------------------
+                //gather and send image
+                Log.d("NetworkTransfer", "Importing Photo " + currentPhoto + " ...");
                 FileInputStream fileIn = new FileInputStream(file);
                 fileIn.read(imageData);
 
                 Log.d("NetworkTransfer", "Starting Transfer...");
 
-                String byteJustSent;
-
-                // Send image data to server
-                for (byte imageDatum : imageData) {
-                    // System.out.print(imageData[i]);
-                    // System.out.print(Byte.toString(imageData[i]));
-                    byteJustSent = Byte.toString(imageDatum);
-                    toServer.writeBytes(byteJustSent + "\n");
-                    toServer.flush();
-                }
-
-                //image coruption checking resend function
-                /*if(fromServer.readLine().equals("retryTransfer\n")) {
-                    Log.d("NetworkTransfer", "Image Corruption Detected, retrying photo send;");
-
-                    fileIn.close();
-                    fileIn = new FileInputStream(file);
-                    fileIn.read(imageData);
-
-                    for (byte imageDatum : imageData) {
-                        byteJustSent = Byte.toString(imageDatum);
-                        toServer.writeBytes(byteJustSent + "\n");
-                        toServer.flush();
-                    }
-                    
-                    //server will now terminate connection if files are still invalid
-                }*/
-                
+                //send one photo to the server
+                send(imageData, aesKey, toServer);
                 fileIn.close();
+
+                //----------------------------------------------------------------------------------------------------------
+                //metadata transfer
 
                 latitude = metadata.getLatitude();
                 longitude = metadata.getLongitude();
                 altitude = metadata.getAltitude();
                 time = metadata.getCaptureTime();
+                //aperture = metadata.getAperture();
+                //iso = metadata.getISO();
+                //focallength = metadata.getFocallength();
 
                 // send metadata to server
-                toServer.writeBytes(latitude + "\n");
-                toServer.flush();
-                toServer.writeBytes(longitude + "\n");
-                toServer.flush();
-                toServer.writeBytes(altitude + "\n");
-                toServer.flush();
-                toServer.writeBytes(time + "\n");
-                toServer.flush();
+                send(Double.toString(latitude), aesKey, toServer);
+                send(Double.toString(longitude), aesKey, toServer);
+                send(Double.toString(altitude), aesKey, toServer);
+                send(Long.toString(time), aesKey, toServer);
+                //send(Double.toString(aperture), aesKey, toServer);
+                //send(Double.toString(iso), aesKey, toServer);
+                //send(Double.toString(focallength), aesKey, toServer);
+                
+
+
 
                 Log.d("NetworkTransfer", "Transfer Successful!");
                 SharedPreferences.Editor prefEdit = prefs.edit();
@@ -162,13 +258,64 @@ public class ClientRunOnTransfer {
             }
         }
 
-        BufferedReader fromServer = new BufferedReader(new InputStreamReader(ssocket.getInputStream()));
 
-        if(fromServer.readLine().equals("freeToDisconnect")) {
-            ssocket.close();
+        if(recieve(aesKey, fromServer).equals("freeToDisconnect")) {
+            socket.close();
             Log.d("NetworkTransfer", "Program Complete. Closing...");
             return true;
         }
         return true;
+    }
+
+    public static void send(String message, Key aesKey, DataOutputStream toServer) throws Exception {
+        Cipher AEScipher = Cipher.getInstance("AES");
+        AEScipher.init(Cipher.ENCRYPT_MODE, aesKey);
+        
+        byte[] encryptedMessage = AEScipher.doFinal(message.getBytes());
+
+        Base64.Encoder encoder = Base64.getEncoder();
+        String encryptedEncodedMessage = encoder.encodeToString(encryptedMessage);
+
+        toServer.writeBytes(encryptedEncodedMessage + '\n');
+        toServer.flush();
+    }
+
+    public static void send(byte[] message, Key aesKey, DataOutputStream toServer) throws Exception {
+        Cipher AEScipher = Cipher.getInstance("AES");
+        AEScipher.init(Cipher.ENCRYPT_MODE, aesKey);
+        
+        byte[] encryptedMessage = AEScipher.doFinal(message);
+
+        Base64.Encoder encoder = Base64.getEncoder();
+        String encryptedEncodedMessage = encoder.encodeToString(encryptedMessage);
+
+        toServer.writeBytes(encryptedEncodedMessage + '\n');
+        toServer.flush();
+    }
+
+    public static byte[] recieveBytes(Key aesKey, BufferedReader fromServer) throws Exception {
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, aesKey);
+
+        String encryptedEncodedMessage = fromServer.readLine();//check to make sure no included \n character
+        
+        byte[] decodedBytes = Base64.getDecoder().decode(encryptedEncodedMessage);
+
+        byte[] decryptedMessage;
+        decryptedMessage = cipher.doFinal(decodedBytes);
+        return decryptedMessage;
+    }
+
+    public static String recieve(Key aesKey, BufferedReader fromServer) throws Exception {
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, aesKey);
+
+        String encryptedEncodedMessage = fromServer.readLine();//check to make sure no included \n character
+        
+        byte[] decodedBytes = Base64.getDecoder().decode(encryptedEncodedMessage);
+
+        byte[] decryptedMessage;
+        decryptedMessage = cipher.doFinal(decodedBytes);
+        return new String(decryptedMessage);
     }
 }

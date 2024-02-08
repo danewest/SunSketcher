@@ -70,10 +70,11 @@ public class MainActivity extends AppCompatActivity {
             //connect to server to get ID and upload time
             Thread idTimeThread = new Thread(() -> {
                 try {
-                    IDRequest.clientTransferSequence(App.getContext());
+                    IDRequest.clientTransferSequence();
                     Log.d("ClientID", "ClientID: " + prefs.getLong("clientID", -1));
                 } catch (Exception e) {
                     Log.e("ClientID", "Could not connect to server to obtain client ID.");
+                    e.printStackTrace();
                 }
             });
             idTimeThread.start();
