@@ -79,7 +79,7 @@ public class UploadScheduler extends Service {
                     //if unsuccessful, sleep again for 15 minutes
                     if (!successful) {
                         try {
-                            Thread.sleep(5 * 60 * 1000);
+                            Thread.sleep(1 * 60 * 1000);
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }

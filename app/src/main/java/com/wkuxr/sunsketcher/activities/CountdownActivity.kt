@@ -63,8 +63,8 @@ class CountdownActivity : AppCompatActivity() {
                     val alt = location.altitude
 
                     //todo: for testing
-                    lat = 25.7750
-                    lon = -103.5
+                    lat = 47.6683
+                    lon = -60.7450
 
                     //get actual device location for eclipse timing TODO: use for actual app releases
                     val eclipseData = LocToTime.calculatefor(lat, lon, alt)
@@ -108,9 +108,9 @@ class CountdownActivity : AppCompatActivity() {
                         prefs.apply()
 
                         //go to camera 60 seconds prior, start taking images 15 seconds prior to 5 seconds after, and then at end of eclipse 5 seconds before and 15 after TODO: also for the sunset timing
-                        //val date = Date((times[0] - 60) * 1000); //TODO: use
+                        val date = Date((times[0] - 60) * 1000); //TODO: use
                         //the next line is a testcase to make sure functionality works for eclipse timing
-                        val date = Date(System.currentTimeMillis() + 5000) //TODO: remove
+                        //val date = Date(System.currentTimeMillis() + 5000) //TODO: remove
                         Log.d("SCHEDULE_CAMERA", date.toString())
                         if (timer == null) {
                             Log.d("Timing", "Creating timer.")
