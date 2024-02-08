@@ -402,9 +402,9 @@ public class CameraActivity extends AppCompatActivity {
 
         //timer that takes images every 1 seconds for 20 seconds starting 15 seconds before t[c2], then another timer for images every 1s for 20s starting 5s before t[c3]
         //the next three lines are a testcase to make sure functionality works
-        //long randomizer = (long)((Math.random() * 500) - 250);
-        //startTime = System.currentTimeMillis() + 30000 + randomizer; //TODO: remove for actual app releases
-        //endTime = startTime + 60000 * 5 + randomizer; //5 minutes after startTime TODO: remove for actual app releases
+        long randomizer = (long)((Math.random() * 500) - 250);
+        startTime = System.currentTimeMillis() + 30000 + randomizer; //TODO: remove for actual app releases
+        endTime = startTime + 60000 * 5 + randomizer; //5 minutes after startTime TODO: remove for actual app releases
         long midTime = (endTime + startTime) / 2; //set time for midpoint photo for cropping basis
         sequenceTimer = new Timer();
         //set timer to start captures at t[c2] - 20 at 1 img per 2 seconds

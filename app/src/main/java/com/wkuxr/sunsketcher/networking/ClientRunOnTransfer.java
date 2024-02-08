@@ -184,8 +184,6 @@ public class ClientRunOnTransfer {
 
         //-------------------------------------------------------------------------------------------------------------------
         //begin transfer messaging
-        //send transfer request
-        send("transferRequest", aesKey, toServer);
 
 
         //send client ID

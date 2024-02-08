@@ -51,7 +51,7 @@ class FinishedInfoActivity : AppCompatActivity() {
             binding.uploadBtn.text = "The upload service is running. Estimated finish time: ${(0.5 + clientID) * 15} minutes from time that upload was accepted. Please allow for extra time, as your upload time may be delayed without notice."
         }*/
         //TODO: remove the following two lines
-        binding.uploadBtn.isEnabled = false
+        //binding.uploadBtn.isEnabled = false
         binding.uploadBtn.text = "This is a test version of the app where upload is unnecessary."
 
         //dump database values to a csv file in documents folder
@@ -125,7 +125,7 @@ class FinishedInfoActivity : AppCompatActivity() {
                 startService(uploadSchedulerIntent)
             }
 
-            btn.text = "The upload service is running. Estimated finish time: ${(0.5 + clientID) * 15} minutes from time that upload was accepted. Please allow for extra time, as your upload time may be delayed without notice."
+            btn.text = "The upload service is running."
             btn.isEnabled = false
         } catch (e: Exception){
             e.printStackTrace()
