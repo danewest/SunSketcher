@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case 1: //allowed upload
                 if(prefs.getBoolean("uploadSuccessful", false)){ //allowed upload and upload already finished
-                    //intent = new Intent(this, FinishedCompleteActivity.class);
+                    intent = new Intent(this, FinishedCompleteActivity.class);
                 } else {
                     intent = new Intent(this, FinishedInfoActivity.class);
                 }
@@ -146,6 +146,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void learnMore(View v){
         Intent intent = new Intent(this, LearnMoreActivity.class);
+        startActivity(intent);
+    }
+
+    public void tac(View v){
+        Intent intent = new Intent(this, TermsAndConditionsActivity.class);
         startActivity(intent);
     }
 

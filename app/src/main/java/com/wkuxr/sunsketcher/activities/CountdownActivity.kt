@@ -1,7 +1,6 @@
 package com.wkuxr.sunsketcher.activities
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -25,6 +24,9 @@ import java.util.Timer
 import java.util.TimerTask
 
 class CountdownActivity : AppCompatActivity() {
+    companion object {
+        lateinit var singleton: CountdownActivity
+    }
     lateinit var binding: ActivityCountdownBinding
     companion object {
         lateinit var singleton: CountdownActivity
@@ -34,7 +36,7 @@ class CountdownActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityCountdownBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        
         singleton = this
         var str = SpannableStringBuilder("Please turn your ringer ").bold{append("off")}.append(" and Do Not Disturb ").bold{append("on!")}
         binding.countdownInfoText.text = str
@@ -45,7 +47,6 @@ class CountdownActivity : AppCompatActivity() {
 
     }
 
-    //TODO: make countdown functionality
     var timer: Timer? = null
 
     private fun getLocation() {

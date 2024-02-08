@@ -20,6 +20,7 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.RggbChannelVector;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.hardware.camera2.DngCreator;
+import android.media.ExifInterface;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
@@ -30,6 +31,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 import android.util.Range;
+import android.util.Rational;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
@@ -491,7 +493,7 @@ public class CameraActivity extends AppCompatActivity {
     Runnable midpointRunnable = new Runnable(){
         @Override
         public void run(){
-            startStillCaptureRequest();
+            startStillCaptureRequest(10000000);
         }
     };
 
@@ -562,6 +564,8 @@ public class CameraActivity extends AppCompatActivity {
 
     CameraManager cameraManager;
 
+    float hyperfocus;
+
     @SuppressWarnings("SuspiciousNameCombination")
     private void setupCamera(int width, int height) {
         cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
@@ -626,6 +630,10 @@ public class CameraActivity extends AppCompatActivity {
             mImageReader = ImageReader.newInstance(mImageSize.getWidth(), mImageSize.getHeight(), imageFormat, 1);
             mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
             mCameraId = currentLarge;
+            CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(mCameraId);
+            hyperfocus = characteristics.get(CameraCharacteristics.LENS_INFO_HYPERFOCAL_DISTANCE);
+
+            Log.d("CameraSetting", "Hyperfocus: " + hyperfocus);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -704,7 +712,7 @@ public class CameraActivity extends AppCompatActivity {
                 mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE, CaptureRequest.COLOR_CORRECTION_MODE_TRANSFORM_MATRIX);
                 mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, colorTemperature(2000));
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
-                mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, 0.0f);
+                mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, hyperfocus);
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, 64);  // 63 ISO
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, exposureTime);
                 mCaptureRequestBuilder.set(CaptureRequest.JPEG_QUALITY, (byte)100);
@@ -868,11 +876,12 @@ public class CameraActivity extends AppCompatActivity {
 
         //String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()); // also saves a timestamp which we can use to
         // create metadata files. Additionally, saves some weird number to the end of the filename. Not sure how to prevent that.
-        String prepend = "IMAGE_" + timestamp + "_";
+        String prepend = "IMAGE_" + timestamp;
         //File imageFile = File.createTempFile(prepend, ".jpg", mImageFolder);
         File imageFile = new File(mImageFolder, prepend + ".jpg");
         mImageFileName = imageFile.getAbsolutePath();
-        db.addMetadata(new Metadata(mImageFileName, (double)lat, (double)lon, (double)alt, timestampLong));
+
+        db.addMetadata(new Metadata(mImageFileName, (double)lat, (double)lon, (double)alt, timestampLong, 0, 0, 0, 0, ""));
     }
 
     private void lockFocus() {
