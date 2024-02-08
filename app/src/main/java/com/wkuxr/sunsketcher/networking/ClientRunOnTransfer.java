@@ -164,7 +164,9 @@ public class ClientRunOnTransfer {
         long time = 0;
         double aperture;
         double iso;
-        double focallength;
+        double whitebalance;
+        String focallength;
+        double exposure;
 
         db.initialize();
         MetadataDAO metadataDao = db.metadataDao();
@@ -233,18 +235,22 @@ public class ClientRunOnTransfer {
                 longitude = metadata.getLongitude();
                 altitude = metadata.getAltitude();
                 time = metadata.getCaptureTime();
-                //aperture = metadata.getAperture();
-                //iso = metadata.getISO();
-                //focallength = metadata.getFocallength();
+                aperture = metadata.getFstop();
+                iso = metadata.getIso();
+                whitebalance = metadata.getWhiteBalance();
+                focallength = metadata.getFocalDistance();
+                exposure = metadata.getExposure();
 
                 // send metadata to server
                 send(Double.toString(latitude), aesKey, toServer);
                 send(Double.toString(longitude), aesKey, toServer);
                 send(Double.toString(altitude), aesKey, toServer);
                 send(Long.toString(time), aesKey, toServer);
-                //send(Double.toString(aperture), aesKey, toServer);
-                //send(Double.toString(iso), aesKey, toServer);
-                //send(Double.toString(focallength), aesKey, toServer);
+                send(Double.toString(aperture), aesKey, toServer);
+                send(Double.toString(iso), aesKey, toServer);
+                send(Double.toString(whitebalance), aesKey, toServer);
+                send(focallength, aesKey, toServer);
+                send(Double.toString(exposure), aesKey, toServer);
                 
 
 
