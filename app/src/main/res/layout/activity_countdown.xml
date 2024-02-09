@@ -13,11 +13,11 @@
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:contentDescription="Background image of Baily's Bead"
+        android:scaleType="fitXY"
         android:src="@drawable/eclipse_image"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="384dp" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/countdownSunsketcherLogo"

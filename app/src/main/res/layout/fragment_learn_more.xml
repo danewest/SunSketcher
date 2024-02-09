@@ -59,9 +59,11 @@
 
     <TextView
         android:id="@+id/learnMoreFragmentText"
-        android:layout_width="300dp"
+        android:layout_width="0dp"
         android:layout_height="300dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
         android:fontFamily="@font/montserrat"
         android:text="SunSketcher is a collaborative, crowd-sourced experiment to collect observations during the 2024 solar eclipse that will determine the exact shape of the Sun."
         android:textAlignment="center"

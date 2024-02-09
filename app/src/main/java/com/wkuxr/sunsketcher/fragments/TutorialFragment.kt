@@ -38,7 +38,7 @@ class TutorialFragment : Fragment() {
             2 -> {
                 binding.tutorialFragmentTitle.text = "Step two"
                 binding.tutorialFragmentImage.setImageResource(R.drawable.phone_stand_tutorial)
-                binding.tutorialFragmentText.text = "Place your device against a hard surface or on a phone stand, with the rear camera facing the Sun."
+                binding.tutorialFragmentText.text = "Place your device against a hard surface or on a phone stand, with the rear camera facing the Sun.\nAt this point, please do not touch your phone again until after totality has ended."
             }
             3 -> {
                 binding.tutorialFragmentTitle.text = "Step three"
