@@ -40,7 +40,8 @@ class TermsAndConditionsActivity : AppCompatActivity() {
                     "\n\nYou may elect to register as a SunSketcher (https://sunsketcher.org/register.php), " +
                     "by providing your email address to receive updates from SunSketcher; however, " +
                     "providing your email address is optional, meaning that you are not required to " +
-                    "provide the data in order for the App to function.\n\n")
+                    "provide the data in order for the App to function.\n" +
+                    "Standard data rates may apply.\n\n")
             .bold{append("IV.\tAge Restriction")}
             .append("\n\tIf you are under the age of 13, you should not use this App. If you are a " +
                     "minor between the ages of 13-18, you may use this App only in conjunction with " +
@@ -75,7 +76,7 @@ class TermsAndConditionsActivity : AppCompatActivity() {
             .append("\n\tIf you have any questions about the SunSketcher App, please contact:" +
                     "\n\n\t\tWestern Kentucky University" +
                     "\n\t\tGreg Arbuckle" +
-                    "\n\t\tgreg.arbuckle@WKU.edu")
+                    "\n\t\tgreg.arbuckle@wku.edu")
         binding.tacText.text = str
     }
 

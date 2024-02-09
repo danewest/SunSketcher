@@ -115,9 +115,9 @@ class CountdownActivity : AppCompatActivity() {
                         if (timer == null) {
                             Log.d("Timing", "Creating timer.")
                             timer = Timer()
-                            val cameraActivitySchedulerTask = TimeTask()
-                            timer!!.schedule(cameraActivitySchedulerTask, date)
-                            val countdownTimeDiff = (times[0] * 1000) - System.currentTimeMillis()
+                            //val cameraActivitySchedulerTask = TimeTask()
+                            //timer!!.schedule(cameraActivitySchedulerTask, date)
+                            val countdownTimeDiff = ((times[0] * 1000) - 60 * 1000) - System.currentTimeMillis()
                             object : CountDownTimer(countdownTimeDiff, 1000) {
                                 override fun onTick(millisUntilFinished: Long) {
                                     var seconds = millisUntilFinished / 1000
@@ -129,7 +129,10 @@ class CountdownActivity : AppCompatActivity() {
                                     binding.countdownTimeText.text = "${if(hours > 0){"$hours:"} else {""}}${if(minutes > 0){"${if(minutes < 10){"0"}else{""} + "$minutes"}:"} else {""}}${if(seconds < 10){"0"}else{""} + "$seconds"} UNTIL FIRST PHOTO IS TAKEN"
                                 }
 
-                                override fun onFinish() {}
+                                override fun onFinish() {
+                                    val intent = Intent(singleton, CameraActivity::class.java)
+                                    singleton.startActivity(intent)
+                                }
                             }.start()
 
                         }
