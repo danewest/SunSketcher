@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    tools:context=".activities.ImageCroppingActivity">
+
+    <ImageView
+        android:id="@+id/imageCroppingBackgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:contentDescription="Background image of Baily's Bead"
+        android:scaleType="fitXY"
+        android:src="@drawable/eclipse_image"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageCroppingSunsketcherLogo"
+        android:layout_width="244dp"
+        android:layout_height="66dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="SunSketcher Logo"
+        android:src="@drawable/sunsketcher"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="83dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <ImageView
+        android:id="@+id/imageCroppingBackgroundShade"
+        android:layout_width="match_parent"
+        android:layout_height="670dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="60dp"
+        android:adjustViewBounds="true"
+        android:background="#DC000000"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="@+id/imageCroppingBackgroundImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageCroppingSunsketcherLogo"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/imageCroppingTopLine"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#FFFFFF"
+        android:contentDescription="@null"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageCroppingBackgroundShade" />
+
+    <ImageView
+        android:id="@+id/imageCroppingBottomLine"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#FFFFFF"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="@+id/imageCroppingBackgroundShade"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/imageCroppingProcessingText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/oswald_medium"
+        android:text="Processing images...\nThis may take up to two minutes. Please do not close the SunSketcher app."
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        app:layout_constraintBottom_toTopOf="@+id/imageCroppingBottomLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageCroppingTopLine" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

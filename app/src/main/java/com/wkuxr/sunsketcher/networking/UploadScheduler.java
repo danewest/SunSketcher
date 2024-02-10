@@ -108,6 +108,9 @@ public class UploadScheduler extends Service {
             }
             notificationManager.notify(1002, doneNotification.build());
 
+            Intent activityIntent = new Intent(App.getContext(), FinishedCompleteActivity.class);
+            App.getContext().startActivity(activityIntent);
+
             //stop the foreground service
             stopSelf();
         });

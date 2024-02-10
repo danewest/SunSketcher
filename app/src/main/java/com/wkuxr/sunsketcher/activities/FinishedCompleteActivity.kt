@@ -1,5 +1,6 @@
 package com.wkuxr.sunsketcher.activities
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity

@@ -1,30 +1,18 @@
 package com.wkuxr.sunsketcher.activities
 
-import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.media.ExifInterface
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.wkuxr.sunsketcher.App
 import com.wkuxr.sunsketcher.R
 import com.wkuxr.sunsketcher.database.Metadata
 import com.wkuxr.sunsketcher.database.MetadataDB
-import com.wkuxr.sunsketcher.database.MetadataDB.Companion.createDB
-import com.wkuxr.sunsketcher.database.MetadataDB.Companion.db
-import com.wkuxr.sunsketcher.databinding.ActivitySendConfirmationBinding
-import com.wkuxr.sunsketcher.networking.UploadScheduler
 import org.opencv.android.Utils
 import org.opencv.core.Core
 import org.opencv.core.Mat
@@ -35,77 +23,42 @@ import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
 import java.io.File
 
-
-class SendConfirmationActivity : AppCompatActivity() {
-    lateinit var binding: ActivitySendConfirmationBinding
-    lateinit var recyclerView: RecyclerView
-
+class ImageCroppingActivity : AppCompatActivity() {
     companion object {
         lateinit var prefs: SharedPreferences
-        lateinit var singleton: SendConfirmationActivity
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySendConfirmationBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        singleton = this
+        setContentView(R.layout.activity_image_cropping)
 
-        recyclerView = binding.imageRecycler
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE)
-        val prefs = getSharedPreferences("eclipseDetails", MODE_PRIVATE)
-        val hasConfirmDeny = prefs.getInt("upload", -1)
-        var intent: Intent? = null
-        when (hasConfirmDeny) {
-            0 -> intent = Intent(this, FinishedInfoDenyActivity::class.java)
-            1 -> intent = if (prefs.getBoolean("uploadSuccessful", false)) { //allowed upload and upload already finished
-                Intent(this, FinishedCompleteActivity::class.java)
-            } else {
-                Intent(this, FinishedInfoActivity::class.java)
+
+        if(!prefs.getBoolean("cropped", false)){
+            val thread = Thread {
+                cropImages()
             }
-
-            else -> {}
+            thread.start()
+        } else {
+            val intent = Intent(this, SendConfirmationActivity::class.java)
+            startActivity(intent)
         }
-        if (intent != null) {
-            this.startActivity(intent)
-        }
-        
-        /*if(!prefs.getBoolean("cropped", false)){
-            cropImages()
-        }*/
-
-        displayImageList()
     }
 
     override fun onResume() {
         super.onResume()
-        val prefs = getSharedPreferences("eclipseDetails", MODE_PRIVATE)
-        val intent = when (prefs.getInt("upload", -1)) {
-            0 -> {
-                Intent(this, FinishedInfoDenyActivity::class.java)
-            }
-            1 -> {
-                if (prefs.getBoolean("uploadSuccessful", false)) { //allowed upload and upload already finished
-                    Intent(this, FinishedCompleteActivity::class.java)
-                } else {
-                    Intent(this, FinishedInfoActivity::class.java)
-                }
-            }
-            else -> {
-                null
-            }
-        }
-        if (intent != null) {
-            this.startActivity(intent)
+        if(!prefs.getBoolean("cropped", true)){
+            val intent = Intent(this, SendConfirmationActivity::class.java)
+            startActivity(intent)
         }
     }
 
-    fun cropImages(){
+    private fun cropImages(){
         System.loadLibrary("opencv_java4")
 
         // initialize database as an object
-        val db : MetadataDB = createDB(this)
+        val db : MetadataDB = MetadataDB.createDB(this)
 
         // get list of all rows (user's images) in metadata
         val metadataList : List<Metadata> = db.getMetadata()
@@ -135,7 +88,7 @@ class SendConfirmationActivity : AppCompatActivity() {
             // iterate through all images (rows) in database and apply cropping w/ crop box to them
             // then save the cropped image to the cropped image folder and replace db filepath
             for (metadataRow in metadataList) {
-
+                Log.d("ImageCropping", "Cropping ${metadataRow.filepath}")
                 // create bitmap from current image
                 val imgOriginal = File(metadataRow.filepath)
                 val newImgBitmap = BitmapFactory.decodeFile(metadataRow.filepath)
@@ -182,9 +135,13 @@ class SendConfirmationActivity : AppCompatActivity() {
 
             }
         } else {
-            Toast.makeText(this@SendConfirmationActivity, "Error creating directory", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error creating directory", Toast.LENGTH_SHORT).show()
         }
-        prefs.edit().putBoolean("cropped", true).apply()
+
+        Log.d("ImageCropping", "Images have been cropped successfully.")
+        SendConfirmationActivity.prefs.edit().putBoolean("cropped", true).apply()
+        val intent = Intent(this, SendConfirmationActivity::class.java)
+        startActivity(intent)
     }
 
     // creates folder in SunSketchers directory for cropped images. Returns created folder
@@ -254,7 +211,7 @@ class SendConfirmationActivity : AppCompatActivity() {
     }
 
     // checks if a coordinate's x and y are out of bounds of a given area
-    fun boundaryCheck(pt: Point, maxX: Int, maxY: Int): Point {
+    private fun boundaryCheck(pt: Point, maxX: Int, maxY: Int): Point {
         if (pt.x < 0) {
             pt.x = 0.0
         }
@@ -269,65 +226,5 @@ class SendConfirmationActivity : AppCompatActivity() {
         }
 
         return pt
-    }
-
-    fun onClick(v: View) {
-        val intent: Intent = if (v.id == binding.sendConfirmationYesBtn.id) {
-            prefs.edit().putInt("upload", 1).apply()
-            if(!foregroundServiceRunning()) { //TODO: add for actual releases
-                if(App.getContext() == null)
-                    App.setContext(this)
-                val uploadSchedulerIntent = Intent(this, UploadScheduler::class.java)
-                startService(uploadSchedulerIntent)
-            }
-            Intent(this, FinishedInfoActivity::class.java)
-        } else {
-            Intent(this, UploadDenyConfirmationActivity::class.java)
-        }
-        this.startActivity(intent)
-    }
-
-    private fun displayImageList() {
-        db = createDB(this)
-        val metadata = db.getMetadata()
-        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        recyclerView.adapter = ItemAdapter(metadata)
-    }
-
-    class ItemAdapter(private val metadataList: List<Metadata>) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.recycle_list_item, parent, false)
-            return ItemViewHolder(view)
-        }
-
-        override fun getItemCount(): Int {
-            return metadataList.size
-        }
-
-        override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-            val item = metadataList[position]
-            holder.itemView.tag = item.id
-            Log.d("IMAGEFILEPATHS", item.filepath)
-            val imgFile = File(item.filepath)
-
-            //create bitmap from image
-            val imgBitmap = BitmapFactory.decodeFile(imgFile.absolutePath)
-
-            holder.imgView.setImageBitmap(imgBitmap)
-        }
-
-        inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val imgView: ImageView = itemView.findViewById(R.id.itemImage)
-        }
-    }
-
-    fun foregroundServiceRunning(): Boolean {
-        val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
-        for (service in activityManager.getRunningServices(Int.MAX_VALUE)) {
-            if (UploadScheduler::class.java.name == service.service.className) {
-                return true
-            }
-        }
-        return false
     }
 }

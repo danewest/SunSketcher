@@ -402,7 +402,7 @@ public class CameraActivity extends AppCompatActivity {
 
         //timer that takes images every 1 seconds for 20 seconds starting 15 seconds before t[c2], then another timer for images every 1s for 20s starting 5s before t[c3]
         //the next three lines are a testcase to make sure functionality works
-        //long randomizer = (long)((Math.random() * 500) - 250);
+        //long randomizer = (long)((Math.random() * 500) - 250); //TODO: remove for actual app releases
         //startTime = System.currentTimeMillis() + 30000 + randomizer; //TODO: remove for actual app releases
         //endTime = startTime + 60000 * 5 + randomizer; //5 minutes after startTime TODO: remove for actual app releases
         long midTime = (endTime + startTime) / 2; //set time for midpoint photo for cropping basis
@@ -512,8 +512,8 @@ public class CameraActivity extends AppCompatActivity {
 
     static class SwitchActivityTask extends TimerTask {
         public void run(){
-            Log.d("ACTIVITYSWITCH", "To " + SendConfirmationActivity.class.getName());
-            Intent intent = new Intent(singleton, SendConfirmationActivity.class);
+            Log.d("ACTIVITYSWITCH", "To " + ImageCroppingActivity.class.getName());
+            Intent intent = new Intent(singleton, ImageCroppingActivity.class);
             singleton.closeCamera();
             singleton.startActivity(intent);
             singleton.finish();

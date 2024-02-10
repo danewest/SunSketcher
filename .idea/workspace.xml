@@ -3,7 +3,10 @@
   <component name="AndroidLayouts">
     <shared>
       <config>
+        <device id="_device_class_phone" />
         <device id="_device_class_foldable" />
+        <device id="_device_class_desktop" />
+        <device id="pixel_6" />
         <device id="resizable" />
         <device id="13.5in Freeform" />
         <device id="10.1in WXGA (Tablet)" />
@@ -15,8 +18,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="acb4d6b3-a831-4890-a89e-278ce8cf7451" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/ImageCroppingActivity.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_image_cropping.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_tutorial.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_tutorial.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CameraActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CameraActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CountdownActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CountdownActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/FinishedCompleteActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/FinishedCompleteActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/MainActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/SendConfirmationActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/SendConfirmationActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/fragments/TutorialFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/fragments/TutorialFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/networking/UploadScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/networking/UploadScheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_finished_info.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_finished_info.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,22 +65,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/akatsuki/Downloads/OpenCV-android-sdk/sdk&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "cidr.known.project.marker": "true",
+    "last_opened_file_path": "/home/akatsuki/Downloads/OpenCV-android-sdk/sdk",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.17",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "device.mirroring"
   }
-}</component>
+}]]></component>
   <component name="PsdUISettings">
     <option name="MODULE_TAB" value="Properties" />
     <option name="LAST_EDITED_SIGNING_CONFIG" value="debug" />
+  </component>
+  <component name="RecentsManager">
+    <key name="android.template.-1209819723">
+      <recent name="com.wkuxr.sunsketcher.activities" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App">
@@ -149,18 +168,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <breakpoint enabled="true" type="OCSymbolicBreakpointType">
-          <properties>
-            <option name="moduleName" value="libart.so" />
-            <option name="symbolPattern" value="art_sigsegv_fault" />
-          </properties>
-          <option name="timeStamp" value="7" />
-        </breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

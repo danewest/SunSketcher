@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = null;
         switch(hasConfirmDeny){
             case -2: //not yet confirmed or denied
-                intent = new Intent(this, SendConfirmationActivity.class);
+                intent = new Intent(this, ImageCroppingActivity.class);
                 break;
             case 0: //denied upload
                 intent = new Intent(this, FinishedInfoDenyActivity.class);
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = null;
         switch(hasConfirmDeny){
             case -2: //not yet confirmed or denied
-                intent = new Intent(this, SendConfirmationActivity.class);
+                intent = new Intent(this, ImageCroppingActivity.class);
                 break;
             case 0: //denied upload
                 intent = new Intent(this, FinishedInfoDenyActivity.class);
