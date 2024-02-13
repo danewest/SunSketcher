@@ -18,11 +18,13 @@ class TermsAndConditionsActivity : AppCompatActivity() {
             .append("\n\tSunSketcher (“Licensed Application” or “App” hereinafter) is a piece of " +
                     "software created to photograph the 2024 Great North American Eclipse. The App " +
                     "is customized for iOS and Android mobile devices (“Devices”), and is owned by " +
-                    "WKU. The App is used to take a series of photographs of the totality of the " +
+                    "WKU. The App is used with phones located in the continental United States" +
+                    "to take a series of photographs of the totality of the " +
                     "Great North American Eclipse on April 8, 2024. With user consent, the images " +
                     "collected by each user of the App (“User Content”) will be sent to a database " +
                     "along with the time and location (longitude, latitude, and altitude) at which " +
-                    "the images were taken.\n\nTo learn more about the SunSketcher App, and the " +
+                    "the images were taken. Normal data rates may apply." +
+                    "\n\nTo learn more about the SunSketcher App, and the " +
                     "Great North American Eclipse, see https://sunsketcher.org/faq.php.\n\n")
             .bold{append("II.\tConditions of Use")}
             .append("\n\tBy using this app, you certify that you have read and reviewed this " +
@@ -40,8 +42,7 @@ class TermsAndConditionsActivity : AppCompatActivity() {
                     "\n\nYou may elect to register as a SunSketcher (https://sunsketcher.org/register.php), " +
                     "by providing your email address to receive updates from SunSketcher; however, " +
                     "providing your email address is optional, meaning that you are not required to " +
-                    "provide the data in order for the App to function.\n\n" +
-                    "Standard data rates may apply.\n\n")
+                    "provide the data in order for the App to function.\n")
             .bold{append("IV.\tAge Restriction")}
             .append("\n\tIf you are under the age of 13, you should not use this App. If you are a " +
                     "minor between the ages of 13-18, you may use this App only in conjunction with " +

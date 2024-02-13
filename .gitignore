@@ -9,3 +9,4 @@
 local.properties
 opencv
 /.idea
+.idea/workspace.xml
