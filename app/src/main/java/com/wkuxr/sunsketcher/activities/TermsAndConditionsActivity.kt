@@ -42,7 +42,7 @@ class TermsAndConditionsActivity : AppCompatActivity() {
                     "\n\nYou may elect to register as a SunSketcher (https://sunsketcher.org/register.php), " +
                     "by providing your email address to receive updates from SunSketcher; however, " +
                     "providing your email address is optional, meaning that you are not required to " +
-                    "provide the data in order for the App to function.\n")
+                    "provide the data in order for the App to function.\n\n")
             .bold{append("IV.\tAge Restriction")}
             .append("\n\tIf you are under the age of 13, you should not use this App. If you are a " +
                     "minor between the ages of 13-18, you may use this App only in conjunction with " +
