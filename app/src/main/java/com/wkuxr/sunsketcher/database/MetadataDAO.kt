@@ -13,6 +13,6 @@ interface MetadataDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addImageMeta(metadata: Metadata): Long
 
-    @Query("UPDATE Metadata SET filepath = :filepath, fstop = :fstop, iso = :iso, whiteBalance = :whiteBalance, exposure = :exposure, focalDistance = :focalDistance WHERE id = :id")
-    fun updateRow(id: Int, filepath: String, fstop: Double, iso: Int, whiteBalance: Int, exposure: Double, focalDistance: String): Int
+    @Query("UPDATE Metadata SET filepath = :filepath, fstop = :fstop, iso = :iso, whiteBalance = :whiteBalance, exposure = :exposure, focalDistance = :focalDistance, isCropped = :isCropped WHERE id = :id")
+    fun updateRow(id: Int, filepath: String, fstop: Double, iso: Int, whiteBalance: Int, exposure: Double, focalDistance: String, isCropped: Boolean): Int
 }

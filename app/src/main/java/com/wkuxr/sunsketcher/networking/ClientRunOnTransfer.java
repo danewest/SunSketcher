@@ -35,7 +35,8 @@ public class ClientRunOnTransfer {
         MetadataDB.Companion.createDB(App.getContext());
         
         Log.d("NetworkTransfer", "Checkpoint 0");
-        Socket socket = new Socket("161.6.109.198", 10000);
+        Socket socket = new Socket();
+        socket.connect(new InetSocketAddress("161.6.109.198", 10000), 10000);
         Log.d("NetworkTransfer", "Created Socket");
 
         //continue only if client is from the US

@@ -15,7 +15,6 @@ import com.wkuxr.sunsketcher.activities.SendConfirmationActivity.Companion.prefs
 import com.wkuxr.sunsketcher.database.MetadataDB.Companion.createDB
 import com.wkuxr.sunsketcher.database.MetadataDB.Companion.db
 import com.wkuxr.sunsketcher.databinding.ActivityFinishedInfoBinding
-import com.wkuxr.sunsketcher.networking.ClientRunOnTransfer.clientTransferSequence
 import com.wkuxr.sunsketcher.networking.UploadScheduler
 import java.io.File
 import java.io.FileWriter
@@ -61,6 +60,11 @@ class FinishedInfoActivity : AppCompatActivity() {
 
         if (prefs.getBoolean("uploadSuccessful", false)) { //upload already finished
             Intent(this, FinishedCompleteActivity::class.java)
+        } else if (!foregroundServiceRunning()){
+            if(App.getContext() == null)
+                App.setContext(this)
+            val uploadSchedulerIntent = Intent(this, UploadScheduler::class.java)
+            startService(uploadSchedulerIntent)
         }
     }
 
@@ -75,8 +79,14 @@ class FinishedInfoActivity : AppCompatActivity() {
 
         if (prefs.getBoolean("uploadSuccessful", false)) { //upload already finished
             Intent(this, FinishedCompleteActivity::class.java)
+        } else if (!foregroundServiceRunning()){
+            if(App.getContext() == null)
+                App.setContext(this)
+            val uploadSchedulerIntent = Intent(this, UploadScheduler::class.java)
+            startService(uploadSchedulerIntent)
         }
     }
+
 
     //dump timing data to a CSV
     private fun dumpDBtoCSV(){
@@ -114,10 +124,6 @@ class FinishedInfoActivity : AppCompatActivity() {
             prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE)
             val clientID = prefs.getLong("clientID", -1)
 
-            //window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
-            //var thread = NetworkThread(this) { updateUIOnUploadFinish() }
-            //thread.start()
             if(!foregroundServiceRunning()) {
                 if(App.getContext() == null)
                     App.setContext(this)
@@ -129,30 +135,6 @@ class FinishedInfoActivity : AppCompatActivity() {
             btn.isEnabled = false
         } catch (e: Exception){
             e.printStackTrace()
-        }
-    }
-
-    private fun updateUIOnUploadFinish(){
-        runOnUiThread {
-            Runnable {
-                Log.d("NetworkThread", "Upload is complete. Changing button text.")
-                binding.uploadBtn.text = "Upload complete."
-            }
-        }
-    }
-
-    //old manual upload method
-    class NetworkThread(context: Context, uiUpdate: () -> Unit) : Thread() {
-        val uiUpdateFun = uiUpdate
-        val context = context
-        override fun run() {
-            try {
-                Log.d("NetworkThread", "Beginning Upload. Please wait...")
-                clientTransferSequence()
-                uiUpdateFun()
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
-            }
         }
     }
 

@@ -24,7 +24,9 @@ class Metadata(
 
     var exposure: Double = 0.0,
 
-    var focalDistance: String = ""
+    var focalDistance: String = "",
+
+    var isCropped: Boolean = false
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0

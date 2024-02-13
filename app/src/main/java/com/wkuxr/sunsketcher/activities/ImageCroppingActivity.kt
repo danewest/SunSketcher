@@ -26,10 +26,13 @@ import java.io.File
 class ImageCroppingActivity : AppCompatActivity() {
     companion object {
         lateinit var prefs: SharedPreferences
+        var numImages: Int = 0
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image_cropping)
+
+        numImages = MetadataDB.createDB(this).getMetadata().size
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
@@ -37,7 +40,18 @@ class ImageCroppingActivity : AppCompatActivity() {
 
         if(!prefs.getBoolean("cropped", false)){
             val thread = Thread {
+                /*val numToCrop = 20
+                var numCropped = 0
+                while(numCropped < numImages) {
+                    cropImages(numToCrop)
+                  numCropped += numToCrop
+                }*/
+
                 cropImages()
+
+                SendConfirmationActivity.prefs.edit().putBoolean("cropped", true).apply()
+                val intent = Intent(this, SendConfirmationActivity::class.java)
+                startActivity(intent)
             }
             thread.start()
         } else {
@@ -54,6 +68,7 @@ class ImageCroppingActivity : AppCompatActivity() {
         }
     }
 
+    //private fun cropImages(numToCrop: Int){
     private fun cropImages(){
         System.loadLibrary("opencv_java4")
 
@@ -81,14 +96,21 @@ class ImageCroppingActivity : AppCompatActivity() {
         // reference to folder with all cropped images
         val mCropImageFolder: File = createCroppedImageFolder()
 
-        if (mCropImageFolder.exists()) {
+        if (mCropImageFolder.exists() && !cropBox.empty()) {
 
             // cropped image folder successfully made!
 
             // iterate through all images (rows) in database and apply cropping w/ crop box to them
             // then save the cropped image to the cropped image folder and replace db filepath
+            //var numCropped = 0
             for (metadataRow in metadataList) {
-                Log.d("ImageCropping", "Cropping ${metadataRow.filepath}")
+                if(metadataRow.isCropped){
+                    continue
+                }
+                /*if(numCropped >= numToCrop){
+                    break
+                }*/
+
                 // create bitmap from current image
                 val imgOriginal = File(metadataRow.filepath)
                 val newImgBitmap = BitmapFactory.decodeFile(metadataRow.filepath)
@@ -98,7 +120,7 @@ class ImageCroppingActivity : AppCompatActivity() {
 
                 Imgproc.cvtColor(imgMatCropped, imgMatCropped, Imgproc.COLOR_BGR2RGB)
 
-                if (!cropBox.empty()) {
+
                     // crop the image using crop box
                     imgMatCropped = Mat(imgMatCropped, cropBox)
 
@@ -125,23 +147,18 @@ class ImageCroppingActivity : AppCompatActivity() {
                         focalDistance = ""
                     }
                     // save crop img file path to img metadata in database
-                    db.updateRowFilepath(metadataRow.id, imgCroppedFile.absolutePath, fstop, iso, whiteBalance, exposure, focalDistance)
+                    db.updateRowFilepath(metadataRow.id, imgCroppedFile.absolutePath, fstop, iso, whiteBalance, exposure, focalDistance, true)
+                    //numCropped++
 
+                    Log.d("ImageCropping", "Image ${metadataRow.id} has been cropped: ${metadataRow.filepath}")
 
-                } else {
-                    // TODO if for some reason the crop box ends up empty should we just keep the original image in db?
-                    continue
-                }
 
             }
         } else {
             Toast.makeText(this, "Error creating directory", Toast.LENGTH_SHORT).show()
         }
 
-        Log.d("ImageCropping", "Images have been cropped successfully.")
-        SendConfirmationActivity.prefs.edit().putBoolean("cropped", true).apply()
-        val intent = Intent(this, SendConfirmationActivity::class.java)
-        startActivity(intent)
+        //Log.d("ImageCropping", "$numToCrop images have been cropped successfully.")
     }
 
     // creates folder in SunSketchers directory for cropped images. Returns created folder

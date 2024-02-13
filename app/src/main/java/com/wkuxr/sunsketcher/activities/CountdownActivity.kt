@@ -83,11 +83,11 @@ class CountdownActivity : AppCompatActivity() {
                         val times = testConvertTimes(eclipseData) //TODO: remove for actual app releases
 
                         //use the given times to create calendar objects to use in setting alarms
-                        val timeCals = arrayOfNulls<Calendar>(2)
+                        /*val timeCals = arrayOfNulls<Calendar>(2)
                         timeCals[0] = Calendar.getInstance()
                         timeCals[0]?.timeInMillis = times[0] * 1000
                         timeCals[1] = Calendar.getInstance()
-                        timeCals[1]?.timeInMillis = times[1] * 1000
+                        timeCals[1]?.timeInMillis = times[1] * 1000*/
 
                         //for the final app, might want to add something that makes a countdown timer on screen tick down TODO: working on that right now, past me
                         //String details = "You are at lat: " + lat + ", lon: " + lon + "; The solar eclipse will start at the following time at your current location: " + timeCals[0].getTime(); //TODO: use for actual app releases
@@ -108,17 +108,20 @@ class CountdownActivity : AppCompatActivity() {
                         prefs.apply()
 
                         //go to camera 60 seconds prior, start taking images 15 seconds prior to 5 seconds after, and then at end of eclipse 5 seconds before and 15 after TODO: also for the sunset timing
-                        val date = Date((times[0] - 60) * 1000); //TODO: use
+                        //val date = Date((times[0] - 60) * 1000); //TODO: use
                         //the next line is a testcase to make sure functionality works for eclipse timing
                         //val date = Date(System.currentTimeMillis() + 5000) //TODO: remove
-                        Log.d("SCHEDULE_CAMERA", date.toString())
+                        //Log.d("SCHEDULE_CAMERA", date.toString())
                         if (timer == null) {
                             Log.d("Timing", "Creating timer.")
                             timer = Timer()
                             //val cameraActivitySchedulerTask = TimeTask()
                             //timer!!.schedule(cameraActivitySchedulerTask, date)
-                            val countdownTimeDiff = ((times[0] * 1000) - 60 * 1000) - System.currentTimeMillis() //TODO: use
-                            //val countdownTimeDiff = 5000L //TODO: remove
+                            /*var countdownTimeDiff = ((times[0] * 1000) - 60 * 1000) - System.currentTimeMillis() //TODO: use
+                            if(countdownTimeDiff <= 0){
+                                countdownTimeDiff = 5000L;
+                            }*/
+                            val countdownTimeDiff = 5000L //TODO: remove
                             object : CountDownTimer(countdownTimeDiff, 1000) {
                                 override fun onTick(millisUntilFinished: Long) {
                                     var seconds = millisUntilFinished / 1000

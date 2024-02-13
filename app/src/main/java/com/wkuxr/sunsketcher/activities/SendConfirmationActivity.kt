@@ -41,6 +41,7 @@ class SendConfirmationActivity : AppCompatActivity() {
     lateinit var recyclerView: RecyclerView
 
     companion object {
+
         lateinit var prefs: SharedPreferences
         lateinit var singleton: SendConfirmationActivity
     }
@@ -54,7 +55,6 @@ class SendConfirmationActivity : AppCompatActivity() {
         recyclerView = binding.imageRecycler
 
         prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE)
-        val prefs = getSharedPreferences("eclipseDetails", MODE_PRIVATE)
         val hasConfirmDeny = prefs.getInt("upload", -1)
         var intent: Intent? = null
         when (hasConfirmDeny) {
