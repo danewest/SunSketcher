@@ -28,6 +28,7 @@ class ImageCroppingActivity : AppCompatActivity() {
         lateinit var prefs: SharedPreferences
         var numImages: Int = 0
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image_cropping)
@@ -38,45 +39,35 @@ class ImageCroppingActivity : AppCompatActivity() {
 
         prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE)
 
-        if(!prefs.getBoolean("cropped", false)){
-            val thread = Thread {
-                /*val numToCrop = 20
-                var numCropped = 0
-                while(numCropped < numImages) {
-                    cropImages(numToCrop)
-                  numCropped += numToCrop
-                }*/
-
+        val thread = Thread {
+            while (!prefs.getBoolean("cropped", false)) {
                 cropImages()
-
-                SendConfirmationActivity.prefs.edit().putBoolean("cropped", true).apply()
-                val intent = Intent(this, SendConfirmationActivity::class.java)
-                startActivity(intent)
             }
-            thread.start()
-        } else {
+
+            SendConfirmationActivity.prefs.edit().putBoolean("cropped", true).apply()
             val intent = Intent(this, SendConfirmationActivity::class.java)
             startActivity(intent)
         }
+        thread.start()
     }
 
     override fun onResume() {
         super.onResume()
-        if(!prefs.getBoolean("cropped", true)){
+        if (!prefs.getBoolean("cropped", true)) {
             val intent = Intent(this, SendConfirmationActivity::class.java)
             startActivity(intent)
         }
     }
 
     //private fun cropImages(numToCrop: Int){
-    private fun cropImages(){
+    private fun cropImages() {
         System.loadLibrary("opencv_java4")
 
         // initialize database as an object
-        val db : MetadataDB = MetadataDB.createDB(this)
+        val db: MetadataDB = MetadataDB.createDB(this)
 
         // get list of all rows (user's images) in metadata
-        val metadataList : List<Metadata> = db.getMetadata()
+        val metadataList: List<Metadata> = db.getMetadata()
 
         // get crop box from the center image
         val centerMetadata = metadataList[metadataList.size / 2]
@@ -102,14 +93,18 @@ class ImageCroppingActivity : AppCompatActivity() {
 
             // iterate through all images (rows) in database and apply cropping w/ crop box to them
             // then save the cropped image to the cropped image folder and replace db filepath
-            //var numCropped = 0
+            var numCropped = 0
+            val numToCrop = 20
             for (metadataRow in metadataList) {
-                if(metadataRow.isCropped){
+                if (metadataRow.isCropped) {
+                    //don't crop images that have already been cropped
                     continue
                 }
-                /*if(numCropped >= numToCrop){
+                if (numCropped >= numToCrop) {
+                    //will only be true if we aren't on the final round of images to crop, so we say that not all of the images have been cropped (because we assume at the end of the for loop that this is the final round, and we need the app to know that it isn't)
+                    prefs.edit().putBoolean("cropped", false).commit()
                     break
-                }*/
+                }
 
                 // create bitmap from current image
                 val imgOriginal = File(metadataRow.filepath)
@@ -121,44 +116,49 @@ class ImageCroppingActivity : AppCompatActivity() {
                 Imgproc.cvtColor(imgMatCropped, imgMatCropped, Imgproc.COLOR_BGR2RGB)
 
 
-                    // crop the image using crop box
-                    imgMatCropped = Mat(imgMatCropped, cropBox)
+                // crop the image using crop box
+                imgMatCropped = Mat(imgMatCropped, cropBox)
 
-                    // create image file in the crop image folder with original image's name
-                    val imgCroppedFile = File(mCropImageFolder, imgOriginal.name)
+                // create image file in the crop image folder with original image's name
+                val imgCroppedFile = File(mCropImageFolder, imgOriginal.name)
 
-                    // write the cropped image to the cropped image file
-                    Imgcodecs.imwrite(imgCroppedFile.absolutePath, imgMatCropped)
+                // write the cropped image to the cropped image file
+                Imgcodecs.imwrite(imgCroppedFile.absolutePath, imgMatCropped)
 
-                    val exif = ExifInterface(imgOriginal.absolutePath)
-                    var fstop = exif.getAttribute(ExifInterface.TAG_F_NUMBER)?.toDouble()
-                    val iso = Integer.parseInt(exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS))
-                    val whiteBalance = Integer.parseInt(exif.getAttribute(ExifInterface.TAG_WHITE_BALANCE))
-                    var exposure = exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME)?.toDouble()
-                    var focalDistance = exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
+                val exif = ExifInterface(imgOriginal.absolutePath)
+                var fstop = exif.getAttribute(ExifInterface.TAG_F_NUMBER)?.toDouble()
+                val iso = Integer.parseInt(exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS))
+                val whiteBalance =
+                    Integer.parseInt(exif.getAttribute(ExifInterface.TAG_WHITE_BALANCE))
+                var exposure = exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME)?.toDouble()
+                var focalDistance = exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
 
-                    if (fstop == null){
-                        fstop = 0.0
-                    }
-                    if (exposure == null){
-                        exposure = 0.0
-                    }
-                    if (focalDistance == null){
-                        focalDistance = ""
-                    }
-                    // save crop img file path to img metadata in database
-                    db.updateRowFilepath(metadataRow.id, imgCroppedFile.absolutePath, fstop, iso, whiteBalance, exposure, focalDistance, true)
-                    //numCropped++
+                if (fstop == null) {
+                    fstop = 0.0
+                }
+                if (exposure == null) {
+                    exposure = 0.0
+                }
+                if (focalDistance == null) {
+                    focalDistance = ""
+                }
+                // save crop img file path to img metadata in database
+                db.updateRowFilepath(metadataRow.id, imgCroppedFile.absolutePath, fstop, iso, whiteBalance, exposure, focalDistance, true)
+                numCropped++
 
-                    Log.d("ImageCropping", "Image ${metadataRow.id} has been cropped: ${metadataRow.filepath}")
+                Log.d("ImageCropping", "Image ${metadataRow.id} has been cropped: ${metadataRow.filepath}"
+                )
 
-
+                //assume this call of the cropImages function is the final call to it
+                prefs.edit().putBoolean("cropped", true).commit()
             }
+
+            Log.d("ImageCropping", "$numCropped images have been cropped successfully.")
         } else {
             Toast.makeText(this, "Error creating directory", Toast.LENGTH_SHORT).show()
         }
 
-        //Log.d("ImageCropping", "$numToCrop images have been cropped successfully.")
+
     }
 
     // creates folder in SunSketchers directory for cropped images. Returns created folder
@@ -204,7 +204,8 @@ class ImageCroppingActivity : AppCompatActivity() {
         val side = (Math.sqrt((imgMaxX * imgMaxY).toDouble()) * 0.02)
 
         // create the coords for rectangle and check if starting/ending coordinates for rectangle are out of image bounds
-        val startCoord: Point = boundaryCheck(Point(maxLocX - side, maxLocY - side), imgMaxX, imgMaxY)
+        val startCoord: Point =
+            boundaryCheck(Point(maxLocX - side, maxLocY - side), imgMaxX, imgMaxY)
         val endCoord: Point = boundaryCheck(Point(maxLocX + side, maxLocY + side), imgMaxX, imgMaxY)
 
         // create the region of interest (roi) rectangle around brightest spot
@@ -221,8 +222,17 @@ class ImageCroppingActivity : AppCompatActivity() {
 //    """.trimIndent())
 
         // create the actual crop box to be used on all of the user's images
-        val boxStartCoord: Point = boundaryCheck(Point((roi.x - roi.width).toDouble(), (roi.y - roi.width).toDouble()), imgMaxX, imgMaxY)
-        val boxEndCoord: Point = boundaryCheck(Point((roi.x + 2 * roi.width).toDouble(), (roi.y + 2 * roi.width).toDouble()), imgMaxX, imgMaxY)
+        val boxStartCoord: Point = boundaryCheck(
+            Point((roi.x - roi.width).toDouble(), (roi.y - roi.width).toDouble()),
+            imgMaxX,
+            imgMaxY
+        )
+        val boxEndCoord: Point = boundaryCheck(
+            Point(
+                (roi.x + 2 * roi.width).toDouble(),
+                (roi.y + 2 * roi.width).toDouble()
+            ), imgMaxX, imgMaxY
+        )
 
         return Rect(boxStartCoord, boxEndCoord)
     }

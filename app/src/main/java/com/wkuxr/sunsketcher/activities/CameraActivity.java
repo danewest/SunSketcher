@@ -404,7 +404,8 @@ public class CameraActivity extends AppCompatActivity {
         //the next three lines are a testcase to make sure functionality works
         long randomizer = (long)((Math.random() * 500) - 250); //TODO: remove for actual app releases
         startTime = System.currentTimeMillis() + 30000 + randomizer; //TODO: remove for actual app releases
-        endTime = startTime + 60000 * 2 + randomizer; //5 minutes after startTime TODO: remove for actual app releases
+        Log.d("CameraDebug", "Setting c2 time to 30 seconds from now. Image capture starts in 10.");
+        endTime = startTime + 60000 * 2 + randomizer; //2 minutes after startTime TODO: remove for actual app releases
         long midTime = (endTime + startTime) / 2; //set time for midpoint photo for cropping basis
         sequenceTimer = new Timer();
         //set timer to start captures at t[c2] - 20 at 1 img per 2 seconds
@@ -462,6 +463,7 @@ public class CameraActivity extends AppCompatActivity {
 
     static class StartSequenceTask extends TimerTask {
         public void run(){
+            Log.d("CameraDebug", "Starting slow captures.");
             singleton.sequenceHandler.removeCallbacks(singleton.fastSequenceRunnable);
             singleton.sequenceHandler.postDelayed(singleton.sequenceRunnable, 0);
         }
@@ -477,6 +479,7 @@ public class CameraActivity extends AppCompatActivity {
 
     static class FastSequenceTask extends TimerTask {
         public void run(){
+            Log.d("CameraDebug", "Starting fast captures.");
             singleton.sequenceHandler.removeCallbacks(singleton.sequenceRunnable);
             singleton.sequenceHandler.postDelayed(singleton.fastSequenceRunnable, 0);
         }
