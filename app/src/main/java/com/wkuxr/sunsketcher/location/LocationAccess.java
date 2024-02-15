@@ -2,6 +2,7 @@ package com.wkuxr.sunsketcher.location;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Looper;
@@ -40,9 +41,10 @@ public class LocationAccess {
         }
 
         LocationRequest locationRequest = LocationRequest.create()
-                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-                .setInterval(10000) // Update interval in milliseconds
-                .setFastestInterval(5000); // Fastest update interval in milliseconds
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY) // Update interval in milliseconds
+                .setInterval(10000)
+                .setFastestInterval(5000)
+                .setNumUpdates(1);
 
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, new LocationCallback() {
             @Override

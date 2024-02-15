@@ -3,13 +3,16 @@
   <component name="AndroidLayouts">
     <shared>
       <config>
-        <device id="_device_class_phone" />
+        <device id="pixel_4a" />
+        <device id="pixel_4_xl" />
+        <device id="Nexus 6" />
+        <device id="Nexus 6P" />
+        <device id="Nexus 5X" />
+        <device id="pixel_2" />
+        <device id="pixel" />
         <device id="_device_class_foldable" />
-        <device id="_device_class_desktop" />
-        <device id="pixel_6" />
-        <device id="resizable" />
-        <device id="13.5in Freeform" />
-        <device id="10.1in WXGA (Tablet)" />
+        <device id="_device_class_phone" />
+        <device id="pixel_3a" />
       </config>
     </shared>
   </component>
@@ -17,21 +20,51 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="acb4d6b3-a831-4890-a89e-278ce8cf7451" name="Changes" comment="">
+    <list default="true" id="9efa315a-29e0-4b19-9bb1-8a00b1e36643" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/PermissionsWarningActivity.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_permissions_warning.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CameraActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CameraActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CountdownActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CountdownActivity.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/ImageCroppingActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/ImageCroppingActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/MainActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/SendConfirmationActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/SendConfirmationActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/location/LocationAccess.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/location/LocationAccess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_countdown.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_countdown.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_finished_complete.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_finished_complete.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_finished_info.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_finished_info.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_finished_info_deny.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_finished_info_deny.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_image_cropping.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_image_cropping.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_learn_more.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_learn_more.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_location_prompt.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_location_prompt.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_location_warning.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_location_warning.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_send_confirmation.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_send_confirmation.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_terms_and_conditions.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_terms_and_conditions.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_tutorial.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_tutorial.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_tutorial_prompt.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_tutorial_prompt.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_upload_deny_confirmation.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_upload_deny_confirmation.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_learn_more.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_learn_more.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_tutorial.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_tutorial.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/recycle_list_item.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/recycle_list_item.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[RFCT71CL4AH]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[RFCN90FN94Z]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
     </projectState>
+  </component>
+  <component name="GenerateSignedApkSettings">
+    <option name="EXPORT_PRIVATE_KEY" value="false" />
+    <option name="KEY_STORE_PATH" value="C:\Users\trv66960\.android\sunsketcher-keystore.jks" />
+    <option name="KEY_ALIAS" value="sunsketcher" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -58,15 +91,26 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;BundleExportedModule&quot;: &quot;SunSketcher.app&quot;,
+    &quot;DEBUGGABLE_DEVICE&quot;: &quot;samsung-sm_s908u1-RFCT70XQR9L&quot;,
+    &quot;DEBUGGABLE_PROCESS&quot;: &quot;com.wkuxr.eclipsetotality&quot;,
+    &quot;DEBUGGER_ID&quot;: &quot;Auto&quot;,
+    &quot;ExportBundle.BundlePathForSunSketcher.app&quot;: &quot;C:\\Users\\trv66960\\AndroidStudioProjects\\EclipseTotality\\app&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;SHOW_ALL_PROCESSES&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/akatsuki/Downloads/OpenCV-android-sdk/sdk&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/trv66960/AndroidStudioProjects/EclipseTotality&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;device.mirroring&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;ExportApk.BuildVariants&quot;: [
+      &quot;release&quot;
+    ]
   }
 }</component>
   <component name="PsdUISettings">
@@ -75,6 +119,9 @@
   </component>
   <component name="RecentsManager">
     <key name="android.template.-1209819723">
+      <recent name="com.wkuxr.sunsketcher.activities" />
+    </key>
+    <key name="android.template.-582349950">
       <recent name="com.wkuxr.sunsketcher.activities" />
     </key>
   </component>
@@ -141,7 +188,7 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="acb4d6b3-a831-4890-a89e-278ce8cf7451" name="Changes" comment="" />
+      <changelist id="9efa315a-29e0-4b19-9bb1-8a00b1e36643" name="Changes" comment="" />
       <created>1707442437022</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -159,5 +206,18 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="OCSymbolicBreakpointType">
+          <properties>
+            <option name="moduleName" value="libart.so" />
+            <option name="symbolPattern" value="art_sigsegv_fault" />
+          </properties>
+          <option name="timeStamp" value="6" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

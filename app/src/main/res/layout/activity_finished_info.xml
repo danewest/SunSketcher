@@ -34,13 +34,12 @@
 
     <ImageView
         android:id="@+id/finishedInfoBackgroundShade"
-        android:layout_width="match_parent"
-        android:layout_height="670dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:background="#DC000000"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/finishedInfoBackgroundImage"
+        app:layout_constraintBottom_toTopOf="@+id/finishedInfoBottomLine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,10 +60,12 @@
         android:id="@+id/finishedInfoBottomLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
+        android:layout_marginBottom="60dp"
         android:background="#FFFFFF"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/finishedInfoBackgroundShade"
+        app:layout_constraintBottom_toBottomOf="@+id/finishedInfoBackgroundImage"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView

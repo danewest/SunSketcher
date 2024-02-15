@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="708dp"
+    android:layout_height="wrap_content"
     android:background="#00000000"
     tools:context=".fragments.TutorialFragment">
 
@@ -33,8 +33,8 @@
     <TextView
         android:id="@+id/tutorialFragmentTitle"
         android:layout_width="318dp"
-        android:layout_height="88dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:fontFamily="@font/oswald_medium"
         android:text="Before you start"
         android:textAlignment="center"
@@ -48,7 +48,7 @@
         android:id="@+id/tutorialFragmentImage"
         android:layout_width="0dp"
         android:layout_height="200dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="12dp"
         android:adjustViewBounds="true"
         android:src="@drawable/do_not_disturb_tutorial"
         app:layout_constraintEnd_toEndOf="parent"
@@ -58,10 +58,10 @@
 
     <TextView
         android:id="@+id/tutorialFragmentText"
-        android:layout_width="0dp"
-        android:layout_height="300dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="24dp"
         android:fontFamily="@font/montserrat"
         android:text="In order to ensure smooth operation, please enable the 'Do Not Disturb' feature of your phone. You can disable it again after your images have been captured, after the total eclipse ends."

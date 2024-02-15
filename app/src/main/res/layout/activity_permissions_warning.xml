@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    tools:context=".activities.LocationWarningActivity">
+    tools:context=".activities.PermissionsWarningActivity">
 
     <ImageView
-        android:id="@+id/locationWarningBackgroundImage"
+        android:id="@+id/permissionsWarningBackgroundImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
@@ -20,7 +20,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
-        android:id="@+id/locationWarningSunsketcherLogo"
+        android:id="@+id/permissionsWarningSunsketcherLogo"
         android:layout_width="244dp"
         android:layout_height="66dp"
         android:layout_marginTop="16dp"
@@ -34,31 +34,31 @@
         tools:layout_editor_absoluteY="16dp" />
 
     <ImageView
-        android:id="@+id/locationWarningBackgroundShade"
+        android:id="@+id/permissionsWarningBackgroundShade"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
         android:background="#DC000000"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toTopOf="@+id/locationWarningBottomLine"
+        app:layout_constraintBottom_toTopOf="@+id/permissionsWarningBottomLine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locationWarningSunsketcherLogo"
+        app:layout_constraintTop_toBottomOf="@+id/permissionsWarningSunsketcherLogo"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
-        android:id="@+id/locationWarningTopLine"
+        android:id="@+id/permissionsWarningTopLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:background="#FFFFFF"
         android:contentDescription="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/locationWarningBackgroundShade" />
+        app:layout_constraintTop_toTopOf="@+id/permissionsWarningBackgroundShade" />
 
     <ImageView
-        android:id="@+id/locationWarningBottomLine"
+        android:id="@+id/permissionsWarningBottomLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:layout_marginBottom="60dp"
@@ -69,10 +69,10 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/locationWarningTitleText"
+        android:id="@+id/permissionsWarningTitleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="12dp"
         android:fontFamily="@font/oswald_medium"
         android:text="Oh no!"
         android:textAlignment="center"
@@ -81,26 +81,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/locationWarningBackgroundShade" />
+        app:layout_constraintTop_toTopOf="@+id/permissionsWarningBackgroundShade" />
 
     <TextView
-        android:id="@+id/locationWarningText"
+        android:id="@+id/permissionsWarningText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="24dp"
         android:fontFamily="@font/montserrat"
-        android:text="Please wait to press the start button until you are at the location you will be during the eclipse."
+        android:text="All requested permissions must be allowed for the app to function. If you have not been prompted to allow permissions, please open the app settings by long-pressing on the app icon and selecting the info card. From there, allow all of the permissions in the &quot;Permissions&quot; tab."
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="28sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locationWarningTitleText" />
+        app:layout_constraintTop_toBottomOf="@+id/permissionsWarningTitleText" />
 
     <ImageView
-        android:id="@+id/locationWarningDone"
+        android:id="@+id/permissionsWarningDone"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_marginBottom="24dp"
@@ -109,7 +109,7 @@
         android:contentDescription="Done"
         android:focusable="auto"
         android:onClick="onClick"
-        app:layout_constraintBottom_toBottomOf="@+id/locationWarningBottomLine"
+        app:layout_constraintBottom_toBottomOf="@+id/permissionsWarningBottomLine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/check" />

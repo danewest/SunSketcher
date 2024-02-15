@@ -44,7 +44,7 @@ class ImageCroppingActivity : AppCompatActivity() {
                 cropImages()
             }
 
-            SendConfirmationActivity.prefs.edit().putBoolean("cropped", true).apply()
+            prefs.edit().putBoolean("cropped", true).apply()
             val intent = Intent(this, SendConfirmationActivity::class.java)
             startActivity(intent)
         }
@@ -58,6 +58,8 @@ class ImageCroppingActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+
+    var cropBox: Rect? = null
 
     //private fun cropImages(numToCrop: Int){
     private fun cropImages() {
@@ -81,13 +83,15 @@ class ImageCroppingActivity : AppCompatActivity() {
 
         // find the correct crop box using the center image
 
-        val cropBox = getEclipseBox(imgMat)
+        if(cropBox == null) {
+            cropBox = getEclipseBox(imgMat)
+        }
 
         // create folder for cropped images to be stored on the phone
         // reference to folder with all cropped images
         val mCropImageFolder: File = createCroppedImageFolder()
 
-        if (mCropImageFolder.exists() && !cropBox.empty()) {
+        if (mCropImageFolder.exists() && !cropBox!!.empty()) {
 
             // cropped image folder successfully made!
 

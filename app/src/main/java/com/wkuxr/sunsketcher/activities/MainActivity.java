@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static MainActivity singleton;   //having a singleton instance of the MainActivity makes so many things significantly easier because it gives us a definite, central reference point for non-static and activity-related functions
     ActivityMainBinding binding;
+
+    static String[] perms = new String[]{"android.permission.CAMERA","android.permission.ACCESS_FINE_LOCATION","android.permission.WRITE_EXTERNAL_STORAGE","android.permission.INTERNET","android.permission.POST_NOTIFICATIONS"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,14 +41,18 @@ public class MainActivity extends AppCompatActivity {
         singleton = this;
         App.setContext(this);
 
-        reqPerm(new String[]{"android.permission.CAMERA","android.permission.ACCESS_FINE_LOCATION","android.permission.WRITE_EXTERNAL_STORAGE","android.permission.INTERNET","android.permission.POST_NOTIFICATIONS"});
+        reqPerm(perms);
 
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         int hasConfirmDeny = prefs.getInt("upload", -1); //if -1, hasn't taken images yet
         Intent intent = null;
         switch(hasConfirmDeny){
             case -2: //not yet confirmed or denied
-                intent = new Intent(this, ImageCroppingActivity.class);
+                if(prefs.getBoolean("cropped", false)){
+                    intent = new Intent(this, SendConfirmationActivity.class);
+                } else {
+                    intent = new Intent(this, ImageCroppingActivity.class);
+                }
                 break;
             case 0: //denied upload
                 intent = new Intent(this, FinishedInfoDenyActivity.class);
@@ -91,7 +97,11 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = null;
         switch(hasConfirmDeny){
             case -2: //not yet confirmed or denied
-                intent = new Intent(this, ImageCroppingActivity.class);
+                if(prefs.getBoolean("cropped", false)){
+                    intent = new Intent(this, SendConfirmationActivity.class);
+                } else {
+                    intent = new Intent(this, ImageCroppingActivity.class);
+                }
                 break;
             case 0: //denied upload
                 intent = new Intent(this, FinishedInfoDenyActivity.class);
@@ -121,17 +131,21 @@ public class MainActivity extends AppCompatActivity {
     Timer timer = null;
 
     public void start(View v){
-        SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+        Intent intent;
+        if(reqPerm(perms)) {
+            SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
 
-        if (prefs.getBoolean("completedTutorial", false)) {
-            //tutorial has been completed, go to location prompt
-            Intent intent = new Intent(this, LocationPromptActivity.class);
-            startActivity(intent);
+            if (prefs.getBoolean("completedTutorial", false)) {
+                //tutorial has been completed, go to location prompt
+                intent = new Intent(this, LocationPromptActivity.class);
+            } else {
+                //tutorial has not been completed, suggest viewing tutorial
+                intent = new Intent(this, TutorialPromptActivity.class);
+            }
         } else {
-            //tutorial has not been completed, suggest viewing tutorial
-            Intent intent = new Intent(this, TutorialPromptActivity.class);
-            startActivity(intent);
+            intent = new Intent(this, PermissionsWarningActivity.class);
         }
+        startActivity(intent);
     }
 
     public void tutorial(View v){
@@ -154,9 +168,19 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void reqPerm(String[] permissions){
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    public boolean reqPerm(String[] permissions){
+        if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)) {
+            //all required permissions have been granted
+            return true;
+        }
+        else {
+            //not all required permissions have been granted
+            Log.d("PermissionRequests", "Not all required permissions were granted. Requesting them." +
+                    "\nFine location: " + (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) +
+                    "\nCamera: " + (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            );
             requestPermissions(permissions, 1);
+            return false;
         }
     }
 

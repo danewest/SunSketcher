@@ -34,13 +34,12 @@
 
     <ImageView
         android:id="@+id/finishedCompleteBackgroundShade"
-        android:layout_width="match_parent"
-        android:layout_height="670dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:background="#DC000000"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/finishedCompleteBackgroundImage"
+        app:layout_constraintBottom_toTopOf="@+id/finishedCompleteBottomLine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,9 +60,10 @@
         android:id="@+id/finishedCompleteBottomLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
+        android:layout_marginBottom="60dp"
         android:background="#FFFFFF"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/finishedCompleteBackgroundShade"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -71,7 +71,7 @@
         android:id="@+id/finishedCompleteTitleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="12dp"
         android:fontFamily="@font/oswald_medium"
         android:text="Thank you!"
         android:textAlignment="center"
@@ -87,7 +87,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="24dp"
         android:fontFamily="@font/montserrat"
         android:text="Your data has been received! Thank you for participating in SunSketcher! You can now delete the SunSketcher app."
@@ -103,43 +103,43 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="80dp"
         android:layout_marginEnd="24dp"
+        android:layout_marginBottom="12dp"
         android:fontFamily="@font/montserrat"
         android:text="Make it count! If you're a member of SciStarter, log your participation here to be included in #OneMillionActsofScience."
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="22sp"
+        app:layout_constraintBottom_toTopOf="@+id/finishedCompleteSciStarterButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/finishedCompleteText" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/finishedCompleteSciStarterButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
+        android:layout_marginBottom="12dp"
         android:clickable="true"
         android:contentDescription="SciStarter Website Link"
         android:focusable="auto"
         android:onClick="onSciStarterClick"
+        app:layout_constraintBottom_toTopOf="@+id/finishedCompleteLearnMoreButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/finishedCompleteBackgroundImage"
-        app:layout_constraintTop_toBottomOf="@+id/finishedCompleteSciStarterText"
         app:srcCompat="@drawable/scistarter" />
 
     <ImageView
         android:id="@+id/finishedCompleteLearnMoreButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
+        android:layout_marginBottom="12dp"
         android:contentDescription="Learn more"
         android:onClick="onLearnMoreClick"
+        app:layout_constraintBottom_toTopOf="@+id/finishedCompleteBottomLine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/finishedCompleteSciStarterButton"
         app:srcCompat="@drawable/learn_more_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

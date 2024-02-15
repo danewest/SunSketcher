@@ -35,14 +35,13 @@
 
     <ImageView
         android:id="@+id/sendConfirmationBackgroundShade"
-        android:layout_width="match_parent"
-        android:layout_height="670dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="60dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:adjustViewBounds="true"
         android:background="#DC000000"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/sendConfirmationBackgroundImage"
+        app:layout_constraintBottom_toTopOf="@+id/sendConfirmationBottomLine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,18 +62,37 @@
         android:id="@+id/sendConfirmationBottomLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
+        android:layout_marginBottom="60dp"
         android:background="#FFFFFF"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/sendConfirmationBackgroundShade"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/sendConfirmationYesBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sendConfirmationInfoText">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/imageRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/sendConfirmationSkipText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:fontFamily="@font/oswald_medium"
         android:text="Ok to share photos?"
@@ -124,30 +142,12 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:fontFamily="@font/montserrat"
-        android:text="Scroll left and right for more images.\n\nEven the ones that look boring hold scientific value!"
+        android:text="Scroll left and right for more images.\nEven the ones that look boring hold scientific value!"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sendConfirmationSkipText" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/sendConfirmationYesBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sendConfirmationInfoText">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/imageRecycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

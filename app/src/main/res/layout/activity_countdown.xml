@@ -35,14 +35,13 @@
 
     <ImageView
         android:id="@+id/countdownBackgroundShade"
-        android:layout_width="match_parent"
-        android:layout_height="670dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="60dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:adjustViewBounds="true"
         android:background="#DC000000"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/countdownBackgroundImage"
+        app:layout_constraintBottom_toTopOf="@+id/countdownBottomLine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,9 +62,10 @@
         android:id="@+id/countdownBottomLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
+        android:layout_marginBottom="60dp"
         android:background="#FFFFFF"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/countdownBackgroundShade"
+        app:layout_constraintBottom_toBottomOf="@+id/countdownBackgroundImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -74,7 +74,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
-        android:layout_marginTop="20dp"
         android:layout_marginEnd="36dp"
         android:fontFamily="@font/montserrat"
         android:text="Your location:\nLatitude: 37.141562\nLongitude: -88.669294"
@@ -89,11 +88,11 @@
         android:id="@+id/countdownDoNotDisturbImage"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
+        android:layout_marginBottom="8dp"
         android:adjustViewBounds="true"
+        app:layout_constraintBottom_toTopOf="@+id/countdownInfoText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/countdownTopLine"
         app:srcCompat="@drawable/do_not_disturb_countdown" />
 
     <TextView
@@ -101,17 +100,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
+        android:layout_marginBottom="8dp"
         android:fontFamily="@font/montserrat"
         android:text="Please turn your ringer off and Do Not Disturb on!"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="36sp"
+        app:layout_constraintBottom_toTopOf="@+id/countdownTimeText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/countdownDoNotDisturbImage" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/countdownTimeText"
@@ -119,14 +118,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="92dp"
+        android:layout_marginBottom="8dp"
         android:fontFamily="@font/montserrat"
         android:text="Waiting for eclipse start time to be calculated..."
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="36sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/countdownBottomLine"
+        app:layout_constraintBottom_toTopOf="@+id/countdownArrowRight"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -135,7 +134,7 @@
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="12dp"
         android:adjustViewBounds="true"
         android:clickable="true"
         android:contentDescription="Next page"

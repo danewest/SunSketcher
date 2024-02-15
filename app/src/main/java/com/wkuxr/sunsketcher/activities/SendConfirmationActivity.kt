@@ -51,10 +51,10 @@ class SendConfirmationActivity : AppCompatActivity() {
         binding = ActivitySendConfirmationBinding.inflate(layoutInflater)
         setContentView(binding.root)
         singleton = this
+        prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE)
 
         recyclerView = binding.imageRecycler
 
-        prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE)
         val hasConfirmDeny = prefs.getInt("upload", -1)
         var intent: Intent? = null
         when (hasConfirmDeny) {

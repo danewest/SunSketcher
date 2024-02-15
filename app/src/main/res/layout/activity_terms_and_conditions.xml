@@ -35,13 +35,12 @@
 
     <ImageView
         android:id="@+id/tacBackgroundShade"
-        android:layout_width="match_parent"
-        android:layout_height="670dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:background="#DC000000"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/tacBackgroundImage"
+        app:layout_constraintBottom_toTopOf="@+id/tacBottomLine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,9 +61,10 @@
         android:id="@+id/tacBottomLine"
         android:layout_width="match_parent"
         android:layout_height="3dp"
+        android:layout_marginBottom="60dp"
         android:background="#FFFFFF"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/tacBackgroundShade"
+        app:layout_constraintBottom_toBottomOf="@+id/tacBackgroundImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -74,9 +74,9 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="128dp"
+        android:layout_marginBottom="48dp"
         android:scrollbars="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/tacBottomLine"
+        app:layout_constraintBottom_toTopOf="@+id/imageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tacTopLine">
