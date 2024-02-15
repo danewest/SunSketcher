@@ -21,41 +21,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9efa315a-29e0-4b19-9bb1-8a00b1e36643" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/PermissionsWarningActivity.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_permissions_warning.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CameraActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CameraActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CountdownActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CountdownActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/ImageCroppingActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/ImageCroppingActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/SendConfirmationActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/SendConfirmationActivity.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/location/LocationAccess.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/location/LocationAccess.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_countdown.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_countdown.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_finished_complete.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_finished_complete.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_finished_info.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_finished_info.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_finished_info_deny.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_finished_info_deny.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_image_cropping.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_image_cropping.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_learn_more.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_learn_more.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_location_prompt.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_location_prompt.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_location_warning.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_location_warning.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_send_confirmation.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_send_confirmation.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_terms_and_conditions.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_terms_and_conditions.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_tutorial.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_tutorial.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_tutorial_prompt.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_tutorial_prompt.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_upload_deny_confirmation.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_upload_deny_confirmation.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_learn_more.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_learn_more.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_tutorial.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_tutorial.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/recycle_list_item.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/recycle_list_item.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[RFCN90FN94Z]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\trv66960\.android\avd\Pixel_4_API_33.avd]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -206,18 +185,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <breakpoint enabled="true" type="OCSymbolicBreakpointType">
-          <properties>
-            <option name="moduleName" value="libart.so" />
-            <option name="symbolPattern" value="art_sigsegv_fault" />
-          </properties>
-          <option name="timeStamp" value="6" />
-        </breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

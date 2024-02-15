@@ -88,11 +88,11 @@
         android:id="@+id/countdownDoNotDisturbImage"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="12dp"
         android:adjustViewBounds="true"
-        app:layout_constraintBottom_toTopOf="@+id/countdownInfoText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/countdownLocationDetailsText"
         app:srcCompat="@drawable/do_not_disturb_countdown" />
 
     <TextView
@@ -100,17 +100,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="8dp"
         android:fontFamily="@font/montserrat"
         android:text="Please turn your ringer off and Do Not Disturb on!"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="36sp"
-        app:layout_constraintBottom_toTopOf="@+id/countdownTimeText"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/countdownDoNotDisturbImage" />
 
     <TextView
         android:id="@+id/countdownTimeText"
@@ -118,14 +119,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="82dp"
         android:fontFamily="@font/montserrat"
         android:text="Waiting for eclipse start time to be calculated..."
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="36sp"
+        android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/countdownArrowRight"
+        app:layout_constraintBottom_toTopOf="@+id/countdownBottomLine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -149,7 +150,7 @@
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_marginStart="24dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="12dp"
         android:adjustViewBounds="true"
         android:clickable="true"
         android:contentDescription="Previous page"
@@ -164,12 +165,12 @@
         android:id="@+id/countdownPhoneStandImage"
         android:layout_width="wrap_content"
         android:layout_height="200dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="12dp"
         android:adjustViewBounds="true"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/countdownTopLine"
+        app:layout_constraintTop_toBottomOf="@+id/countdownLocationDetailsText"
         app:srcCompat="@drawable/phone_stand_tutorial" />
 
     <TextView
@@ -177,7 +178,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="24dp"
         android:fontFamily="@font/montserrat"
         android:text="Set the phone down with the REAR CAMERA facing the Sun. Enjoy totality, you can check your phone again 5 minutes after totality ends."

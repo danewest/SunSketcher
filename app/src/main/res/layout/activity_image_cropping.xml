@@ -76,7 +76,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:fontFamily="@font/oswald_medium"
-        android:text="Processing images...\nThis may take up to two minutes. Please do not close the SunSketcher app."
+        android:text="Processing images...\nThis may take up to two minutes. Please do not close the SunSketcher app.\nIf your device says that the app has stopped working, please re-open the SunSketcher app."
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="36sp"

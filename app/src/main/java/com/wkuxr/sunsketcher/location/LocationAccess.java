@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
@@ -43,17 +44,19 @@ public class LocationAccess {
         LocationRequest locationRequest = LocationRequest.create()
                 .setPriority(Priority.PRIORITY_HIGH_ACCURACY) // Update interval in milliseconds
                 .setInterval(10000)
-                .setFastestInterval(5000)
-                .setNumUpdates(1);
+                .setFastestInterval(5000);
+        Log.d("LocationAccess", "Created location request.");
 
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
+                Log.d("LocationAccess", "Location received.");
                 Location lastLocation = locationResult.getLastLocation();
                 if (callback != null) {
                     callback.onLocationResult(lastLocation);
                 }
+                fusedLocationProviderClient.removeLocationUpdates(this);
             }
         }, Looper.getMainLooper());
     }
