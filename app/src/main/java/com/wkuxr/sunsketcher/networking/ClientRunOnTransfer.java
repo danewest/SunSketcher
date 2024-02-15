@@ -129,7 +129,7 @@ public class ClientRunOnTransfer {
         byte[] decryptedMessage = cipher.doFinal(decodedBytes);
             Log.d("NetworkTransfer", "key decrypted");
         Log.d("NetworkTransfer", "Decrypted key value " + Arrays.toString(decryptedMessage));
-        SecretKey aesKey = new SecretKeySpec(decryptedMessage,  "AES/GCM/NoPadding");
+        SecretKey aesKey = new SecretKeySpec(decryptedMessage,  "AES");
             Log.d("NetworkTransfer", "Aes key acquired");
 
 
