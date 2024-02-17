@@ -11,8 +11,8 @@ android {
         applicationId "com.wkuxr.eclipsetotality"
         minSdk 31
         targetSdk 33
-        versionCode 18
-        versionName "0.4.4-pre"
+        versionCode 19
+        versionName "0.4.5-pre"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
@@ -48,7 +48,6 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.room:room-runtime:2.5.2'
     annotationProcessor 'androidx.room:room-compiler:2.5.2'
     kapt 'androidx.room:room-compiler:2.5.2'

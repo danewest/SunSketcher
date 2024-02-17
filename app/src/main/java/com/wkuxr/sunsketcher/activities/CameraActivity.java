@@ -19,8 +19,6 @@ import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.RggbChannelVector;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.hardware.camera2.DngCreator;
-import android.media.ExifInterface;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
@@ -31,7 +29,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 import android.util.Range;
-import android.util.Rational;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
@@ -155,19 +152,7 @@ public class CameraActivity extends AppCompatActivity {
                 ByteBuffer byteBuffer = mImage.getPlanes()[0].getBuffer();
                 bytes = new byte[byteBuffer.remaining()];
                 byteBuffer.get(bytes);
-
-                //change the image format to raw10
-                /*imageFormat = ImageFormat.RAW10;
-                setupCamera(mTextureView.getWidth(), mTextureView.getHeight());
-                connectCamera();*/
             }
-
-            //TODO: implement DngCreator with RAW_SENSOR imageFormat
-            /*try {
-                DngCreator dngCreator = DngCreator(cameraManager.getCameraCharacteristics(mCameraId), )
-            } catch (CameraAccessException e) {
-                throw new RuntimeException(e);
-            }*/
 
             //write the byte array to the file created
             FileOutputStream fileOutputStream = null;
@@ -257,15 +242,6 @@ public class CameraActivity extends AppCompatActivity {
                         //This line displays the popup
                         // that is shown after an image is taken. we don't particularly need it in the final product, but it is good for testing.
                         Toast.makeText(getApplicationContext(), "AF Locked!", Toast.LENGTH_SHORT).show();
-                                /*try {
-                                    CaptureRequest.Builder builder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-                                    startStillCaptureRequest(builder);
-                                    builder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-                                    builder.set(CaptureRequest.SENSOR_SENSITIVITY,100);
-                                    startStillCaptureRequest(builder);
-                                } catch (CameraAccessException e) {
-                                    e.printStackTrace();
-                                }*/
                     }
                     break;
             }
@@ -302,46 +278,6 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-    /*@RequiresApi(api = Build.VERSION_CODES.O)
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        createImageFolder();
-
-        mTextureView = findViewById(R.id.textureView);
-        ImageButton mStillImageButton = findViewById(R.id.cameraImageButton2);
-        mStillImageButton.setOnClickListener(v -> {
-            //checkWriteStoragePermission();  // this was taken out because it causes the app to crash by asking
-            // for permission twice. may be an issue that causes the app to crash upon startup currently.
-            //try{
-            //    startStillCaptureRequest(mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE));
-            //} catch (CameraAccessException e){
-            //    e.printStackTrace();
-            //}
-
-            lockFocus();
-            try {
-                CaptureRequest.Builder builder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-                builder.set(CaptureRequest.EDGE_MODE, CaptureRequest.EDGE_MODE_OFF);
-                builder.set(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE_ON);
-                builder.set(CaptureRequest.COLOR_CORRECTION_ABERRATION_MODE, CaptureRequest.COLOR_CORRECTION_ABERRATION_MODE_OFF);
-                builder.set(CaptureRequest.NOISE_REDUCTION_MODE, CaptureRequest.NOISE_REDUCTION_MODE_OFF);
-                builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
-                builder.set(CaptureRequest.CONTROL_AE_LOCK, true);
-                builder.set(CaptureRequest.CONTROL_AWB_LOCK, true);
-
-                startStillCaptureRequest(builder);
-            } catch (CameraAccessException e) {
-                e.printStackTrace();
-            }
-        });
-    }*/
-
-    //NTPUDPClient NTPClient;
-    //long offset = 0;
-
     long startTime;
     long endTime;
 
@@ -356,40 +292,18 @@ public class CameraActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        //Thread NTPClientThread = new Thread(ntpClientRunnable){};
-        //NTPClientThread.start();
-
         db = MetadataDB.Companion.createDB(this);
-
-        //checkWriteStoragePermission();
 
         createImageFolder();
 
         mTextureView = findViewById(R.id.textureView);
 
         //get the start and end time of eclipse totality from SharedPreferences, default to Long.MAX_VALUE if not present so the camera sequence doesn't falsely trigger.
-        SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+        prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         long randomizer = (long)((Math.random() * 500) - 250);
         startTime = prefs.getLong("startTime", Long.MAX_VALUE) + randomizer;
         endTime = prefs.getLong("endTime", Long.MAX_VALUE) + randomizer;
     }
-
-    /*Runnable ntpClientRunnable = () -> {
-        NTPClient = new NTPUDPClient();
-        NTPClient.setDefaultTimeout(2_000);
-        InetAddress inetAddress;
-        TimeInfo timeInfo;
-        try {
-            inetAddress = InetAddress.getByName("pool.ntp.org");
-            timeInfo = NTPClient.getTime(inetAddress);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        timeInfo.computeDetails();
-
-        offset = timeInfo.getOffset();
-        Log.d("NTPTimingOffset","Offset is " + offset);
-    };*/
 
     @Override
     protected void onStart() {
@@ -397,15 +311,15 @@ public class CameraActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        prefs = singleton.getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+        prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         prefs.edit().putInt("upload", -2).apply();
 
         //timer that takes images every 1 seconds for 20 seconds starting 15 seconds before t[c2], then another timer for images every 1s for 20s starting 5s before t[c3]
         //the next three lines are a testcase to make sure functionality works
-        //long randomizer = (long)((Math.random() * 500) - 250); //TODO: remove for actual app releases
-        //startTime = System.currentTimeMillis() + 30000 + randomizer; //TODO: remove for actual app releases
-        //Log.d("CameraDebug", "Setting c2 time to 30 seconds from now. Image capture starts in 10.");
-        //endTime = startTime + 60000 * 2 + randomizer; //2 minutes after startTime TODO: remove for actual app releases
+        long randomizer = (long)((Math.random() * 500) - 250); //TODO: remove for actual app releases
+        startTime = System.currentTimeMillis() + 30000 + randomizer; //TODO: remove for actual app releases
+        Log.d("CameraDebug", "Setting c2 time to 30 seconds from now. Image capture starts in 10.");
+        endTime = startTime + 60000 * 2 + randomizer; //2 minutes after startTime TODO: remove for actual app releases
         long midTime = (endTime + startTime) / 2; //set time for midpoint photo for cropping basis
         sequenceTimer = new Timer();
         //set timer to start captures at t[c2] - 20 at 1 img per 2 seconds
@@ -714,7 +628,7 @@ public class CameraActivity extends AppCompatActivity {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE, CaptureRequest.COLOR_CORRECTION_MODE_TRANSFORM_MATRIX);
-                mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, colorTemperature(2000));
+                //mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, colorTemperature(2000));
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, hyperfocus);
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, 64);  // 63 ISO

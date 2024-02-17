@@ -22,6 +22,7 @@ import org.opencv.core.Size
 import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
 import java.io.File
+import java.util.concurrent.Executors
 
 class ImageCroppingActivity : AppCompatActivity() {
     companion object {
@@ -39,7 +40,8 @@ class ImageCroppingActivity : AppCompatActivity() {
 
         prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE)
 
-        val thread = Thread {
+        //old, caused application not responding dialogue
+        /*val thread = Thread {
             while (!prefs.getBoolean("cropped", false)) {
                 cropImages()
             }
@@ -48,7 +50,17 @@ class ImageCroppingActivity : AppCompatActivity() {
             val intent = Intent(this, SendConfirmationActivity::class.java)
             startActivity(intent)
         }
-        thread.start()
+        thread.start()*/
+
+        Executors.newSingleThreadExecutor().execute{
+            while (!prefs.getBoolean("cropped", false)) {
+                cropImages()
+            }
+
+            prefs.edit().putBoolean("cropped", true).apply()
+            val intent = Intent(this, SendConfirmationActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onResume() {
@@ -61,7 +73,6 @@ class ImageCroppingActivity : AppCompatActivity() {
 
     var cropBox: Rect? = null
 
-    //private fun cropImages(numToCrop: Int){
     private fun cropImages() {
         System.loadLibrary("opencv_java4")
 
@@ -167,12 +178,10 @@ class ImageCroppingActivity : AppCompatActivity() {
 
     // creates folder in SunSketchers directory for cropped images. Returns created folder
     private fun createCroppedImageFolder(): File {
+        // reference to original image folder in pictures directory
         val picturesDir = filesDir
 
-        // reference to original image folder in pictures directory (should already be made)
-        //val mImageFolder: File = File(picturesDir, "SunSketcher")
-
-        // create the cropped image folder in Pictures/SunSketcher/CroppedImages
+        // create the cropped image folder in the app's internal storage
         val mCropImageFolder = File(picturesDir, "CroppedImages")
         mCropImageFolder.mkdirs()
 
@@ -214,16 +223,6 @@ class ImageCroppingActivity : AppCompatActivity() {
 
         // create the region of interest (roi) rectangle around brightest spot
         val roi = Rect(startCoord, endCoord)
-
-//        // to check rectangle coordinates and side length
-//        System.out.println("""
-//    ${"rectangle start x coordinate = " + roi.x}
-//    rectangle start y coordinate = ${roi.y}
-//    """.trimIndent())
-//        System.out.println("""
-//    ${"rectangle height = " + roi.height}
-//    rectangle width = ${roi.width}
-//    """.trimIndent())
 
         // create the actual crop box to be used on all of the user's images
         val boxStartCoord: Point = boundaryCheck(
