@@ -39,6 +39,7 @@ class CountdownActivity : AppCompatActivity() {
         binding.countdownInfoText.text = str
 
         var str2 = SpannableStringBuilder("Set the phone down with the ").bold{append("REAR CAMERA")}.append(" facing the Sun. Enjoy totality, you can check your phone again 5 minutes after totality ends.")
+        binding.countdownInfoPage2Text.text = str2
 
         getLocation()
 
