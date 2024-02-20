@@ -300,6 +300,33 @@ public class CameraActivity extends AppCompatActivity {
 
         //get the start and end time of eclipse totality from SharedPreferences, default to Long.MAX_VALUE if not present so the camera sequence doesn't falsely trigger.
         prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+
+        int hasConfirmDeny = prefs.getInt("upload", -1); //if -1, hasn't taken images yet
+        Intent intent = null;
+        switch(hasConfirmDeny){
+            case -2: //not yet confirmed or denied
+                if(prefs.getBoolean("cropped", false)){
+                    intent = new Intent(this, SendConfirmationActivity.class);
+                } else {
+                    intent = new Intent(this, ImageCroppingActivity.class);
+                }
+                break;
+            case 0: //denied upload
+                intent = new Intent(this, FinishedInfoDenyActivity.class);
+                break;
+            case 1: //allowed upload
+                if(prefs.getBoolean("uploadSuccessful", false)){ //allowed upload and upload already finished
+                    intent = new Intent(this, FinishedCompleteActivity.class);
+                } else {
+                    intent = new Intent(this, FinishedInfoActivity.class);
+                }
+                break;
+            default:
+        }
+        if(intent != null) {
+            this.startActivity(intent);
+        }
+
         long randomizer = (long)((Math.random() * 500) - 250);
         startTime = prefs.getLong("startTime", Long.MAX_VALUE) + randomizer;
         endTime = prefs.getLong("endTime", Long.MAX_VALUE) + randomizer;

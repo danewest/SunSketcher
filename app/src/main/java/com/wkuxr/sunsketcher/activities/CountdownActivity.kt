@@ -18,8 +18,6 @@ import com.wkuxr.sunsketcher.databinding.ActivityCountdownBinding
 import com.wkuxr.sunsketcher.location.LocToTime
 import com.wkuxr.sunsketcher.location.LocationAccess
 import com.wkuxr.sunsketcher.location.LocationAccess.LocationResultCallback
-import java.util.Calendar
-import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
 
@@ -33,6 +31,30 @@ class CountdownActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityCountdownBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val prefs = getSharedPreferences("eclipseDetails", MODE_PRIVATE)
+        val hasConfirmDeny = prefs.getInt("upload", -1) //if -1, hasn't taken images yet
+
+        var intent: Intent? = null
+        when (hasConfirmDeny) {
+            -2 -> intent = if (prefs.getBoolean("cropped", false)) {
+                Intent(this, SendConfirmationActivity::class.java)
+            } else {
+                Intent(this, ImageCroppingActivity::class.java)
+            }
+
+            0 -> intent = Intent(this, FinishedInfoDenyActivity::class.java)
+            1 -> intent = if (prefs.getBoolean("uploadSuccessful", false)) { //allowed upload and upload already finished
+                Intent(this, FinishedCompleteActivity::class.java)
+            } else {
+                Intent(this, FinishedInfoActivity::class.java)
+            }
+
+            else -> {}
+        }
+        if (intent != null) {
+            this.startActivity(intent)
+        }
         
         singleton = this
         var str = SpannableStringBuilder("Please turn your ringer ").bold{append("off")}.append(" and Do Not Disturb ").bold{append("on!")}

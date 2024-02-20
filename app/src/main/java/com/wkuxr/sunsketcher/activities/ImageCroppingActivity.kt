@@ -40,18 +40,7 @@ class ImageCroppingActivity : AppCompatActivity() {
 
         prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE)
 
-        //old, caused application not responding dialogue
-        /*val thread = Thread {
-            while (!prefs.getBoolean("cropped", false)) {
-                cropImages()
-            }
-
-            prefs.edit().putBoolean("cropped", true).apply()
-            val intent = Intent(this, SendConfirmationActivity::class.java)
-            startActivity(intent)
-        }
-        thread.start()*/
-
+        //crop images on a background thread
         Executors.newSingleThreadExecutor().execute{
             while (!prefs.getBoolean("cropped", false)) {
                 cropImages()
