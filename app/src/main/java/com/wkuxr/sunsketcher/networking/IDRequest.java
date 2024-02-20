@@ -17,6 +17,7 @@ import com.wkuxr.sunsketcher.database.MetadataDB;
 
 import java.net.*;
 import java.io.*;
+import java.security.SecureRandom;
 import java.util.*;
 
 import java.security.KeyPair;
@@ -26,13 +27,18 @@ import java.security.PublicKey;
 import java.security.Key;
 
 import javax.crypto.*;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class IDRequest {
     static SharedPreferences prefs;
 
+    static SecretKey aesKey;
+    static BufferedReader fromServer;
+    static DataOutputStream toServer;
+
     public static boolean clientTransferSequence() throws Exception {
-        prefs = App.getContext().getSharedPreferences("eclipseDetails",Context.MODE_PRIVATE);
+        prefs = App.getContext().getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         Log.d("NetworkTransfer", "Loading...");
         Log.d("NetworkTransfer", "Checkpoint 0");
         Socket socket = new Socket();
@@ -40,14 +46,14 @@ public class IDRequest {
         Log.d("NetworkTransfer", "Created Socket");
 
         //continue only if client is from the US
-        BufferedReader fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        
+        fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
         String clearToSend = fromServer.readLine();
 
         Log.d("NetworkTransfer", "Clear to send received.");
         Log.d("NetworkTransfer", clearToSend);
 
-        if(!clearToSend.contains("true")) {
+        if (!clearToSend.contains("true")) {
             //do not retry
             Log.d("NetworkTransfer", "Clear to send is false.");
             prefs.edit().putInt("finishedUpload", 2).apply();
@@ -56,7 +62,7 @@ public class IDRequest {
             return true;
         }
 
-        DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
+        toServer = new DataOutputStream(socket.getOutputStream());
         toServer.writeBytes("IDRequest\n");
         toServer.flush();
 
@@ -79,14 +85,14 @@ public class IDRequest {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");//KeyProperties.KEY_ALGORITHM_RSA);
 
         keyPairGenerator.initialize(2048);
-            Log.d("NetworkTransfer", "Key Generator Initialized");
+        Log.d("NetworkTransfer", "Key Generator Initialized");
 
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
-            Log.d("NetworkTransfer", "Keys Generated");
+        Log.d("NetworkTransfer", "Keys Generated");
 
         PublicKey publicKey = keyPair.getPublic();
         PrivateKey privateKey = keyPair.getPrivate();
-            Log.d("NetworkTransfer", "keys initialized");
+        Log.d("NetworkTransfer", "keys initialized");
         Log.d("NetworkTransfer", "public key value: " + Arrays.toString(publicKey.getEncoded()));
 
 
@@ -95,12 +101,12 @@ public class IDRequest {
 
         DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
         toServer.flush();
-        
+
         Log.d("NetworkTransfer", "checkpoint 2");
 
 
         Log.d("NetworkTransfer", "Communication streams open");
-        
+
         //Send public key to server
         Base64.Encoder encoder = Base64.getEncoder();
         String publicKeyString = new String(encoder.encode(publicKey.getEncoded()));
@@ -118,32 +124,25 @@ public class IDRequest {
 
         byte[] decodedBytes = Base64.getDecoder().decode(encryptedMessage);
         Log.d("NetworkTransfer", "Encrypted key value " + Arrays.toString(decodedBytes));
-        
+
 
         Log.d("NetworkTransfer", "Aes key received.");
 
         // Decrypt key using private key
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-            Log.d("NetworkTransfer", "Cipher created");
+        Log.d("NetworkTransfer", "Cipher created");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            Log.d("NetworkTransfer", "cipher initialized");
+        Log.d("NetworkTransfer", "cipher initialized");
         byte[] decryptedMessage = cipher.doFinal(decodedBytes);
-            Log.d("NetworkTransfer", "key decrypted");
+        Log.d("NetworkTransfer", "key decrypted");
         Log.d("NetworkTransfer", "Decrypted key value " + Arrays.toString(decryptedMessage));
-        SecretKey aesKey = new SecretKeySpec(decryptedMessage,  "AES");
-            Log.d("NetworkTransfer", "Aes key acquired");
-
-
-
-
-
+        aesKey = new SecretKeySpec(decryptedMessage, "AES");
+        Log.d("NetworkTransfer", "Aes key acquired");
 
 
         //Encrypt passkey with AES key and send to server
-        send("SarahSketcher2024", aesKey, toServer);
+        send("SarahSketcher2024");
 
-
-        
 
         Log.d("NetworkTransfer", "Connection Successful!");
 
@@ -152,26 +151,20 @@ public class IDRequest {
 
         //-------------------------------------------------------------------------------------------------------------------
         //begin transfer messaging
-        
-        
-        String transferID = new String(recieve(aesKey, fromServer));
+
+
+        String transferID = receive();
         Log.d("NetworkTransfer", "Received ID " + transferID);
         singleton.getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE).edit().putLong("clientID", Long.parseLong(transferID)).apply();
 
         socket.close();
-        Log.d("NetworkTransfer","Program Complete. Closing...");
+        Log.d("NetworkTransfer", "Program Complete. Closing...");
 
         return true;
     }
 
 
-
-
-
-
-
-
-    public void send(String message) throws Exception {
+    public static void send(String message) throws Exception {
         Cipher AEScipher = Cipher.getInstance("AES/GCM/NoPadding");
 
         // Generate nonce
@@ -186,11 +179,11 @@ public class IDRequest {
         Base64.Encoder encoder = Base64.getEncoder();
 
         // Concatenate nonce and encrypted message
-        String encryptedEncodedMessage = new String(encoder.encodeToString(nonce)) + ":" +
-                                          new String(encoder.encodeToString(encryptedMessage));
+        String encryptedEncodedMessage = encoder.encodeToString(nonce) + ":" +
+                encoder.encodeToString(encryptedMessage);
 
-        toClient.writeBytes(encryptedEncodedMessage + '\n');
-        toClient.flush();
+        toServer.writeBytes(encryptedEncodedMessage + '\n');
+        toServer.flush();
     }
 
     public void send(byte[] message) throws Exception {
@@ -208,38 +201,38 @@ public class IDRequest {
         Base64.Encoder encoder = Base64.getEncoder();
 
         // Concatenate nonce and encrypted message
-        String encryptedEncodedMessage = new String(encoder.encodeToString(nonce)) + ":" +
-                                          new String(encoder.encodeToString(encryptedMessage));
+        String encryptedEncodedMessage = encoder.encodeToString(nonce) + ":" +
+                encoder.encodeToString(encryptedMessage);
 
-        toClient.writeBytes(encryptedEncodedMessage + '\n');
-        toClient.flush();
+        toServer.writeBytes(encryptedEncodedMessage + '\n');
+        toServer.flush();
 
     }
 
     public byte[] receiveBytes() throws Exception {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        
+
         // Read nonce and encrypted message
-        String encryptedEncodedMessage = fromClient.readLine();
+        String encryptedEncodedMessage = fromServer.readLine();
         String[] parts = encryptedEncodedMessage.split(":");
         byte[] nonce = Base64.getDecoder().decode(parts[0]);
         byte[] decodedBytes = Base64.getDecoder().decode(parts[1]);
-        
+
         cipher.init(Cipher.DECRYPT_MODE, aesKey, new GCMParameterSpec(128, nonce));
 
         // Decrypt message
         return cipher.doFinal(decodedBytes);
     }
 
-    public String receive() throws Exception {
+    public static String receive() throws Exception {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        
+
         // Read nonce and encrypted message
-        String encryptedEncodedMessage = fromClient.readLine();
+        String encryptedEncodedMessage = fromServer.readLine();
         String[] parts = encryptedEncodedMessage.split(":");
         byte[] nonce = Base64.getDecoder().decode(parts[0]);
         byte[] decodedBytes = Base64.getDecoder().decode(parts[1]);
-        
+
         cipher.init(Cipher.DECRYPT_MODE, aesKey, new GCMParameterSpec(128, nonce));
 
         // Decrypt message
@@ -253,20 +246,6 @@ public class IDRequest {
         secureRandom.nextBytes(nonce);
         return nonce;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

@@ -118,11 +118,11 @@ class CountdownActivity : AppCompatActivity() {
                             timer = Timer()
                             //val cameraActivitySchedulerTask = TimeTask()
                             //timer!!.schedule(cameraActivitySchedulerTask, date)
-                            var countdownTimeDiff = ((times[0] * 1000) - 60 * 1000) - System.currentTimeMillis() //TODO: use
+                            /*var countdownTimeDiff = ((times[0] * 1000) - 60 * 1000) - System.currentTimeMillis() //TODO: use
                             if(countdownTimeDiff <= 0){
                                 countdownTimeDiff = 5000L;
-                            }
-                            //val countdownTimeDiff = 5000L //TODO: remove
+                            }*/
+                            val countdownTimeDiff = 5000L //TODO: remove
                             object : CountDownTimer(countdownTimeDiff, 1000) {
                                 override fun onTick(millisUntilFinished: Long) {
                                     var seconds = millisUntilFinished / 1000

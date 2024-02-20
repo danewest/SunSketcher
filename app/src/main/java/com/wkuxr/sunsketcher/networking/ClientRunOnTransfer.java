@@ -15,6 +15,7 @@ import com.wkuxr.sunsketcher.database.MetadataDB;
 
 import java.net.*;
 import java.io.*;
+import java.security.SecureRandom;
 import java.util.*;
 
 import java.security.KeyPair;
@@ -24,10 +25,15 @@ import java.security.PublicKey;
 import java.security.Key;
 
 import javax.crypto.*;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class ClientRunOnTransfer {
     static SharedPreferences prefs;
+
+    static SecretKey aesKey;
+    static BufferedReader fromServer;
+    static DataOutputStream toServer;
     
     public static boolean clientTransferSequence() throws Exception {
         Log.d("NetworkTransfer", "Loading...");
@@ -40,7 +46,7 @@ public class ClientRunOnTransfer {
         Log.d("NetworkTransfer", "Created Socket");
 
         //continue only if client is from the US
-        BufferedReader fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         
         String clearToSend = fromServer.readLine();
 
@@ -56,7 +62,7 @@ public class ClientRunOnTransfer {
             return true;
         }
 
-        DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
+        toServer = new DataOutputStream(socket.getOutputStream());
         toServer.writeBytes("TransferRequest\n");
         toServer.flush();
 
@@ -139,7 +145,7 @@ public class ClientRunOnTransfer {
 
 
         //Encrypt passkey with AES key and send to server
-        send("SarahSketcher2024", aesKey, toServer);
+        send("SarahSketcher2024");
 
 
         
@@ -188,10 +194,10 @@ public class ClientRunOnTransfer {
 
 
         //send client ID
-        send(Integer.toString(clientID), aesKey, toServer);
+        send(Integer.toString(clientID));
 
         //send total number of photos
-        send(Integer.toString(metadataList.size()), aesKey, toServer);
+        send(Integer.toString(metadataList.size()));
 
         for (Metadata metadata : metadataList) {
             Context context = App.getContext();
@@ -209,10 +215,10 @@ public class ClientRunOnTransfer {
                 //send pseudometadata
 
                 Log.d("NetworkTransfer", "current name = " + currentName);
-                send(currentName, aesKey, toServer);
+                send(currentName);
 
                 Log.d("NetworkTransfer", "File length = " + (int) file.length());
-                send(Integer.toString((int) file.length()), aesKey, toServer);
+                send(Integer.toString((int) file.length()));
 
                 //---------------------------------------------------------------------------------------------------------
                 //gather and send image
@@ -223,7 +229,7 @@ public class ClientRunOnTransfer {
                 Log.d("NetworkTransfer", "Starting Transfer...");
 
                 //send one photo to the server
-                send(imageData, aesKey, toServer);
+                send(imageData);
                 fileIn.close();
 
                 //----------------------------------------------------------------------------------------------------------
@@ -240,15 +246,15 @@ public class ClientRunOnTransfer {
                 exposure = metadata.getExposure();
 
                 // send metadata to server
-                send(Double.toString(latitude), aesKey, toServer);
-                send(Double.toString(longitude), aesKey, toServer);
-                send(Double.toString(altitude), aesKey, toServer);
-                send(Long.toString(time), aesKey, toServer);
-                send(Double.toString(aperture), aesKey, toServer);
-                send(Double.toString(iso), aesKey, toServer);
-                send(Double.toString(whitebalance), aesKey, toServer);
-                send(focallength, aesKey, toServer);
-                send(Double.toString(exposure), aesKey, toServer);
+                send(Double.toString(latitude));
+                send(Double.toString(longitude));
+                send(Double.toString(altitude));
+                send(Long.toString(time));
+                send(Double.toString(aperture));
+                send(Double.toString(iso));
+                send(Double.toString(whitebalance));
+                send(focallength);
+                send(Double.toString(exposure));
                 
 
 
@@ -263,7 +269,7 @@ public class ClientRunOnTransfer {
         }
 
 
-        if(recieve(aesKey, fromServer).equals("freeToDisconnect")) {
+        if(receive().equals("freeToDisconnect")) {
             socket.close();
             Log.d("NetworkTransfer", "Program Complete. Closing...");
             return true;
@@ -271,7 +277,7 @@ public class ClientRunOnTransfer {
         return true;
     }
 
-    public void send(String message) throws Exception {
+    public static void send(String message) throws Exception {
         Cipher AEScipher = Cipher.getInstance("AES/GCM/NoPadding");
 
         // Generate nonce
@@ -289,11 +295,11 @@ public class ClientRunOnTransfer {
         String encryptedEncodedMessage = new String(encoder.encodeToString(nonce)) + ":" +
                                           new String(encoder.encodeToString(encryptedMessage));
 
-        toClient.writeBytes(encryptedEncodedMessage + '\n');
-        toClient.flush();
+        toServer.writeBytes(encryptedEncodedMessage + '\n');
+        toServer.flush();
     }
 
-    public void send(byte[] message) throws Exception {
+    public static void send(byte[] message) throws Exception {
         Cipher AEScipher = Cipher.getInstance("AES/GCM/NoPadding");
 
         // Generate nonce
@@ -311,8 +317,8 @@ public class ClientRunOnTransfer {
         String encryptedEncodedMessage = new String(encoder.encodeToString(nonce)) + ":" +
                                           new String(encoder.encodeToString(encryptedMessage));
 
-        toClient.writeBytes(encryptedEncodedMessage + '\n');
-        toClient.flush();
+        toServer.writeBytes(encryptedEncodedMessage + '\n');
+        toServer.flush();
 
     }
 
@@ -320,7 +326,7 @@ public class ClientRunOnTransfer {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         
         // Read nonce and encrypted message
-        String encryptedEncodedMessage = fromClient.readLine();
+        String encryptedEncodedMessage = fromServer.readLine();
         String[] parts = encryptedEncodedMessage.split(":");
         byte[] nonce = Base64.getDecoder().decode(parts[0]);
         byte[] decodedBytes = Base64.getDecoder().decode(parts[1]);
@@ -331,11 +337,11 @@ public class ClientRunOnTransfer {
         return cipher.doFinal(decodedBytes);
     }
 
-    public String receive() throws Exception {
+    public static String receive() throws Exception {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         
         // Read nonce and encrypted message
-        String encryptedEncodedMessage = fromClient.readLine();
+        String encryptedEncodedMessage = fromServer.readLine();
         String[] parts = encryptedEncodedMessage.split(":");
         byte[] nonce = Base64.getDecoder().decode(parts[0]);
         byte[] decodedBytes = Base64.getDecoder().decode(parts[1]);

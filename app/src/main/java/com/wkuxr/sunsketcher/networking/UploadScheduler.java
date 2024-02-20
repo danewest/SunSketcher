@@ -75,6 +75,7 @@ public class UploadScheduler extends Service {
                         }
                     } catch (Exception e) {
                         Log.w("UploadScheduler", "Connection failed. Trying again in 15 minutes.");
+                        e.printStackTrace();
                     }
                     //if unsuccessful, sleep again for 15 minutes
                     if (!successful) {
