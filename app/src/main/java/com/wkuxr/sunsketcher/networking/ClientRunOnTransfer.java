@@ -271,55 +271,86 @@ public class ClientRunOnTransfer {
         return true;
     }
 
-    public static void send(String message, Key aesKey, DataOutputStream toServer) throws Exception {
-        Cipher AEScipher = Cipher.getInstance("AES");
-        AEScipher.init(Cipher.ENCRYPT_MODE, aesKey);
-        
+    public void send(String message) throws Exception {
+        Cipher AEScipher = Cipher.getInstance("AES/GCM/NoPadding");
+
+        // Generate nonce
+        byte[] nonce = generateNonce(AEScipher.getBlockSize());
+
+        // Initialize cipher with nonce
+        AEScipher.init(Cipher.ENCRYPT_MODE, aesKey, new GCMParameterSpec(128, nonce));
+
+        // Encrypt message
         byte[] encryptedMessage = AEScipher.doFinal(message.getBytes());
 
         Base64.Encoder encoder = Base64.getEncoder();
-        String encryptedEncodedMessage = encoder.encodeToString(encryptedMessage);
 
-        toServer.writeBytes(encryptedEncodedMessage + '\n');
-        toServer.flush();
+        // Concatenate nonce and encrypted message
+        String encryptedEncodedMessage = new String(encoder.encodeToString(nonce)) + ":" +
+                                          new String(encoder.encodeToString(encryptedMessage));
+
+        toClient.writeBytes(encryptedEncodedMessage + '\n');
+        toClient.flush();
     }
 
-    public static void send(byte[] message, Key aesKey, DataOutputStream toServer) throws Exception {
-        Cipher AEScipher = Cipher.getInstance("AES");
-        AEScipher.init(Cipher.ENCRYPT_MODE, aesKey);
-        
+    public void send(byte[] message) throws Exception {
+        Cipher AEScipher = Cipher.getInstance("AES/GCM/NoPadding");
+
+        // Generate nonce
+        byte[] nonce = generateNonce(AEScipher.getBlockSize());
+
+        // Initialize cipher with nonce
+        AEScipher.init(Cipher.ENCRYPT_MODE, aesKey, new GCMParameterSpec(128, nonce));
+
+        // Encrypt message
         byte[] encryptedMessage = AEScipher.doFinal(message);
 
         Base64.Encoder encoder = Base64.getEncoder();
-        String encryptedEncodedMessage = encoder.encodeToString(encryptedMessage);
 
-        toServer.writeBytes(encryptedEncodedMessage + '\n');
-        toServer.flush();
+        // Concatenate nonce and encrypted message
+        String encryptedEncodedMessage = new String(encoder.encodeToString(nonce)) + ":" +
+                                          new String(encoder.encodeToString(encryptedMessage));
+
+        toClient.writeBytes(encryptedEncodedMessage + '\n');
+        toClient.flush();
+
     }
 
-    public static byte[] recieveBytes(Key aesKey, BufferedReader fromServer) throws Exception {
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.DECRYPT_MODE, aesKey);
-
-        String encryptedEncodedMessage = fromServer.readLine();//check to make sure no included \n character
+    public byte[] receiveBytes() throws Exception {
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         
-        byte[] decodedBytes = Base64.getDecoder().decode(encryptedEncodedMessage);
+        // Read nonce and encrypted message
+        String encryptedEncodedMessage = fromClient.readLine();
+        String[] parts = encryptedEncodedMessage.split(":");
+        byte[] nonce = Base64.getDecoder().decode(parts[0]);
+        byte[] decodedBytes = Base64.getDecoder().decode(parts[1]);
+        
+        cipher.init(Cipher.DECRYPT_MODE, aesKey, new GCMParameterSpec(128, nonce));
 
-        byte[] decryptedMessage;
-        decryptedMessage = cipher.doFinal(decodedBytes);
-        return decryptedMessage;
+        // Decrypt message
+        return cipher.doFinal(decodedBytes);
     }
 
-    public static String recieve(Key aesKey, BufferedReader fromServer) throws Exception {
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.DECRYPT_MODE, aesKey);
-
-        String encryptedEncodedMessage = fromServer.readLine();//check to make sure no included \n character
+    public String receive() throws Exception {
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         
-        byte[] decodedBytes = Base64.getDecoder().decode(encryptedEncodedMessage);
+        // Read nonce and encrypted message
+        String encryptedEncodedMessage = fromClient.readLine();
+        String[] parts = encryptedEncodedMessage.split(":");
+        byte[] nonce = Base64.getDecoder().decode(parts[0]);
+        byte[] decodedBytes = Base64.getDecoder().decode(parts[1]);
+        
+        cipher.init(Cipher.DECRYPT_MODE, aesKey, new GCMParameterSpec(128, nonce));
 
-        byte[] decryptedMessage;
-        decryptedMessage = cipher.doFinal(decodedBytes);
+        // Decrypt message
+        byte[] decryptedMessage = cipher.doFinal(decodedBytes);
         return new String(decryptedMessage);
+    }
+
+    private static byte[] generateNonce(int size) {
+        byte[] nonce = new byte[size];
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(nonce);
+        return nonce;
     }
 }
