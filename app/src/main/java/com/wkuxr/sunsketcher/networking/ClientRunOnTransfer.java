@@ -34,12 +34,12 @@ public class ClientRunOnTransfer {
     static SecretKey aesKey;
     static BufferedReader fromServer;
     static DataOutputStream toServer;
-    
+
     public static boolean clientTransferSequence() throws Exception {
         Log.d("NetworkTransfer", "Loading...");
-        prefs = App.getContext().getSharedPreferences("eclipseDetails",Context.MODE_PRIVATE);
+        prefs = App.getContext().getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         MetadataDB.Companion.createDB(App.getContext());
-        
+
         Log.d("NetworkTransfer", "Checkpoint 0");
         Socket socket = new Socket();
         socket.connect(new InetSocketAddress("161.6.109.198", 10000), 10000);
@@ -47,13 +47,13 @@ public class ClientRunOnTransfer {
 
         //continue only if client is from the US
         fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        
+
         String clearToSend = fromServer.readLine();
 
         Log.d("NetworkTransfer", "Clear to send received.");
         Log.d("NetworkTransfer", clearToSend);
 
-        if(!clearToSend.contains("true")) {
+        if (!clearToSend.contains("true")) {
             //do not retry
             Log.d("NetworkTransfer", "Clear to send is false.");
             prefs.edit().putInt("finishedUpload", 2).apply();
@@ -85,14 +85,14 @@ public class ClientRunOnTransfer {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");//KeyProperties.KEY_ALGORITHM_RSA);
 
         keyPairGenerator.initialize(2048);
-            Log.d("NetworkTransfer", "Key Generator Initialized");
+        Log.d("NetworkTransfer", "Key Generator Initialized");
 
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
-            Log.d("NetworkTransfer", "Keys Generated");
+        Log.d("NetworkTransfer", "Keys Generated");
 
         PublicKey publicKey = keyPair.getPublic();
         PrivateKey privateKey = keyPair.getPrivate();
-            Log.d("NetworkTransfer", "keys initialized");
+        Log.d("NetworkTransfer", "keys initialized");
         Log.d("NetworkTransfer", "public key value: " + Arrays.toString(publicKey.getEncoded()));
 
 
@@ -100,12 +100,12 @@ public class ClientRunOnTransfer {
         Log.d("NetworkTransfer", "checkpoint 1");
         DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
         toServer.flush();
-        
+
         Log.d("NetworkTransfer", "checkpoint 2");
 
 
         Log.d("NetworkTransfer", "Communication streams open");
-        
+
         //Send public key to server
         Base64.Encoder encoder = Base64.getEncoder();
         String publicKeyString = new String(encoder.encode(publicKey.getEncoded()));
@@ -123,32 +123,25 @@ public class ClientRunOnTransfer {
 
         byte[] decodedBytes = Base64.getDecoder().decode(encryptedMessage);
         Log.d("NetworkTransfer", "Encrypted key value " + Arrays.toString(decodedBytes));
-        
+
 
         Log.d("NetworkTransfer", "Aes key received.");
 
         // Decrypt key using private key
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-            Log.d("NetworkTransfer", "Cipher created");
+        Log.d("NetworkTransfer", "Cipher created");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            Log.d("NetworkTransfer", "cipher initialized");
+        Log.d("NetworkTransfer", "cipher initialized");
         byte[] decryptedMessage = cipher.doFinal(decodedBytes);
-            Log.d("NetworkTransfer", "key decrypted");
+        Log.d("NetworkTransfer", "key decrypted");
         Log.d("NetworkTransfer", "Decrypted key value " + Arrays.toString(decryptedMessage));
-        SecretKey aesKey = new SecretKeySpec(decryptedMessage,  "AES");
-            Log.d("NetworkTransfer", "Aes key acquired");
-
-
-
-
-
+        aesKey = new SecretKeySpec(decryptedMessage, "AES");
+        Log.d("NetworkTransfer", "Aes key acquired");
 
 
         //Encrypt passkey with AES key and send to server
         send("SarahSketcher2024");
 
-
-        
 
         Log.d("NetworkTransfer", "Connection Successful!");
 
@@ -157,8 +150,6 @@ public class ClientRunOnTransfer {
 
         //-------------------------------------------------------------------------------------------------------------------
         //begin transfer messaging
-
-
 
 
         //--------------------------------------------------------------------------------------------------------------
@@ -184,9 +175,8 @@ public class ClientRunOnTransfer {
 
         Log.d("NetworkTransfer", "Connection Successful!");
 
-        
-        int clientID = (int) prefs.getLong("clientID", 9999999);
 
+        int clientID = (int) prefs.getLong("clientID", 9999999);
 
 
         //-------------------------------------------------------------------------------------------------------------------
@@ -202,7 +192,7 @@ public class ClientRunOnTransfer {
         for (Metadata metadata : metadataList) {
             Context context = App.getContext();
             prefs = context.getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
-            if(metadata.getId() > (prefs.getInt("numUploaded", -1) + 1)) {
+            if (metadata.getId() > (prefs.getInt("numUploaded", -1) + 1)) {
 
                 //initialize values
                 String[] filepathSplit = metadata.getFilepath().split("/");
@@ -255,8 +245,6 @@ public class ClientRunOnTransfer {
                 send(Double.toString(whitebalance));
                 send(focallength);
                 send(Double.toString(exposure));
-                
-
 
 
                 Log.d("NetworkTransfer", "Transfer Successful!");
@@ -269,7 +257,7 @@ public class ClientRunOnTransfer {
         }
 
 
-        if(receive().equals("freeToDisconnect")) {
+        if (receive().equals("freeToDisconnect")) {
             socket.close();
             Log.d("NetworkTransfer", "Program Complete. Closing...");
             return true;
@@ -292,8 +280,8 @@ public class ClientRunOnTransfer {
         Base64.Encoder encoder = Base64.getEncoder();
 
         // Concatenate nonce and encrypted message
-        String encryptedEncodedMessage = new String(encoder.encodeToString(nonce)) + ":" +
-                                          new String(encoder.encodeToString(encryptedMessage));
+        String encryptedEncodedMessage = encoder.encodeToString(nonce) + ":" +
+                encoder.encodeToString(encryptedMessage);
 
         toServer.writeBytes(encryptedEncodedMessage + '\n');
         toServer.flush();
@@ -314,23 +302,23 @@ public class ClientRunOnTransfer {
         Base64.Encoder encoder = Base64.getEncoder();
 
         // Concatenate nonce and encrypted message
-        String encryptedEncodedMessage = new String(encoder.encodeToString(nonce)) + ":" +
-                                          new String(encoder.encodeToString(encryptedMessage));
+        String encryptedEncodedMessage = encoder.encodeToString(nonce) + ":" +
+                encoder.encodeToString(encryptedMessage);
 
         toServer.writeBytes(encryptedEncodedMessage + '\n');
         toServer.flush();
 
     }
 
-    public byte[] receiveBytes() throws Exception {
+    public static byte[] receiveBytes() throws Exception {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        
+
         // Read nonce and encrypted message
         String encryptedEncodedMessage = fromServer.readLine();
         String[] parts = encryptedEncodedMessage.split(":");
         byte[] nonce = Base64.getDecoder().decode(parts[0]);
         byte[] decodedBytes = Base64.getDecoder().decode(parts[1]);
-        
+
         cipher.init(Cipher.DECRYPT_MODE, aesKey, new GCMParameterSpec(128, nonce));
 
         // Decrypt message
@@ -339,13 +327,13 @@ public class ClientRunOnTransfer {
 
     public static String receive() throws Exception {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        
+
         // Read nonce and encrypted message
         String encryptedEncodedMessage = fromServer.readLine();
         String[] parts = encryptedEncodedMessage.split(":");
         byte[] nonce = Base64.getDecoder().decode(parts[0]);
         byte[] decodedBytes = Base64.getDecoder().decode(parts[1]);
-        
+
         cipher.init(Cipher.DECRYPT_MODE, aesKey, new GCMParameterSpec(128, nonce));
 
         // Decrypt message

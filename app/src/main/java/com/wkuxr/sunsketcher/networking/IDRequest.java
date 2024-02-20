@@ -186,7 +186,7 @@ public class IDRequest {
         toServer.flush();
     }
 
-    public void send(byte[] message) throws Exception {
+    public static void send(byte[] message) throws Exception {
         Cipher AEScipher = Cipher.getInstance("AES/GCM/NoPadding");
 
         // Generate nonce
@@ -209,7 +209,7 @@ public class IDRequest {
 
     }
 
-    public byte[] receiveBytes() throws Exception {
+    public static byte[] receiveBytes() throws Exception {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
 
         // Read nonce and encrypted message
