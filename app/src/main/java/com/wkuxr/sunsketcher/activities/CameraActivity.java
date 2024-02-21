@@ -437,8 +437,8 @@ public class CameraActivity extends AppCompatActivity {
     Runnable midpointRunnable = new Runnable(){
         @Override
         public void run(){
-            //startStillCaptureRequest(10000000);
-            startStillCaptureRequest(5000000);
+            startStillCaptureRequest(10000000);
+            //startStillCaptureRequest(5000000);
         }
     };
 
@@ -655,7 +655,7 @@ public class CameraActivity extends AppCompatActivity {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE, CaptureRequest.COLOR_CORRECTION_MODE_TRANSFORM_MATRIX);
-                //mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, colorTemperature(2000));
+                mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, colorTemperature(6600));
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, hyperfocus);
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, 64);  // 63 ISO

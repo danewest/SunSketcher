@@ -166,14 +166,15 @@ class CountdownActivity : AppCompatActivity() {
                         }
                     } else {
                         binding.countdownLocationDetailsText.text = "Your location:\nLatitude: $lat\nLongitude: $lon"
-                        binding.countdownTimeText.text = "Not in eclipse path. Please enter the path of totality before pressing the start button."
+                        binding.countdownTimeText.text = "Not in path of totality."
                     }
 
 
                 }
 
                 override fun onLocationFailed() {
-                    binding.countdownLocationDetailsText.text = "Unable to get location. Did you allow access permissions?"
+                    binding.countdownLocationDetailsText.text = ""
+                    binding.countdownTimeText.text = "Unable to get location. Did you allow access permissions?"
                 }
             })
         }
