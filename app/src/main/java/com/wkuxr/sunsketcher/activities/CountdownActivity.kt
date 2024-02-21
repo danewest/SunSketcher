@@ -86,8 +86,8 @@ class CountdownActivity : AppCompatActivity() {
                     val alt = location.altitude
 
                     //todo: for testing
-                    lat = 47.6683
-                    lon = -60.7450
+                    //lat = 47.6683
+                    //lon = -60.7450
 
                     //get actual device location for eclipse timing TODO: use for actual app releases
                     val eclipseData = LocToTime.calculatefor(lat, lon, alt)
@@ -102,8 +102,8 @@ class CountdownActivity : AppCompatActivity() {
 
                     //make sure the user is actually in eclipse path before trying to do any scheduling stuff
                     if (!eclipseData[0].equals("N/A")) {
-                        //val times = convertTimes(eclipseData)     //TODO: use for actual app releases
-                        val times = testConvertTimes(eclipseData) //TODO: remove for actual app releases
+                        val times = convertTimes(eclipseData)     //TODO: use for actual app releases
+                        //val times = testConvertTimes(eclipseData) //TODO: remove for actual app releases
 
                         //use the given times to create calendar objects to use in setting alarms
                         /*val timeCals = arrayOfNulls<Calendar>(2)
@@ -140,31 +140,33 @@ class CountdownActivity : AppCompatActivity() {
                             timer = Timer()
                             //val cameraActivitySchedulerTask = TimeTask()
                             //timer!!.schedule(cameraActivitySchedulerTask, date)
-                            /*var countdownTimeDiff = ((times[0] * 1000) - 60 * 1000) - System.currentTimeMillis() //TODO: use
-                            if(countdownTimeDiff <= 0){
-                                countdownTimeDiff = 5000L;
-                            }*/
-                            val countdownTimeDiff = 5000L //TODO: remove
-                            object : CountDownTimer(countdownTimeDiff, 1000) {
-                                override fun onTick(millisUntilFinished: Long) {
-                                    var seconds = millisUntilFinished / 1000
-                                    var minutes = seconds / 60
-                                    seconds %= 60
-                                    val hours = minutes / 60
-                                    minutes %= 60
+                            var countdownTimeDiff = ((times[0] * 1000) - 60 * 1000) - System.currentTimeMillis() //TODO: use
+                            //val countdownTimeDiff = 5000L //TODO: remove
+                            if(countdownTimeDiff > 0) {
+                                object : CountDownTimer(countdownTimeDiff, 1000) {
+                                    override fun onTick(millisUntilFinished: Long) {
+                                        var seconds = millisUntilFinished / 1000
+                                        var minutes = seconds / 60
+                                        seconds %= 60
+                                        val hours = minutes / 60
+                                        minutes %= 60
 
-                                    binding.countdownTimeText.text = "${if(hours > 0){"$hours:"} else {""}}${if(minutes > 0){"${if(minutes < 10){"0"}else{""} + "$minutes"}:"} else {"0:"}}${if(seconds < 10){"0"}else{""} + "$seconds"} UNTIL FIRST PHOTO IS TAKEN"
-                                }
+                                        binding.countdownTimeText.text = "${if (hours > 0) { "$hours:" } else { "" }}${if (minutes > 0) { "${if (minutes < 10) { "0" } else { "" } + "$minutes"}:" } else { "0:" }}${if (seconds < 10) { "0" } else { "" } + "$seconds"} UNTIL FIRST PHOTO IS TAKEN"
+                                    }
 
-                                override fun onFinish() {
-                                    val intent = Intent(singleton, CameraActivity::class.java)
-                                    singleton.startActivity(intent)
-                                }
-                            }.start()
+                                    override fun onFinish() {
+                                        val intent = Intent(singleton, CameraActivity::class.java)
+                                        singleton.startActivity(intent)
+                                    }
+                                }.start()
+                            } else {
+                                binding.countdownTimeText.text = "The total eclipse has already started at your location."
+                            }
 
                         }
                     } else {
-                        binding.countdownLocationDetailsText.text = "Not in eclipse path. Please enter the path of totality before pressing the start button."
+                        binding.countdownLocationDetailsText.text = "Your location:\nLatitude: $lat\nLongitude: $lon"
+                        binding.countdownTimeText.text = "Not in eclipse path. Please enter the path of totality before pressing the start button."
                     }
 
 

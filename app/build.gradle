@@ -11,8 +11,8 @@ android {
         applicationId "com.wkuxr.eclipsetotality"
         minSdk 31
         targetSdk 33
-        versionCode 21
-        versionName "0.4.7-pre"
+        versionCode 22
+        versionName "1.0.0"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
