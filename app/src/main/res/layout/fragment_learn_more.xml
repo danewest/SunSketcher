@@ -57,20 +57,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/learnMoreFragmentTitle" />
 
-    <TextView
-        android:id="@+id/learnMoreFragmentText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="24dp"
-        android:fontFamily="@font/montserrat"
-        android:text="SunSketcher is a collaborative, crowd-sourced experiment to collect observations during the 2024 solar eclipse that will determine the exact shape of the Sun."
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="96dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/learnMoreFragmentImage" />
+        app:layout_constraintTop_toBottomOf="@+id/learnMoreFragmentImage">
+
+        <TextView
+            android:id="@+id/learnMoreFragmentText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:text="SunSketcher is a collaborative, crowd-sourced experiment to collect observations during the 2024 solar eclipse that will determine the exact shape of the Sun."
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
+    </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

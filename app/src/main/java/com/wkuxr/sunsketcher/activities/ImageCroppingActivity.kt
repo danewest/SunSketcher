@@ -91,75 +91,103 @@ class ImageCroppingActivity : AppCompatActivity() {
         // reference to folder with all cropped images
         val mCropImageFolder: File = createCroppedImageFolder()
 
-        if (mCropImageFolder.exists() && !cropBox!!.empty()) {
+        Log.d("ImageCropping", "mCropImageFolder: " + mCropImageFolder.absolutePath + "; cropBox: " + cropBox)
 
-            // cropped image folder successfully made!
+        if(mCropImageFolder.exists()) {
+            if (!cropBox!!.empty()) {
 
-            // iterate through all images (rows) in database and apply cropping w/ crop box to them
-            // then save the cropped image to the cropped image folder and replace db filepath
-            var numCropped = 0
-            val numToCrop = 20
-            for (metadataRow in metadataList) {
-                if (metadataRow.isCropped) {
-                    //don't crop images that have already been cropped
-                    continue
+                // cropped image folder successfully made!
+
+                // iterate through all images (rows) in database and apply cropping w/ crop box to them
+                // then save the cropped image to the cropped image folder and replace db filepath
+                var numCropped = 0
+                val numToCrop = 20
+                for (metadataRow in metadataList) {
+                    if (metadataRow.isCropped) {
+                        //don't crop images that have already been cropped
+                        continue
+                    }
+                    if (numCropped >= numToCrop) {
+                        //will only be true if we aren't on the final round of images to crop, so we say that not all of the images have been cropped (because we assume at the end of the for loop that this is the final round, and we need the app to know that it isn't)
+                        prefs.edit().putBoolean("cropped", false).commit()
+                        break
+                    }
+
+                    // create bitmap from current image
+                    val imgOriginal = File(metadataRow.filepath)
+                    val newImgBitmap = BitmapFactory.decodeFile(metadataRow.filepath)
+
+                    var imgMatCropped = Mat()
+                    Utils.bitmapToMat(newImgBitmap, imgMatCropped)
+
+                    Imgproc.cvtColor(imgMatCropped, imgMatCropped, Imgproc.COLOR_BGR2RGB)
+
+
+                    // crop the image using crop box
+                    imgMatCropped = Mat(imgMatCropped, cropBox)
+
+                    // create image file in the crop image folder with original image's name
+                    val imgCroppedFile = File(mCropImageFolder, imgOriginal.name)
+
+                    // write the cropped image to the cropped image file
+                    Imgcodecs.imwrite(imgCroppedFile.absolutePath, imgMatCropped)
+
+                    val exif = ExifInterface(imgOriginal.absolutePath)
+                    var fstop = exif.getAttribute(ExifInterface.TAG_F_NUMBER)?.toDouble()
+                    val iso =
+                        Integer.parseInt(exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS))
+                    val whiteBalance =
+                        Integer.parseInt(exif.getAttribute(ExifInterface.TAG_WHITE_BALANCE))
+                    var exposure = exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME)?.toDouble()
+                    var focalDistance = exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
+
+                    if (fstop == null) {
+                        fstop = 0.0
+                    }
+                    if (exposure == null) {
+                        exposure = 0.0
+                    }
+                    if (focalDistance == null) {
+                        focalDistance = ""
+                    }
+                    // save crop img file path to img metadata in database
+                    db.updateRowFilepath(
+                        metadataRow.id,
+                        imgCroppedFile.absolutePath,
+                        fstop,
+                        iso,
+                        whiteBalance,
+                        exposure,
+                        focalDistance,
+                        true
+                    )
+                    numCropped++
+
+                    Log.d(
+                        "ImageCropping",
+                        "Image ${metadataRow.id} has been cropped: ${metadataRow.filepath}"
+                    )
+
+                    //assume this call of the cropImages function is the final call to it
+                    prefs.edit().putBoolean("cropped", true).commit()
                 }
-                if (numCropped >= numToCrop) {
-                    //will only be true if we aren't on the final round of images to crop, so we say that not all of the images have been cropped (because we assume at the end of the for loop that this is the final round, and we need the app to know that it isn't)
-                    prefs.edit().putBoolean("cropped", false).commit()
-                    break
-                }
 
-                // create bitmap from current image
-                val imgOriginal = File(metadataRow.filepath)
-                val newImgBitmap = BitmapFactory.decodeFile(metadataRow.filepath)
-
-                var imgMatCropped = Mat()
-                Utils.bitmapToMat(newImgBitmap, imgMatCropped)
-
-                Imgproc.cvtColor(imgMatCropped, imgMatCropped, Imgproc.COLOR_BGR2RGB)
-
-
-                // crop the image using crop box
-                imgMatCropped = Mat(imgMatCropped, cropBox)
-
-                // create image file in the crop image folder with original image's name
-                val imgCroppedFile = File(mCropImageFolder, imgOriginal.name)
-
-                // write the cropped image to the cropped image file
-                Imgcodecs.imwrite(imgCroppedFile.absolutePath, imgMatCropped)
-
-                val exif = ExifInterface(imgOriginal.absolutePath)
-                var fstop = exif.getAttribute(ExifInterface.TAG_F_NUMBER)?.toDouble()
-                val iso = Integer.parseInt(exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS))
-                val whiteBalance =
-                    Integer.parseInt(exif.getAttribute(ExifInterface.TAG_WHITE_BALANCE))
-                var exposure = exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME)?.toDouble()
-                var focalDistance = exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
-
-                if (fstop == null) {
-                    fstop = 0.0
-                }
-                if (exposure == null) {
-                    exposure = 0.0
-                }
-                if (focalDistance == null) {
-                    focalDistance = ""
-                }
-                // save crop img file path to img metadata in database
-                db.updateRowFilepath(metadataRow.id, imgCroppedFile.absolutePath, fstop, iso, whiteBalance, exposure, focalDistance, true)
-                numCropped++
-
-                Log.d("ImageCropping", "Image ${metadataRow.id} has been cropped: ${metadataRow.filepath}"
-                )
-
-                //assume this call of the cropImages function is the final call to it
+                Log.d("ImageCropping", "$numCropped images have been cropped successfully.")
+            } else {
+                //something's going horribly wrong, skip cropping
+                Log.e("ImageCropping", "Failed to find crop bounding box.")
                 prefs.edit().putBoolean("cropped", true).commit()
-            }
 
-            Log.d("ImageCropping", "$numCropped images have been cropped successfully.")
+                val intent = Intent(this, SendConfirmationActivity::class.java)
+                startActivity(intent)
+            }
         } else {
-            Toast.makeText(this, "Error creating directory", Toast.LENGTH_SHORT).show()
+            //something's going horribly wrong, skip cropping
+            Log.e("ImageCropping", "Failed to get image folder.")
+            prefs.edit().putBoolean("cropped", true).commit()
+
+            val intent = Intent(this, SendConfirmationActivity::class.java)
+            startActivity(intent)
         }
 
 
@@ -168,14 +196,14 @@ class ImageCroppingActivity : AppCompatActivity() {
     // creates folder in SunSketchers directory for cropped images. Returns created folder
     private fun createCroppedImageFolder(): File {
         // reference to original image folder in pictures directory
-        val picturesDir = filesDir
+        //val picturesDir = filesDir
 
         // create the cropped image folder in the app's internal storage
-        val mCropImageFolder = File(picturesDir, "CroppedImages")
-        mCropImageFolder.mkdirs()
+        //val mCropImageFolder = File(picturesDir, "CroppedImages")
+        //mCropImageFolder.mkdirs()
 
-        return mCropImageFolder
-
+        //return mCropImageFolder
+        return filesDir
     }
 
     private fun makeImageGreyScale(img: Mat): Mat {

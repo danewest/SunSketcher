@@ -67,7 +67,7 @@ class CountdownActivity : AppCompatActivity() {
 
     }
 
-    var timer: Timer? = null
+    var timerSet = false
 
     private fun getLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -86,8 +86,8 @@ class CountdownActivity : AppCompatActivity() {
                     val alt = location.altitude
 
                     //todo: for testing
-                    //lat = 47.6683
-                    //lon = -60.7450
+                    lat = 47.6683
+                    lon = -60.7450
 
                     //get actual device location for eclipse timing TODO: use for actual app releases
                     val eclipseData = LocToTime.calculatefor(lat, lon, alt)
@@ -135,13 +135,13 @@ class CountdownActivity : AppCompatActivity() {
                         //the next line is a testcase to make sure functionality works for eclipse timing
                         //val date = Date(System.currentTimeMillis() + 5000) //TODO: remove
                         //Log.d("SCHEDULE_CAMERA", date.toString())
-                        if (timer == null) {
+                        if (!timerSet) {
                             Log.d("Timing", "Creating timer.")
-                            timer = Timer()
+                            timerSet = !timerSet
                             //val cameraActivitySchedulerTask = TimeTask()
                             //timer!!.schedule(cameraActivitySchedulerTask, date)
-                            var countdownTimeDiff = ((times[0] * 1000) - 60 * 1000) - System.currentTimeMillis() //TODO: use
-                            //val countdownTimeDiff = 5000L //TODO: remove
+                            //val countdownTimeDiff = ((times[0] * 1000) - 60 * 1000) - System.currentTimeMillis() //TODO: use
+                            val countdownTimeDiff = 5000L //TODO: remove
                             if(countdownTimeDiff > 0) {
                                 object : CountDownTimer(countdownTimeDiff, 1000) {
                                     override fun onTick(millisUntilFinished: Long) {
