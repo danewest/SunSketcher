@@ -22,15 +22,9 @@
   <component name="ChangeListManager">
     <list default="true" id="9efa315a-29e0-4b19-9bb1-8a00b1e36643" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CameraActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CameraActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CountdownActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CountdownActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/ImageCroppingActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/ImageCroppingActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/fragments/TutorialFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/fragments/TutorialFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_learn_more.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_learn_more.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_terms_and_conditions.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_terms_and_conditions.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_tutorial.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_tutorial.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_learn_more.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_learn_more.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_tutorial.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_tutorial.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

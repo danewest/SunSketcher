@@ -86,8 +86,8 @@ class CountdownActivity : AppCompatActivity() {
                     val alt = location.altitude
 
                     //todo: for testing
-                    lat = 47.6683
-                    lon = -60.7450
+                    //lat = 47.6683
+                    //lon = -60.7450
 
                     //get actual device location for eclipse timing TODO: use for actual app releases
                     val eclipseData = LocToTime.calculatefor(lat, lon, alt)
@@ -140,8 +140,8 @@ class CountdownActivity : AppCompatActivity() {
                             timerSet = !timerSet
                             //val cameraActivitySchedulerTask = TimeTask()
                             //timer!!.schedule(cameraActivitySchedulerTask, date)
-                            //val countdownTimeDiff = ((times[0] * 1000) - 60 * 1000) - System.currentTimeMillis() //TODO: use
-                            val countdownTimeDiff = 5000L //TODO: remove
+                            val countdownTimeDiff = ((times[0] * 1000) - 60 * 1000) - System.currentTimeMillis() //TODO: use
+                            //val countdownTimeDiff = 5000L //TODO: remove
                             if(countdownTimeDiff > 0) {
                                 object : CountDownTimer(countdownTimeDiff, 1000) {
                                     override fun onTick(millisUntilFinished: Long) {
