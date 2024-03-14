@@ -31,7 +31,7 @@ class FinishedInfoActivity : AppCompatActivity() {
         //get the necessary preferences to fill UI text
         prefs = getSharedPreferences("eclipseDetails", MODE_PRIVATE)
         val uploadReady = prefs.getInt("upload", 0)
-        val clientID = prefs.getLong("clientID", -1)
+        //val clientID = prefs.getLong("clientID", -1)
 
         //fill the UI text based on the preferences
         /*var text = binding.infoText
@@ -42,7 +42,7 @@ class FinishedInfoActivity : AppCompatActivity() {
         } else {
             text.text = "Thank you for using the SunSketcher app. You have chosen to upload your images for analysis. Please keep the app installed and do not delete the photos in the `Pictures/SunSketcher/` directory, or the SunSketcher album in your gallery, until further notice. The text at the bottom of the screen will change when your images have been uploaded, at which point you can freely delete the app and images from your device. This may take up to a week, so please be patient."
         }*/
-        binding.clientIDText.text = "ClientID: $clientID"
+        //binding.clientIDText.text = "ClientID: $clientID"
 
         //disable the upload button if the UploadScheduler service is already running (upload button is not used on final version
         /*if(foregroundServiceRunning()){

@@ -42,6 +42,7 @@ public class IDRequest {
         Log.d("NetworkTransfer", "Loading...");
         Log.d("NetworkTransfer", "Checkpoint 0");
         Socket socket = new Socket();
+        socket.setSoTimeout(5000);
         socket.connect(new InetSocketAddress("161.6.109.198", 10000), 10000);
         Log.d("NetworkTransfer", "Created Socket");
 
