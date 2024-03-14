@@ -22,9 +22,9 @@
   <component name="ChangeListManager">
     <list default="true" id="9efa315a-29e0-4b19-9bb1-8a00b1e36643" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CameraActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CameraActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CountdownActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/CountdownActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/FinishedInfoActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wkuxr/sunsketcher/activities/FinishedInfoActivity.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,7 +71,7 @@
     "DEBUGGABLE_DEVICE": "google-pixel_4a-16021JEC200366",
     "DEBUGGABLE_PROCESS": "com.wkuxr.eclipsetotality",
     "DEBUGGER_ID": "Auto",
-    "ExportBundle.BundlePathForSunSketcher.app": "/home/akatsuki/Documents/AndroidStudioProjects/SunSketcher/app",
+    "ExportBundle.BundlePathForSunSketcher.app": "C:\\Users\\trv66960\\AndroidStudioProjects\\EclipseTotality\\app",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
@@ -79,7 +79,7 @@
     "ScreenshotViewer.SavePath": "/home/akatsuki/Documents/SunSketcher_Screenshots/10inTab",
     "cidr.known.project.marker": "true",
     "com.android.tools.idea.streaming.emulator.frame.visible": "false",
-    "last_opened_file_path": "/home/akatsuki/Documents/SunSketcher_Screenshots/10inTab",
+    "last_opened_file_path": "C:/Users/trv66960/AndroidStudioProjects/EclipseTotality/app",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.17",
     "project.structure.side.proportion": "0.2",

@@ -112,8 +112,7 @@ class CountdownActivity : AppCompatActivity() {
                         timeCals[1] = Calendar.getInstance()
                         timeCals[1]?.timeInMillis = times[1] * 1000*/
 
-                        //for the final app, might want to add something that makes a countdown timer on screen tick down TODO: working on that right now, past me
-                        //String details = "You are at lat: " + lat + ", lon: " + lon + "; The solar eclipse will start at the following time at your current location: " + timeCals[0].getTime(); //TODO: use for actual app releases
+                        //String details = "You are at lat: " + lat + ", lon: " + lon + "; The solar eclipse will start at the following time at your current location: " + timeCals[0].getTime();
                         //val details = "The app will now swap to the camera, where you will have 45 seconds to adjust the phone's position before it starts taking photos." //TODO: remove for actual app releases
                         val details = "Your location:\nLatitude: $lat\nLongitude: $lon"
                         //String details = "lat: " + lat + "; lon: " + lon + "; Sunset Time: " + timeCals[0].getTime(); //TODO: remove for actual app releases
@@ -131,7 +130,7 @@ class CountdownActivity : AppCompatActivity() {
                         prefs.apply()
 
                         //go to camera 60 seconds prior, start taking images 15 seconds prior to 5 seconds after, and then at end of eclipse 5 seconds before and 15 after TODO: also for the sunset timing
-                        //val date = Date((times[0] - 60) * 1000); //TODO: use
+                        //val date = Date((times[0] - 60) * 1000); //useless
                         //the next line is a testcase to make sure functionality works for eclipse timing
                         //val date = Date(System.currentTimeMillis() + 5000) //TODO: remove
                         //Log.d("SCHEDULE_CAMERA", date.toString())

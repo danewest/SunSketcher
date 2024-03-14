@@ -178,7 +178,7 @@ public class CameraActivity extends AppCompatActivity {
             }
         }
 
-        //TODO: Fix this function as it currently results in an unreadable file
+        //TODO: Fix the RAW10 part of this function because raw images don't work
         byte[] getCroppedData(Image image, int x1, int x2, int y1, int y2){
             int format = image.getFormat();
             int width = y2 - y1;

@@ -44,14 +44,14 @@ class FinishedInfoActivity : AppCompatActivity() {
         }*/
         binding.clientIDText.text = "ClientID: $clientID"
 
-        //disable the upload button if the UploadScheduler service is already running
-        /*if(foregroundServiceRunning()){   //TODO: uncomment
+        //disable the upload button if the UploadScheduler service is already running (upload button is not used on final version
+        /*if(foregroundServiceRunning()){
             binding.uploadBtn.isEnabled = false
             binding.uploadBtn.text = "The upload service is running. Estimated finish time: ${(0.5 + clientID) * 15} minutes from time that upload was accepted. Please allow for extra time, as your upload time may be delayed without notice."
         }*/
         //TODO: remove the following two lines
         //binding.uploadBtn.isEnabled = false
-        binding.uploadBtn.text = "This is a test version of the app where upload is unnecessary."
+        //binding.uploadBtn.text = "This is a test version of the app where upload is unnecessary."
 
         //dump database values to a csv file in documents folder
         /*if(!prefs.getBoolean("DBIsDumped", false)) {
