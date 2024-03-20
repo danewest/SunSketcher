@@ -77,10 +77,10 @@ public class UploadScheduler extends Service {
                         Log.w("UploadScheduler", "Connection failed. Trying again in 15 minutes.");
                         e.printStackTrace();
                     }
-                    //if unsuccessful, sleep again for 15 minutes
+                    //if unsuccessful, sleep again for 10 seconds
                     if (!successful) {
                         try {
-                            Thread.sleep(1 * 10 * 1000);
+                            Thread.sleep(10 * 1000);
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
