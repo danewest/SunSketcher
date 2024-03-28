@@ -283,41 +283,48 @@ public class CameraActivity extends AppCompatActivity {
 
     MetadataDB db;
 
+    //first thing that runs in the activity's lifecycle
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
+        //set the App.java context singleton to this activity's instance (so that the database can be used)
         singleton = this;
 
+        //set a flag that prevents the screen from locking
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        //create an instance of the database
         db = MetadataDB.Companion.createDB(this);
 
+        //self explanatory
         createImageFolder();
 
+        //get a reference to the layout's texture view
         mTextureView = findViewById(R.id.textureView);
 
-        //get the start and end time of eclipse totality from SharedPreferences, default to Long.MAX_VALUE if not present so the camera sequence doesn't falsely trigger.
+        //get a reference to the sharedPreferences
         prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
 
+        //perform checks to see if the app should actually be on a later screen
         int hasConfirmDeny = prefs.getInt("upload", -1); //if -1, hasn't taken images yet
         Intent intent = null;
         switch(hasConfirmDeny){
-            case -2: //not yet confirmed or denied
-                if(prefs.getBoolean("cropped", false)){
+            case -2: //not yet confirmed or denied, but has taken images
+                if(prefs.getBoolean("cropped", false)){ //if all images have been cropped, false if not found
                     intent = new Intent(this, SendConfirmationActivity.class);
                 } else {
                     intent = new Intent(this, ImageCroppingActivity.class);
                 }
                 break;
-            case 0: //denied upload
+            case 0: //denied upload after taking images
                 intent = new Intent(this, FinishedInfoDenyActivity.class);
                 break;
-            case 1: //allowed upload
-                if(prefs.getBoolean("uploadSuccessful", false)){ //allowed upload and upload already finished
+            case 1: //allowed upload after taking images
+                if(prefs.getBoolean("uploadSuccessful", false)){ //upload already finished
                     intent = new Intent(this, FinishedCompleteActivity.class);
-                } else {
+                } else { //upload hasn't finished
                     intent = new Intent(this, FinishedInfoActivity.class);
                 }
                 break;
@@ -327,11 +334,13 @@ public class CameraActivity extends AppCompatActivity {
             this.startActivity(intent);
         }
 
+        //get the start and end time of eclipse totality from SharedPreferences, default to Long.MAX_VALUE if not present so the camera sequence doesn't falsely trigger. Randomize both by up to 250ms in either direction.
         long randomizer = (long)((Math.random() * 500) - 250);
         startTime = prefs.getLong("startTime", Long.MAX_VALUE) + randomizer;
         endTime = prefs.getLong("endTime", Long.MAX_VALUE) + randomizer;
     }
 
+    //runs after onCreate
     @Override
     protected void onStart() {
         super.onStart();
@@ -342,20 +351,21 @@ public class CameraActivity extends AppCompatActivity {
         prefs.edit().putInt("upload", -2).apply();
 
         //timer that takes images every 1 seconds for 20 seconds starting 15 seconds before t[c2], then another timer for images every 1s for 20s starting 5s before t[c3]
-        //the next three lines are a testcase to make sure functionality works
+        //the next three lines are for testing functionality. They perform the same time randomization as above in the onCreate function, but set the start time and end time relative to the current time
         //long randomizer = (long)((Math.random() * 500) - 250); //TODO: remove for actual app releases
         //startTime = System.currentTimeMillis() + 30000 + randomizer; //TODO: remove for actual app releases
-        //Log.d("CameraDebug", "Setting c2 time to 30 seconds from now. Image capture starts in 10.");
         //endTime = startTime + 60000 * 2 + randomizer; //2 minutes after startTime TODO: remove for actual app releases
-        long midTime = (endTime + startTime) / 2; //set time for midpoint photo for cropping basis
+        long midTime = (endTime + startTime) / 2; //set time for midpoint photo
+
+        //create a timer which is used to schedule all of the timing triggers
         sequenceTimer = new Timer();
         //set timer to start captures at t[c2] - 20 at 1 img per 2 seconds
         Date startC2d1 = new Date(startTime - 20000);
         sequenceTimer.schedule(new StartSequenceTask(),startC2d1);
-        //switch capture rate to 2 per second
+        //switch capture rate to 2 per second at t[c2] - 10
         Date startC2d2 = new Date(startTime - 10000);
         sequenceTimer.schedule(new FastSequenceTask(), startC2d2);
-        //switch capture rate to 1 img per 2 seconds
+        //switch capture rate to 1 img per 2 seconds at t[c2] + 10
         Date startC2d3 = new Date(startTime + 10000);
         sequenceTimer.schedule(new StartSequenceTask(), startC2d3);
         //set timer to stop captures at t[c2] + 20
@@ -367,10 +377,10 @@ public class CameraActivity extends AppCompatActivity {
         //set timer to start captures at t[c3] - 20
         Date startC3d1 = new Date(endTime - 20000);
         sequenceTimer.schedule(new StartSequenceTask(), startC3d1);
-        //switch capture rate to 2 per second
+        //switch capture rate to 2 per second at t[c2] - 10
         Date startC3d2 = new Date(endTime - 10000);
         sequenceTimer.schedule(new FastSequenceTask(), startC3d2);
-        //switch capture rate to 1 img per 2 seconds
+        //switch capture rate to 1 img per 2 seconds at t[c2] + 10
         Date startC3d3 = new Date(endTime + 10000);
         sequenceTimer.schedule(new StartSequenceTask(), startC3d3);
         //set timer to stop captures at t[c3] + 20
@@ -379,11 +389,12 @@ public class CameraActivity extends AppCompatActivity {
 
         //make sound to signify image capturing complete
 
-        //set timer to switch to SendConfirmationActivity
+        //set timer to switch to SendConfirmationActivity 5 seconds after all photos have been taken
         Date activityTimer = new Date(endTime + 25000);
         sequenceTimer.schedule(new SwitchActivityTask(), activityTimer);
     }
 
+    //if the app is completely closed (as in, the user swiped up in the app list or force closed it from settings), this is the last thing that is called
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -394,6 +405,8 @@ public class CameraActivity extends AppCompatActivity {
 
     Timer sequenceTimer = null;
     Handler sequenceHandler = new Handler();
+
+    //thread runnable that takes a photo and then waits for 2 seconds
     Runnable sequenceRunnable = new Runnable(){
         @Override
         public void run(){
@@ -402,6 +415,7 @@ public class CameraActivity extends AppCompatActivity {
         }
     };
 
+    //scheduled task that removes all fast capture task callbacks and starts the 1-per-2-seconds image captures
     static class StartSequenceTask extends TimerTask {
         public void run(){
             Log.d("CameraDebug", "Starting slow captures.");
@@ -410,6 +424,7 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    //thread runnable that takes a photo and then waits for 0.5 seconds
     Runnable fastSequenceRunnable = new Runnable(){
         @Override
         public void run() {
@@ -418,6 +433,7 @@ public class CameraActivity extends AppCompatActivity {
         }
     };
 
+    //scheduled task that removes all slow capture task callbacks and starts the 2-per-second image captures
     static class FastSequenceTask extends TimerTask {
         public void run(){
             Log.d("CameraDebug", "Starting fast captures.");
@@ -426,6 +442,7 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    //scheduled task that removes all callbacks to capture tasks
     static class StopSequenceTask extends TimerTask {
         public void run(){
             singleton.sequenceHandler.removeCallbacks(singleton.sequenceRunnable);
@@ -434,14 +451,10 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-    Runnable midpointRunnable = new Runnable(){
-        @Override
-        public void run(){
-            //startStillCaptureRequest(10000000);
-            startStillCaptureRequest(5000000);
-        }
-    };
+    //thread runnable that takes a single image with a given exposure time (exposure time is passed in as nanoseconds, so the 5000000 below is 1/200 seconds). Uses lambda expression to shorten code length
+    Runnable midpointRunnable = () -> startStillCaptureRequest(5000000);
 
+    //scheduled task that calls the midpointRunnable
     static class MidpointCaptureTask extends TimerTask {
         public void run(){
             /*singleton.closeCamera();
@@ -455,16 +468,18 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    //scheduled task that closes the camera and switches context activities
     static class SwitchActivityTask extends TimerTask {
         public void run(){
             Log.d("ACTIVITYSWITCH", "To " + ImageCroppingActivity.class.getName());
             Intent intent = new Intent(singleton, ImageCroppingActivity.class);
             singleton.closeCamera();
             singleton.startActivity(intent);
-            singleton.finish();
+            singleton.finish(); //makes this screen automatically close if someone tries to navigate back to it using the back button, if the code in the onCreate function that switches the activity context fails
         }
     }
 
+    //runs after onStart and whenever the app is re-focused (as in, the user exited the app but did not kill it by swiping up in the app list, and is now re-opening the app)
     @Override
     protected void onResume() {
         super.onResume();
@@ -479,6 +494,7 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    //if the app is exited (but not killed), close the camera
     @Override
     protected void onPause() {
         closeCamera();
@@ -488,6 +504,7 @@ public class CameraActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    //tbh not sure what this does, Joey wrote it and I haven't touched it
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
@@ -504,13 +521,14 @@ public class CameraActivity extends AppCompatActivity {
 
     boolean aeModeOffAvailable = false;
 
-    //changing this will change the output image format, but we've been having trouble with saving and cropping raw images, so unfortunately we are using a lossy format
+    //changing this will change the output image format, but we've been having trouble with saving and cropping raw images, so unfortunately we are using a lossy format for now; future maintenance may see an attempt at switching to RAW_SENSOR and saving as a DNG in the ImageSaver callback
     int imageFormat = ImageFormat.JPEG;
 
     CameraManager cameraManager;
 
     float hyperfocus;
 
+    //as the name of the function suggests, this sets up the camera connection with the highest resolution back-facing camera
     @SuppressWarnings("SuspiciousNameCombination")
     private void setupCamera(int width, int height) {
         cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
@@ -525,13 +543,14 @@ public class CameraActivity extends AppCompatActivity {
             String[] camera1 = cameraManager.getCameraIdList();
             Size currentLargest = getResolution(cameraManager,camera1[index]);
             String currentLarge = camera1[index];
-            // add a catch to ensure that camera id 0 is not front facing. if it is, and is the highest resolution, it will stay as the front camera.
+            // add a catch to ensure that camera id 0 is not front facing. if it is, and is the highest resolution, it will stay as the front camera (unwanted functionality).
             // it is very rare that a front camera will have the highest resolution, but it is better to be safe.
             if (cameraManager.getCameraCharacteristics(currentLarge).get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT){
                 currentLargest = getResolution(cameraManager, camera1[index+1]);
                 currentLarge = camera1[index+1];
                 index++;
             }
+            //check if the next camera is higher resolution than the currently selected one
             for (int i = index+1; i < cameraManager.getCameraIdList().length; i++) {
                 if (cameraManager.getCameraCharacteristics(camera1[i]).get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT){
                     continue;
@@ -542,7 +561,11 @@ public class CameraActivity extends AppCompatActivity {
                     currentLarge = camera1[i];
                 }
             }
+
+            //get the characteristics of the camera chosen
             CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(currentLarge);
+
+            //list its available AE modes
             final int[] availableAeModes = cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_MODES);
             Log.d("AE_MODE", "Target mode ID: " + CameraCharacteristics.CONTROL_AE_MODE_OFF + "\nAvailable IDs:");
             for(int mode : availableAeModes){
@@ -551,15 +574,18 @@ public class CameraActivity extends AppCompatActivity {
                     break;
                 }
             }
+            //list its available ISOs
             final Range<Integer> isoRange = cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE);
             if(null != isoRange) {
                 Log.d("AE_MODE","iso range => lower : " + isoRange.getLower() + ", higher : " + isoRange.getUpper());
             }
+            //list its available exposure times
             final Range<Long>  exposureTimeRange = cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
             if(null!=exposureTimeRange){
                 Log.d("AE_MODE","exposure time range => lower : " + exposureTimeRange.getLower() + ", higher : " + exposureTimeRange.getUpper());
             }
 
+            //set the preview of the camera and set the image reader for callbacks when images are taken
             StreamConfigurationMap map = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             int deviceOrientation = getWindowManager().getDefaultDisplay().getRotation();
             mTotalRotation = sensorToDeviceRotation(cameraCharacteristics, deviceOrientation);
