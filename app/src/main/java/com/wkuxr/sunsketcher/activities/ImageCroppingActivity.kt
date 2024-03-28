@@ -34,10 +34,13 @@ class ImageCroppingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image_cropping)
 
+        //initialize the database if it isn't already and get the number of entries in it
         numImages = MetadataDB.createDB(this).getMetadata().size
 
+        //prevent the screen from locking while on this activity
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
+        //get the shared preferences
         prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE)
 
         //crop images on a background thread
@@ -46,6 +49,7 @@ class ImageCroppingActivity : AppCompatActivity() {
                 cropImages()
             }
 
+            //once cropping has finished, update the cropped variable in shared preferences and move to the SendConfirmationActivity
             prefs.edit().putBoolean("cropped", true).apply()
             val intent = Intent(this, SendConfirmationActivity::class.java)
             startActivity(intent)
@@ -54,6 +58,8 @@ class ImageCroppingActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        //don't want things to be unrecoverably messed up, so move to the SendConfirmationActivity if the app is resumed
         if (!prefs.getBoolean("cropped", true)) {
             val intent = Intent(this, SendConfirmationActivity::class.java)
             startActivity(intent)
@@ -109,7 +115,7 @@ class ImageCroppingActivity : AppCompatActivity() {
                     }
                     if (numCropped >= numToCrop) {
                         //will only be true if we aren't on the final round of images to crop, so we say that not all of the images have been cropped (because we assume at the end of the for loop that this is the final round, and we need the app to know that it isn't)
-                        prefs.edit().putBoolean("cropped", false).commit()
+                        prefs.edit().putBoolean("cropped", false).commit() //synchronously update the shared preferences
                         break
                     }
 
@@ -195,23 +201,18 @@ class ImageCroppingActivity : AppCompatActivity() {
 
     // creates folder in SunSketchers directory for cropped images. Returns created folder
     private fun createCroppedImageFolder(): File {
-        // reference to original image folder in pictures directory
-        //val picturesDir = filesDir
-
-        // create the cropped image folder in the app's internal storage
-        //val mCropImageFolder = File(picturesDir, "CroppedImages")
-        //mCropImageFolder.mkdirs()
-
-        //return mCropImageFolder
+        //return the root directory of the app's internal files
         return filesDir
     }
 
+    //convert the image material to greyscale
     private fun makeImageGreyScale(img: Mat): Mat {
         val imgGrey = Mat()
         Imgproc.cvtColor(img, imgGrey, Imgproc.COLOR_RGB2GRAY)
         return imgGrey
     }
 
+    //get the bounding box for the given image material
     private fun getEclipseBox(img: Mat): Rect {
 
         // make image grey scale
