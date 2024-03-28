@@ -27,35 +27,39 @@ class CountdownActivity : AppCompatActivity() {
     }
     lateinit var binding: ActivityCountdownBinding
 
+    //first function that is run implicitly when this activity is opened
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCountdownBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //get a reference to the shared preferences
         val prefs = getSharedPreferences("eclipseDetails", MODE_PRIVATE)
         val hasConfirmDeny = prefs.getInt("upload", -1) //if -1, hasn't taken images yet
 
         var intent: Intent? = null
         when (hasConfirmDeny) {
-            -2 -> intent = if (prefs.getBoolean("cropped", false)) {
+            -2 -> intent = if (prefs.getBoolean("cropped", false)) { //-2 means not yet confirmed or denied upload, but has taken images; if cropped is true, all images have been cropped
                 Intent(this, SendConfirmationActivity::class.java)
-            } else {
+            } else { // cropped is false if not all images have been cropped (this is also the default if cropped is not found)
                 Intent(this, ImageCroppingActivity::class.java)
             }
 
-            0 -> intent = Intent(this, FinishedInfoDenyActivity::class.java)
-            1 -> intent = if (prefs.getBoolean("uploadSuccessful", false)) { //allowed upload and upload already finished
+            0 -> intent = Intent(this, FinishedInfoDenyActivity::class.java) //0 means upload was denied
+            1 -> intent = if (prefs.getBoolean("uploadSuccessful", false)) { //1 means the user allowed upload; uploadSuccessful means all data has been uploaded if true
                 Intent(this, FinishedCompleteActivity::class.java)
-            } else {
+            } else { //uploadSuccessful is false if not all data has been uploaded (this is also the default if the variable isn't found)
                 Intent(this, FinishedInfoActivity::class.java)
             }
-
+            //default
             else -> {}
         }
+        //switch to the respective screen if necessary
         if (intent != null) {
             this.startActivity(intent)
         }
-        
+
+        //set the formatted text to be displayed
         singleton = this
         var str = SpannableStringBuilder("Please turn your ringer ").bold{append("off")}.append(" and Do Not Disturb ").bold{append("on!")}
         binding.countdownInfoText.text = str
@@ -69,6 +73,7 @@ class CountdownActivity : AppCompatActivity() {
 
     var timerSet = false
 
+    //this function accesses the GPS location, calculates the time of totality (if the user is not in the path of totality, it says so in the UI and does not do anything), and uses it to schedule when to switch to the camera activity
     private fun getLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //request permission again if it wasn't given
@@ -78,14 +83,19 @@ class CountdownActivity : AppCompatActivity() {
 
             //prevent phone from automatically locking
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+            //create an instance of the LocationAccess class
             val locAccess = LocationAccess(this)
+
+            //use it to get the location once
             locAccess.getCurrentLocation(object : LocationResultCallback {
                 override fun onLocationResult(location: Location) {
+                    //get the coordinates from the callback parameter
                     var lat = location.latitude
                     var lon = location.longitude
                     val alt = location.altitude
 
-                    //todo: for testing
+                    //todo: for testing (location spoof)
                     //lat = 47.6683
                     //lon = -60.7450
 
@@ -97,52 +107,39 @@ class CountdownActivity : AppCompatActivity() {
                     //String[] eclipseData = LocToTime.calculatefor(31.86361, -102.37163, 0); //10/14/2023
                     //String[] eclipseData = LocToTime.calculatefor(36.98605, -86.45146, 0); //8/21/2017
 
-                    //get actual device location for sunset timing (test stuff) TODO: remove for actual app releases
-                    //val sunsetTime = Sunset.calcSun(lat, -lon) //make longitude negative as the sunset calculations use a positive westward latitude as opposed to the eclipse calculations using a positive eastward latitude
-
                     //make sure the user is actually in eclipse path before trying to do any scheduling stuff
                     if (!eclipseData[0].equals("N/A")) {
                         val times = convertTimes(eclipseData)     //TODO: use for actual app releases
-                        //val times = testConvertTimes(eclipseData) //TODO: remove for actual app releases
+                        //val times = testConvertTimes(eclipseData) //TODO: remove for actual app releases (date spoof; not recommended)
 
-                        //use the given times to create calendar objects to use in setting alarms
-                        /*val timeCals = arrayOfNulls<Calendar>(2)
-                        timeCals[0] = Calendar.getInstance()
-                        timeCals[0]?.timeInMillis = times[0] * 1000
-                        timeCals[1] = Calendar.getInstance()
-                        timeCals[1]?.timeInMillis = times[1] * 1000*/
-
-                        //String details = "You are at lat: " + lat + ", lon: " + lon + "; The solar eclipse will start at the following time at your current location: " + timeCals[0].getTime();
-                        //val details = "The app will now swap to the camera, where you will have 45 seconds to adjust the phone's position before it starts taking photos." //TODO: remove for actual app releases
+                        //make it visible that something is happening by showing the device's location on screen
                         val details = "Your location:\nLatitude: $lat\nLongitude: $lon"
-                        //String details = "lat: " + lat + "; lon: " + lon + "; Sunset Time: " + timeCals[0].getTime(); //TODO: remove for actual app releases
                         Log.d("Timing", details)
                         binding.countdownLocationDetailsText.text = details
-                        //--------made it visible that something is happening--------
 
-                        //store the unix time for the start and end of totality in SharedPreferences
+                        //store the unix time for the start and end of totality and the location in SharedPreferences
                         val prefs = getSharedPreferences("eclipseDetails", MODE_PRIVATE).edit()
                         prefs.putLong("startTime", times[0] * 1000)
                         prefs.putLong("endTime", times[1] * 1000)
                         prefs.putFloat("lat", lat.toFloat())
                         prefs.putFloat("lon", lon.toFloat())
                         prefs.putFloat("alt", alt.toFloat())
-                        prefs.apply()
+                        prefs.apply() //save the shared preferences asynchronously
 
-                        //go to camera 60 seconds prior, start taking images 15 seconds prior to 5 seconds after, and then at end of eclipse 5 seconds before and 15 after TODO: also for the sunset timing
-                        //val date = Date((times[0] - 60) * 1000); //useless
-                        //the next line is a testcase to make sure functionality works for eclipse timing
-                        //val date = Date(System.currentTimeMillis() + 5000) //TODO: remove
-                        //Log.d("SCHEDULE_CAMERA", date.toString())
+                        //go to camera 60 seconds prior to C2
                         if (!timerSet) {
                             Log.d("Timing", "Creating timer.")
                             timerSet = !timerSet
-                            //val cameraActivitySchedulerTask = TimeTask()
-                            //timer!!.schedule(cameraActivitySchedulerTask, date)
+
                             val countdownTimeDiff = ((times[0] * 1000) - 60 * 1000) - System.currentTimeMillis() //TODO: use
-                            //val countdownTimeDiff = 5000L //TODO: remove
+                            //val countdownTimeDiff = 5000L //TODO: remove (schedules switch to camera activity for 5 seconds from current time)
+
+                            //check to make sure if it is past C2 - 1 minute already
                             if(countdownTimeDiff > 0) {
+                                //create a countdown timer  that ticks once per second
                                 object : CountDownTimer(countdownTimeDiff, 1000) {
+
+                                    //at each tick, update the countdown timer on screen
                                     override fun onTick(millisUntilFinished: Long) {
                                         var seconds = millisUntilFinished / 1000
                                         var minutes = seconds / 60
@@ -153,17 +150,20 @@ class CountdownActivity : AppCompatActivity() {
                                         binding.countdownTimeText.text = "${if (hours > 0) { "$hours:" } else { "" }}${if (minutes > 0) { "${if (minutes < 10) { "0" } else { "" } + "$minutes"}:" } else { "0:" }}${if (seconds < 10) { "0" } else { "" } + "$seconds"} UNTIL FIRST PHOTO IS TAKEN"
                                     }
 
+                                    //when the timer reaches 0, switch to the camera activity
                                     override fun onFinish() {
                                         val intent = Intent(singleton, CameraActivity::class.java)
                                         singleton.startActivity(intent)
                                     }
-                                }.start()
+                                }.start() //start the countdown timer
                             } else {
-                                binding.countdownTimeText.text = "The total eclipse has already started at your location."
+                                //totality has already started
+                                binding.countdownTimeText.text = "Totality has already started at your location."
                             }
 
                         }
                     } else {
+                        //user is not in the path of totality
                         binding.countdownLocationDetailsText.text = "Your location:\nLatitude: $lat\nLongitude: $lon"
                         binding.countdownTimeText.text = "Not in path of totality."
                     }
@@ -171,6 +171,7 @@ class CountdownActivity : AppCompatActivity() {
 
                 }
 
+                //failed to get location
                 override fun onLocationFailed() {
                     binding.countdownLocationDetailsText.text = ""
                     binding.countdownTimeText.text = "Unable to get location. Did you allow access permissions?"
@@ -179,30 +180,25 @@ class CountdownActivity : AppCompatActivity() {
         }
     }
 
-    //TimerTask subclass that opens the CameraActivity at the specified time
-    internal class TimeTask : TimerTask() {
-        var context: Context = singleton
-
-        override fun run() {
-            val intent = Intent(context, CameraActivity::class.java)
-            context.startActivity(intent)
-        }
-    }
-
-    //convert `hh:mm:ss` format string to unix time (this version is specifically for Apr. 8, 2024 eclipse, the first number in startUnix and endUnix will need to be modified to the unix time for the start of Oct. 14, 2023 for that test
+    //convert `hh:mm:ss` format string to unix time (this version is specifically for Apr. 8, 2024 eclipse
     fun convertTimes(data: Array<String>): LongArray {
         val start = data[0].split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val end = data[1].split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
         //add actual time to unix time of UTC midnight for start of that day
+        //TODO: modify the first number in both of these to UTC midnight start of the day for whatever eclipse this is being used for
         val startUnix = 1712534400 + start[0].toInt() * 3600L + start[1].toInt() * 60L + start[2].toInt() //todo: for april 8
         val endUnix = 1712534400 + end[0].toInt() * 3600L + end[1].toInt() * 60L + end[2].toInt()
-        //long startUnix = 1697241600 + ((Integer.parseInt(start[0])) * 3600L) + (Integer.parseInt(start[1]) * 60L) + Integer.parseInt(start[2]);     //todo: for october 14
-        //long endUnix = 1697241600 + ((Integer.parseInt(end[0])) * 3600L) + (Integer.parseInt(end[1]) * 60L) + Integer.parseInt(end[2]);
+
+        //example of how it needs to be changed for other eclipses; this one specifically is for the October 14th, 2023 annular eclipse
+        //long startUnix = 1697241600 + start[0].toInt() * 3600L + start[1].toInt() * 60L + start[2].toInt()
+        //long endUnix = 1697241600 + end[0].toInt() * 3600L + end[1].toInt() * 60L + end[2].toInt()
+
         return longArrayOf(startUnix, endUnix)
     }
 
-    fun testConvertTimes(data: Array<String>): LongArray {
+    //schedules based on current day; highly recommend against using this since timezone conversions are jank, but I've left it in just in case
+    /*fun testConvertTimes(data: Array<String>): LongArray {
         //0 -> hour; 1 -> minute; 2 -> second
         val start = data[0].split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val end = data[1].split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -220,8 +216,9 @@ class CountdownActivity : AppCompatActivity() {
         val startUnix = currentDateTimezoneCorrectedUnix + start[0].toInt() * 3600L + start[1].toInt() * 60L + start[2].toInt()
         val endUnix = currentDateTimezoneCorrectedUnix + end[0].toInt() * 3600L + end[1].toInt() * 60L + end[2].toInt()
         return longArrayOf(startUnix, endUnix)
-    }
+    }*/
 
+    //switch the visible UI elements when the left and right arrows are pressed
     fun onArrowClick(v: View){
         if(v.id == binding.countdownArrowRight.id){
             binding.countdownArrowRight.visibility = View.GONE
