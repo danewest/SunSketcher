@@ -31,27 +31,10 @@ class FinishedInfoActivity : AppCompatActivity() {
         //get the necessary preferences to fill UI text
         prefs = getSharedPreferences("eclipseDetails", MODE_PRIVATE)
         val uploadReady = prefs.getInt("upload", 0)
+
+        //display the client ID for debugging
         //val clientID = prefs.getLong("clientID", -1)
-
-        //fill the UI text based on the preferences
-        /*var text = binding.infoText
-        if(uploadReady == 0){
-            text.text = "Thank you for using the SunSketcher app. You have chosen not to upload your images for analysis. You can now uninstall the SunSketcher app. Even after uninstalling, your eclipse photos can still be found in the `Photos/SunSketcher/` directory in your device storage, or in your gallery."
-            binding.uploadBtn.isEnabled = false
-            binding.uploadBtn.text = "You have chosen not to upload photos."
-        } else {
-            text.text = "Thank you for using the SunSketcher app. You have chosen to upload your images for analysis. Please keep the app installed and do not delete the photos in the `Pictures/SunSketcher/` directory, or the SunSketcher album in your gallery, until further notice. The text at the bottom of the screen will change when your images have been uploaded, at which point you can freely delete the app and images from your device. This may take up to a week, so please be patient."
-        }*/
         //binding.clientIDText.text = "ClientID: $clientID"
-
-        //disable the upload button if the UploadScheduler service is already running (upload button is not used on final version
-        /*if(foregroundServiceRunning()){
-            binding.uploadBtn.isEnabled = false
-            binding.uploadBtn.text = "The upload service is running. Estimated finish time: ${(0.5 + clientID) * 15} minutes from time that upload was accepted. Please allow for extra time, as your upload time may be delayed without notice."
-        }*/
-        //TODO: remove the following two lines
-        //binding.uploadBtn.isEnabled = false
-        //binding.uploadBtn.text = "This is a test version of the app where upload is unnecessary."
 
         //dump database values to a csv file in documents folder
         /*if(!prefs.getBoolean("DBIsDumped", false)) {
@@ -68,27 +51,25 @@ class FinishedInfoActivity : AppCompatActivity() {
         }
     }
 
+    //called any time the user re-focuses the app
     override fun onResume() {
         super.onResume()
+        //checks if the user's data has been uploaded
         prefs = getSharedPreferences("eclipseDetails", MODE_PRIVATE)
-        var hasFinishedUpload = prefs.getBoolean("uploadSuccessful", false)
-        if(hasFinishedUpload){
-            binding.uploadBtn.isEnabled = false
-            binding.uploadBtn.text = "Your images have been uploaded successfully. You can now uninstall the SunSketcher app."
-        }
-
-        if (prefs.getBoolean("uploadSuccessful", false)) { //upload already finished
+        if (prefs.getBoolean("uploadSuccessful", false)) { //if uploaded, switch to the FinishedCompleteActivity
             Intent(this, FinishedCompleteActivity::class.java)
-        } else if (!foregroundServiceRunning()){
-            if(App.getContext() == null)
+        } else if (!foregroundServiceRunning()){ //if not uploaded, check to see if the UploadScheduler service is running; if not, start it
+            if(App.getContext() == null) //check if the App class has a global context set; if not, set it to this activity
                 App.setContext(this)
+
+            //start the upload scheduler service
             val uploadSchedulerIntent = Intent(this, UploadScheduler::class.java)
             startService(uploadSchedulerIntent)
         }
     }
 
 
-    //dump timing data to a CSV
+    //dump database to a CSV file (saved in documents folder of device)
     private fun dumpDBtoCSV(){
         db = createDB(this)
         db.initialize()
@@ -118,6 +99,7 @@ class FinishedInfoActivity : AppCompatActivity() {
         prefEdit.apply()
     }
 
+    //manually starts the upload scheduler service; the button is hidden in the layout currently, so this is technically not used
     fun onUploadClick(v: View) {
         val btn: Button = v as Button
         try {
@@ -138,6 +120,7 @@ class FinishedInfoActivity : AppCompatActivity() {
         }
     }
 
+    //check if the upload scheduler service is running
     private fun foregroundServiceRunning(): Boolean {
         val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
         for (service in activityManager.getRunningServices(Int.MAX_VALUE)) {
@@ -148,12 +131,14 @@ class FinishedInfoActivity : AppCompatActivity() {
         return false
     }
 
+    //open the scistarter form for SunSketcher in browser
     fun onSciStarterClick(v: View){
         val uri = Uri.parse("https://scistarter.org/form/180")
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
     }
 
+    //open the LearnMoreActivity
     fun onLearnMoreClick(v: View){
         val intent = Intent(this, LearnMoreActivity::class.java)
         startActivity(intent)

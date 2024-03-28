@@ -16,12 +16,14 @@ class FinishedInfoDenyActivity : AppCompatActivity() {
         setContentView(binding.root)
     }
 
+    //open the scistarter form for SunSketcher
     fun onSciStarterClick(v: View){
         val uri = Uri.parse("https://scistarter.org/form/180")
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
     }
 
+    //open the LearnMoreActivity
     fun onLearnMoreClick(v: View){
         val intent = Intent(this, LearnMoreActivity::class.java)
         startActivity(intent)
