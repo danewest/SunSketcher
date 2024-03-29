@@ -355,6 +355,7 @@ public class CameraActivity extends AppCompatActivity {
         //long randomizer = (long)((Math.random() * 500) - 250); //TODO: remove for actual app releases
         //startTime = System.currentTimeMillis() + 30000 + randomizer; //TODO: remove for actual app releases
         //endTime = startTime + 60000 * 2 + randomizer; //2 minutes after startTime TODO: remove for actual app releases
+
         long midTime = (endTime + startTime) / 2; //set time for midpoint photo
 
         //create a timer which is used to schedule all of the timing triggers
