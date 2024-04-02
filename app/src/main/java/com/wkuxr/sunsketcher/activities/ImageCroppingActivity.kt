@@ -8,7 +8,6 @@ import android.media.ExifInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.wkuxr.sunsketcher.R
 import com.wkuxr.sunsketcher.database.Metadata
@@ -138,6 +137,7 @@ class ImageCroppingActivity : AppCompatActivity() {
                     // write the cropped image to the cropped image file
                     Imgcodecs.imwrite(imgCroppedFile.absolutePath, imgMatCropped)
 
+                    //get the relevant exif data for the image
                     val exif = ExifInterface(imgOriginal.absolutePath)
                     var fstop = exif.getAttribute(ExifInterface.TAG_F_NUMBER)?.toDouble()
                     val iso =
@@ -156,7 +156,7 @@ class ImageCroppingActivity : AppCompatActivity() {
                     if (focalDistance == null) {
                         focalDistance = ""
                     }
-                    // save crop img file path to img metadata in database
+                    // save crop img file path and exif data to img metadata in database
                     db.updateRowFilepath(
                         metadataRow.id,
                         imgCroppedFile.absolutePath,

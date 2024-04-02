@@ -147,7 +147,7 @@ class CountdownActivity : AppCompatActivity() {
                                         val hours = minutes / 60
                                         minutes %= 60
 
-                                        binding.countdownTimeText.text = "${if (hours > 0) { "$hours:" } else { "" }}${if (minutes > 0) { "${if (minutes < 10) { "0" } else { "" } + "$minutes"}:" } else { "0:" }}${if (seconds < 10) { "0" } else { "" } + "$seconds"} UNTIL FIRST PHOTO IS TAKEN"
+                                        binding.countdownTimeText.text = "${if (hours > 0) { "$hours:" } else { "" }}${if (minutes > 0) { "${if (minutes < 10) { if(hours > 0) { "0" } else { "" } } else { "" } + "$minutes"}:" } else { if(hours > 0) { "00:" } else { "0:" }}}${if (seconds < 10) { "0" } else { "" } + "$seconds"} UNTIL FIRST PHOTO IS TAKEN"
                                     }
 
                                     //when the timer reaches 0, switch to the camera activity
