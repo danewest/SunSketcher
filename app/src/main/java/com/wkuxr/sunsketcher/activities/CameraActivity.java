@@ -118,6 +118,8 @@ public class CameraActivity extends AppCompatActivity {
     private String mCameraId;
     private Size mPreviewSize;
     private ImageReader mImageReader;
+
+    //callback from images being captured
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener = new
             ImageReader.OnImageAvailableListener() {
                 @Override
@@ -126,7 +128,7 @@ public class CameraActivity extends AppCompatActivity {
                 }
             };
 
-    // This class saves images
+    //called by mOnImageAvailableListener callback above, this class is used to save images asynchronously
     private class ImageSaver implements Runnable {
 
         private final Image mImage;
@@ -145,7 +147,8 @@ public class CameraActivity extends AppCompatActivity {
             }
 
             byte[] bytes;
-            if(mImage.getFormat() == ImageFormat.RAW10){
+            //currently all images are JPEGs, so this is always false (see header comment of getCroppedData function below
+            if(mImage.getFormat() == ImageFormat.RAW_SENSOR){
                 bytes = getCroppedData(mImage, 50, 150, 50, 150);
             } else {
                 //get the byte array data for the image
@@ -178,7 +181,8 @@ public class CameraActivity extends AppCompatActivity {
             }
         }
 
-        //TODO: Fix the RAW10 part of this function because raw images don't work
+        //TODO: Fix the RAW_SENSOR part of this function because raw images don't work
+        //currently useless function, supposed to find the brightest point in a raw image and crop at it; doesn't actually work
         byte[] getCroppedData(Image image, int x1, int x2, int y1, int y2){
             int format = image.getFormat();
             int width = y2 - y1;
@@ -188,7 +192,8 @@ public class CameraActivity extends AppCompatActivity {
 
             Image.Plane[] planes = image.getPlanes();
 
-            if(format == ImageFormat.RAW10){
+            //currently, all images are JPEGs, so this is always false
+            if(format == ImageFormat.RAW_SENSOR){
                 int bytesPerPixel = ImageFormat.getBitsPerPixel(format) / 8;
                 Log.d("Image_Cropping", "Bytes per pixel: " + bytesPerPixel);
                 //create a new data array with the size necessary to hold the cropped image
@@ -229,6 +234,8 @@ public class CameraActivity extends AppCompatActivity {
     private MediaRecorder mMediaRecorder;
     private int mTotalRotation;
     private CameraCaptureSession mPreviewCaptureSession;
+
+    //callback for camera preview
     private final CameraCaptureSession.CaptureCallback mPreviewCaptureCallback = new CameraCaptureSession.CaptureCallback() {
         private void process(CaptureResult captureResult) {
             switch (mCaptureState) {
