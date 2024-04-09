@@ -70,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
             this.startActivity(intent);
         }
 
+        //this commented line allows you to set a specific clientID to make data discernible after transfer to server
+        //prefs.edit().putLong("clientID",9999999).commit();
+
         long clientID = prefs.getLong("clientID", -1);
         //if the app has not yet gotten a clientID from the server, get one
         if(clientID == -1){
@@ -85,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
             });
             idTimeThread.start();
         }
+
+        //the commented out code below here relating to clientIDs is debug functionality to display the clientID on screen
         //binding.clientIDText.setText("ClientID: " + clientID);
     }
 

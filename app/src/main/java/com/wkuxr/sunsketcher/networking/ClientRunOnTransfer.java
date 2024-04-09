@@ -213,7 +213,7 @@ public class ClientRunOnTransfer {
 
                 //---------------------------------------------------------------------------------------------------------
                 //gather and send image
-                Log.d("NetworkTransfer", "Importing Photo " + currentPhoto + " ...");
+                Log.d("NetworkTransfer", "Importing Photo " + (metadataList.size() - prefs.getInt("numUploaded", -1)) + " ...");
                 FileInputStream fileIn = new FileInputStream(file);
                 fileIn.read(imageData);
 
@@ -258,11 +258,12 @@ public class ClientRunOnTransfer {
         }
 
 
-        if (receive().equals("freeToDisconnect")) {
+        //this conditional here waits for the server to tell the client that all data has been successfully received but it actually seems to not work properly on the server side so we removed it after v1.0.6
+        /*if (receive().equals("freeToDisconnect")) {
             socket.close();
             Log.d("NetworkTransfer", "Program Complete. Closing...");
             return true;
-        }
+        }*/
         return true;
     }
 
