@@ -31,6 +31,7 @@ class ImageCroppingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //no need to access any layout elements, so we just don't bother inflating a view binding for this Activity
         setContentView(R.layout.activity_image_cropping)
 
         //initialize the database if it isn't already and get the number of entries in it

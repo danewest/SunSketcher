@@ -7,7 +7,12 @@
 .externalNativeBuild
 .cxx
 local.properties
-opencv
+opencv/.cxx/
+opencv/build/
+opencv/etc/
+opencv/java/
+opencv/libcxx_helper/
+opencv/native/
 /.idea
 .idea/workspace.xml
 /app/release

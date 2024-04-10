@@ -14,8 +14,10 @@ class TutorialPromptActivity : AppCompatActivity() {
         setContentView(binding.root)
     }
 
+    //open the tutorial
     fun viewTutorial(v: View) {
         val prefs = getSharedPreferences("eclipseDetails", MODE_PRIVATE)
+        //specify that it needs to go to the LocationPromptActivity next
         val prefEdit = prefs.edit()
         prefEdit.putInt("next", 1)
         prefEdit.apply()
@@ -25,6 +27,7 @@ class TutorialPromptActivity : AppCompatActivity() {
         finish()
     }
 
+    //skip the tutorial and go straight to the LocationPromptActivity
     fun skipTutorial(v: View) {
         val intent = Intent(this, LocationPromptActivity::class.java)
         this.startActivity(intent)

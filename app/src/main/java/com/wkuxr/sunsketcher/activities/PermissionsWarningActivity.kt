@@ -13,6 +13,7 @@ class PermissionsWarningActivity : AppCompatActivity() {
         setContentView(binding.root)
     }
 
+    //return to the previous activity when clicked
     fun onClick(v: View){
         finish()
     }

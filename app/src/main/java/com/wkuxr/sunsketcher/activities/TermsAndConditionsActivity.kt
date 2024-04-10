@@ -14,6 +14,7 @@ class TermsAndConditionsActivity : AppCompatActivity() {
         binding = ActivityTermsAndConditionsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //build a formatted string for the terms and conditions
         var str = SpannableStringBuilder("").bold{append("I.\tThe Application")}
             .append("\n\tSunSketcher (“Licensed Application” or “App” hereinafter) is a piece of " +
                     "software created to photograph the 2024 Great North American Eclipse. The App " +
@@ -78,9 +79,11 @@ class TermsAndConditionsActivity : AppCompatActivity() {
                     "\n\n\t\tWestern Kentucky University" +
                     "\n\t\tGreg Arbuckle" +
                     "\n\t\tgreg.arbuckle@wku.edu")
+        //display it
         binding.tacText.text = str
     }
 
+    //return to the previous Activity in the activity stack
     fun onClick(v: View){
         finish()
     }

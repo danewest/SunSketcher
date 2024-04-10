@@ -77,19 +77,19 @@ GNU General Public License for more details.
 
 static double[] obsvconst = new double[7];
 
-//outdated elements that match up with the data at https://eclipse.gsfc.nasa.gov/SEpath/SEpath2001/SE2024Apr08Tpath.html
-/*public static double[] elements  = {2460409.26283562,  18.0,  -3.0,   3.0, 73.5, 73.5,
-  -0.31818941,  0.51171158,  3.2613e-05, -8.4156e-06,
-   0.21979441,  0.27095897, -5.9436e-05, -4.6586e-06,
-   7.58619838,  0.01484435, -1.7029e-06,
-  89.59258886, 15.00408332, -8.1636e-07,
-   0.53583722,  0.00006179, -1.2761e-05,
-  -0.01026868,  0.00006148, -1.2698e-05,
-   0.00466833,  0.00464509};*/
+//TODO: Aug. 12, 2026
+/*public static double[] elements = {2461265.24104, 18.0, -3.0, 3.0, 75.4, 75.4,    //Date, hour of greatest eclipse, delta T
+    0.47551399,   0.51892489, -0.00007730, -0.00000804,                             //x
+    0.77118301,  -0.23016800, -0.00012460,  0.00000377,                             //y
+   14.79666996,  -0.01206500, -0.00000300,                                          //d
+   88.74778748,  15.00308990,  0.00000000,                                          //mu
+    0.53795499,   0.00009390, -0.00001210,                                          //l1
+   -0.00814200,   0.00009350, -0.00001210,                                          //l2
+    0.00461410,   0.00459110};*/                                                    //tan f1, tan f2
 
 //updated elements provided by Fred Espenak
 //TODO: Apr. 8, 2024
-public static double[] elements = {2460409.262841, 18.0, -4.0, 4.0, 69.2, 69.2,    //Date, hour of greatest eclipse, delta T
+public static double[] elements = {2460409.262841, 18.0, -4.0, 4.0, 69.2, 69.2,     //Date, hour of greatest eclipse, delta T
    -0.3182485,    0.5117099,  0.0000326, -0.0000084,                                //x
     0.2197639,    0.2709581, -0.0000594, -0.0000047,                                //y
     7.5861838,    0.0148444, -0.0000017,                                            //d
@@ -99,17 +99,17 @@ public static double[] elements = {2460409.262841, 18.0, -4.0, 4.0, 69.2, 69.2, 
     0.0046683,    0.0046450};                                                       //tan f1, tan f2
 
 //TODO: Oct. 14, 2023
-/*public static double[] elements = {2460232.250470, 18.0, -4.0, 4.0, 69.1, 69.1,     //Date, hour of greatest eclipse, delta T
+/*public static double[] elements = {2460232.250470, 18.0, -4.0, 4.0, 69.1, 69.1,   //Date, hour of greatest eclipse, delta T
     0.1696573,   0.4585517,  0.0000278, -0.0000054,                                 //x
     0.3348613,  -0.2413663,  0.0000241,  0.0000030,                                 //y
    -8.2441736,  -0.0148882,  0.0000016,                                             //d
    93.501741,   15.003529,  -0.000002,                                              //mu
     0.5643306,  -0.0000891, -0.0000103,                                             //l1
     0.0180827,  -0.0000886, -0.0000103,                                             //l2
-    0.0046882,   0.0046648};*/                                                        //tan f1, tan f2
+    0.0046882,   0.0046648};*/                                                      //tan f1, tan f2
 
-//TODO: Aug. 21, 2017 (for testing)
-/*public static double[] elements = {2457987.268521,  18.0, -4.0, 4.0, 70.3, 70.3,
+//TODO: Aug. 21, 2017 (for testing the calculator without spoofing, as this eclipse passes the lab)
+/*public static double[] elements = {2457987.268521, 18.0, -4.0, 4.0, 70.3, 70.3,
    -0.1295710,   0.5406426, -2.940e-05, -8.100e-06,
     0.4854160,  -0.1416400, -9.050e-05,  2.050e-06,
    11.8669596,  -0.0136220, -2.000e-06,

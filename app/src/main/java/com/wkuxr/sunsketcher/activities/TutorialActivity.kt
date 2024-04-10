@@ -34,12 +34,12 @@ class TutorialActivity : AppCompatActivity() {
         if (currentScreen < 0){
             currentScreen = 0
         }
-        else if (currentScreen > 5){
-            currentScreen = 5
+        else if (currentScreen > 4){
+            currentScreen = 4
         }
 
         //set the interactive buttons visible or gone based on what page is currently being displayed
-        if (currentScreen == 5){    //last page, next is gone, done is visible, previous is visible by implication
+        if (currentScreen == 4){    //last page, next is gone, done is visible, previous is visible by implication
             binding.tutorialNext.visibility = View.GONE
             binding.tutorialDone.visibility = View.VISIBLE
         }

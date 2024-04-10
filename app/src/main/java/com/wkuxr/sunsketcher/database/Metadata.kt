@@ -1,9 +1,9 @@
 package com.wkuxr.sunsketcher.database
 
-import android.util.Rational
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+//compiles as an SQLite database table, these are the metadata entries per-image. The data found within should be self-evident
 @Entity(tableName = "metadata")
 class Metadata(
     var filepath: String = "",

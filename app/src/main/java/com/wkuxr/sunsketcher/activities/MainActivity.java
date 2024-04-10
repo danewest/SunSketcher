@@ -30,6 +30,9 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
 
     public static MainActivity singleton;   //having a singleton instance of the MainActivity makes so many things significantly easier because it gives us a definite, central reference point for non-static and activity-related functions
+
+    //any time I use a binding object like this, it's so I can reference UI (layout) elements without having to search for them by ID (reduces performance overhead)
+    //requires `android { buildFeatures { viewBinding true } }` in the app module's build.gradle
     ActivityMainBinding binding;
 
     static String[] perms = new String[]{"android.permission.CAMERA","android.permission.ACCESS_FINE_LOCATION","android.permission.WRITE_EXTERNAL_STORAGE","android.permission.INTERNET","android.permission.POST_NOTIFICATIONS"};
@@ -47,25 +50,26 @@ public class MainActivity extends AppCompatActivity {
         int hasConfirmDeny = prefs.getInt("upload", -1); //if -1, hasn't taken images yet
         Intent intent = null;
         switch(hasConfirmDeny){
-            case -2: //not yet confirmed or denied
+            case -2: //-2 means not yet confirmed or denied upload, but has taken images; if cropped is true, all images have been cropped
                 if(prefs.getBoolean("cropped", false)){
                     intent = new Intent(this, SendConfirmationActivity.class);
-                } else {
+                } else { //cropped is false if not all images have been cropped (this is also the default if cropped is not found)
                     intent = new Intent(this, ImageCroppingActivity.class);
                 }
                 break;
             case 0: //denied upload
                 intent = new Intent(this, FinishedInfoDenyActivity.class);
                 break;
-            case 1: //allowed upload
-                if(prefs.getBoolean("uploadSuccessful", false)){ //allowed upload and upload already finished
+            case 1: //1 means the user allowed upload
+                if(prefs.getBoolean("uploadSuccessful", false)){ //uploadSuccessful means all data has been uploaded if true
                     intent = new Intent(this, FinishedCompleteActivity.class);
-                } else {
+                } else { //uploadSuccessful is false if not all data has been uploaded (this is also the default if the variable isn't found)
                     intent = new Intent(this, FinishedInfoActivity.class);
                 }
                 break;
-            default:
+            default: //don't do anything if the above cases aren't true
         }
+        //switch to the respective screen if necessary
         if(intent != null) {
             this.startActivity(intent);
         }
@@ -98,46 +102,39 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
-        int hasConfirmDeny = prefs.getInt("upload", -1);
+        int hasConfirmDeny = prefs.getInt("upload", -1); //if -1, hasn't taken images yet
         Intent intent = null;
         switch(hasConfirmDeny){
-            case -2: //not yet confirmed or denied
+            case -2: //-2 means not yet confirmed or denied upload, but has taken images; if cropped is true, all images have been cropped
                 if(prefs.getBoolean("cropped", false)){
                     intent = new Intent(this, SendConfirmationActivity.class);
-                } else {
+                } else { //cropped is false if not all images have been cropped (this is also the default if cropped is not found)
                     intent = new Intent(this, ImageCroppingActivity.class);
                 }
                 break;
             case 0: //denied upload
                 intent = new Intent(this, FinishedInfoDenyActivity.class);
                 break;
-            case 1: //allowed upload
-                if(prefs.getBoolean("uploadSuccessful", false)){ //allowed upload and upload already finished
+            case 1: //1 means the user allowed upload
+                if(prefs.getBoolean("uploadSuccessful", false)){ //uploadSuccessful means all data has been uploaded if true
                     intent = new Intent(this, FinishedCompleteActivity.class);
-                } else {
+                } else { //uploadSuccessful is false if not all data has been uploaded (this is also the default if the variable isn't found)
                     intent = new Intent(this, FinishedInfoActivity.class);
                 }
                 break;
-            default:
+            default: //don't do anything if the above cases aren't true
         }
+        //switch to the respective screen if necessary
         if(intent != null) {
             this.startActivity(intent);
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if(timer != null){
-            timer.cancel();
-        }
-    }
-
-    Timer timer = null;
-
     public void start(View v){
         Intent intent;
-        if(reqPerm(perms)) {
+
+        //check if the necessary permissions have been allowed
+        if(reqPerm(perms)) { //if so, check whether the tutorial has been completed
             SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
 
             if (prefs.getBoolean("completedTutorial", false)) {
@@ -148,13 +145,16 @@ public class MainActivity extends AppCompatActivity {
                 intent = new Intent(this, TutorialPromptActivity.class);
             }
         } else {
+            //necessary permissions have not been allowed, so request permissions again
             intent = new Intent(this, PermissionsWarningActivity.class);
         }
         startActivity(intent);
     }
 
+    //functionality for clicking the tutorial button. as named, it opens TutorialActivity
     public void tutorial(View v){
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
+        //the tutorial activity must be able to return to the MainActivity or the LocationPromptActivity depending on where it was called from, so discerning that is done with this pref variable
         SharedPreferences.Editor prefEdit = prefs.edit();
         prefEdit.putInt("next", 0);
         prefEdit.apply();
@@ -163,16 +163,19 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //open the LearnMoreActivity
     public void learnMore(View v){
         Intent intent = new Intent(this, LearnMoreActivity.class);
         startActivity(intent);
     }
 
+    //open the TermsAndConditionsActivity
     public void tac(View v){
         Intent intent = new Intent(this, TermsAndConditionsActivity.class);
         startActivity(intent);
     }
 
+    //request the permissions passed in as a string array if they have not already been granted
     public boolean reqPerm(String[] permissions){
         if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)) {
             //all required permissions have been granted
@@ -187,16 +190,5 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(permissions, 1);
             return false;
         }
-    }
-
-    //the rest of these are just overrides necessary for superclass implementation
-    @Override
-    public void onStart(){
-        super.onStart();
-    }
-
-    @Override
-    public void onStop(){
-        super.onStop();
     }
 }

@@ -41,7 +41,7 @@ class CountdownActivity : AppCompatActivity() {
         when (hasConfirmDeny) {
             -2 -> intent = if (prefs.getBoolean("cropped", false)) { //-2 means not yet confirmed or denied upload, but has taken images; if cropped is true, all images have been cropped
                 Intent(this, SendConfirmationActivity::class.java)
-            } else { // cropped is false if not all images have been cropped (this is also the default if cropped is not found)
+            } else { //cropped is false if not all images have been cropped (this is also the default if cropped is not found)
                 Intent(this, ImageCroppingActivity::class.java)
             }
 

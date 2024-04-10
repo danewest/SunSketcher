@@ -15,13 +15,13 @@ import com.wkuxr.sunsketcher.databinding.FragmentTutorialBinding
 class TutorialFragment : Fragment() {
     private lateinit var binding: FragmentTutorialBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
         binding = FragmentTutorialBinding.inflate(inflater, container, false)
         return binding.root
     }
 
+    //change the info being displayed in this fragment
     fun changeScreen(screenNum: Int){
         when (screenNum){
             0 -> {
@@ -41,11 +41,6 @@ class TutorialFragment : Fragment() {
                 binding.tutorialFragmentText.text = "Once the countdown timer is visible, place your device against a hard surface or on a phone stand, with the screen facing away from the Sun, and the back camera(s) facing towards it.\nPlease do not touch your phone again until after totality has ended."
             }
             3 -> {
-                binding.tutorialFragmentTitle.text = "About solar filters"
-                binding.tutorialFragmentImage.setImageResource(R.drawable.solar_filter_tutorial)
-                binding.tutorialFragmentText.text = "Remember to take proper safety precautions! Always use ISO 12312-2 certified solar filters when looking at the Sun during the eclipse, except for the brief period during totality where it is safe to take them off.\n\nThat being said, please do not place a solar filter over the phone's camera(s)!\nWhile we humans have sensitive eyes that require a solar filter to be able to safely look at the Sun, rest assured that aiming a camera at the Sun will incur no damages to it, especially over such a short period of time. A phone's camera has nothing organic like the cells in our eyes do, and, as such, cannot be damaged by contact with sunlight unless over very long periods, about the same amount of time it might take for a piece of cloth to become sun-bleached. The SunSketcher team has performed extensive testing related to the effects of sunlight on phone cameras and even tested the SunSketcher app during the October 14th, 2023 annular eclipse (which, due to being annular as opposed to total, results in more light hitting the camera's sensor) and saw no adverse effects, whether lasting or temporary, with any phone used."
-            }
-            4 -> {
                 binding.tutorialFragmentTitle.text = "Step three"
                 binding.tutorialFragmentImage.setImageResource(R.drawable.eclipse_tutorial)
                 binding.tutorialFragmentText.text = "Enjoy the eclipse! Do NOT disturb the phone until one minute after totality ends. It continues to take photos for a few seconds even after totality."

@@ -62,6 +62,7 @@ class LearnMoreActivity : AppCompatActivity() {
         }
     }
 
+    //open the website when pressed
     fun learnEvenMore(v: View){
         val uri = Uri.parse("https://sunsketcher.org")
         val intent = Intent(Intent.ACTION_VIEW, uri)
