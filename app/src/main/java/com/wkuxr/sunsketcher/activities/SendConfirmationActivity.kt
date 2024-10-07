@@ -5,34 +5,23 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
-import android.media.ExifInterface
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.exifinterface.media.ExifInterface
 import com.wkuxr.sunsketcher.App
 import com.wkuxr.sunsketcher.R
 import com.wkuxr.sunsketcher.database.Metadata
-import com.wkuxr.sunsketcher.database.MetadataDB
 import com.wkuxr.sunsketcher.database.MetadataDB.Companion.createDB
 import com.wkuxr.sunsketcher.database.MetadataDB.Companion.db
 import com.wkuxr.sunsketcher.databinding.ActivitySendConfirmationBinding
 import com.wkuxr.sunsketcher.networking.UploadScheduler
-import org.opencv.android.Utils
-import org.opencv.core.Core
-import org.opencv.core.Mat
-import org.opencv.core.Point
-import org.opencv.core.Rect
-import org.opencv.core.Size
-import org.opencv.imgcodecs.Imgcodecs
-import org.opencv.imgproc.Imgproc
 import java.io.File
 
 

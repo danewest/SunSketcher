@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -23,7 +22,7 @@ import com.wkuxr.sunsketcher.R;
 import com.wkuxr.sunsketcher.activities.FinishedCompleteActivity;
 import com.wkuxr.sunsketcher.activities.FinishedInfoActivity;
 
-import java.io.IOException;
+import org.jetbrains.annotations.Nullable;
 
 public class UploadScheduler extends Service {
     static UploadScheduler singleton;

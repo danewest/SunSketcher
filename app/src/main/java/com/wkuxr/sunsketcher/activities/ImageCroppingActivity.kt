@@ -4,11 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
-import android.media.ExifInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.exifinterface.media.ExifInterface
 import com.wkuxr.sunsketcher.R
 import com.wkuxr.sunsketcher.database.Metadata
 import com.wkuxr.sunsketcher.database.MetadataDB
@@ -142,7 +142,7 @@ class ImageCroppingActivity : AppCompatActivity() {
                     val exif = ExifInterface(imgOriginal.absolutePath)
                     var fstop = exif.getAttribute(ExifInterface.TAG_F_NUMBER)?.toDouble()
                     val iso =
-                        Integer.parseInt(exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS))
+                        Integer.parseInt(exif.getAttribute(ExifInterface.TAG_PHOTOGRAPHIC_SENSITIVITY))
                     val whiteBalance =
                         Integer.parseInt(exif.getAttribute(ExifInterface.TAG_WHITE_BALANCE))
                     var exposure = exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME)?.toDouble()

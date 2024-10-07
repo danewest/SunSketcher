@@ -1,7 +1,6 @@
 package com.wkuxr.sunsketcher.activities
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -18,8 +17,6 @@ import com.wkuxr.sunsketcher.databinding.ActivityCountdownBinding
 import com.wkuxr.sunsketcher.location.LocToTime
 import com.wkuxr.sunsketcher.location.LocationAccess
 import com.wkuxr.sunsketcher.location.LocationAccess.LocationResultCallback
-import java.util.Timer
-import java.util.TimerTask
 
 class CountdownActivity : AppCompatActivity() {
     companion object {
@@ -93,34 +90,32 @@ class CountdownActivity : AppCompatActivity() {
                     //get the coordinates from the callback parameter
                     var lat = location.latitude
                     var lon = location.longitude
-                    val alt = location.altitude
+                    var alt = location.altitude
 
-                    //todo: for testing (location spoof)
+                    //todo: for testing 2024 eclipse (location spoof)
                     //lat = 47.6683
                     //lon = -60.7450
 
-                    //get actual device location for eclipse timing TODO: use for actual app releases
-                    val eclipseData = LocToTime.calculatefor(lat, lon, alt)
+                    //TODO: for testing 2026 eclipse (location spoof)
+                    lat = 80.26822
+                    lon = -27.75176
+                    alt = 1213.0
 
-                    //spoof location for eclipse testing; TODO: remove for actual app releases
-                    //val eclipseData = LocToTime.calculatefor(37.60786, -91.02687, 0.0); //4/8/2024
-                    //String[] eclipseData = LocToTime.calculatefor(31.86361, -102.37163, 0); //10/14/2023
-                    //String[] eclipseData = LocToTime.calculatefor(36.98605, -86.45146, 0); //8/21/2017
+                    //get contact times using obtained location TODO: use for actual app releases
+                    val contactTimes = LocToTime.calculatefor(lat, lon, alt)
 
                     //make sure the user is actually in eclipse path before trying to do any scheduling stuff
-                    if (!eclipseData[0].equals("N/A")) {
-                        val times = convertTimes(eclipseData)     //TODO: use for actual app releases
-                        //val times = testConvertTimes(eclipseData) //TODO: remove for actual app releases (date spoof; not recommended)
-
+                    if (contactTimes[0] != Long.MAX_VALUE) {
                         //make it visible that something is happening by showing the device's location on screen
                         val details = "Your location:\nLatitude: $lat\nLongitude: $lon"
                         Log.d("Timing", details)
+                        Log.d("Timing", "Unix c2: " + contactTimes[0] + "\nUnix c3: " + contactTimes[1])
                         binding.countdownLocationDetailsText.text = details
 
                         //store the unix time for the start and end of totality and the location in SharedPreferences
                         val prefs = getSharedPreferences("eclipseDetails", MODE_PRIVATE).edit()
-                        prefs.putLong("startTime", times[0] * 1000)
-                        prefs.putLong("endTime", times[1] * 1000)
+                        prefs.putLong("startTime", contactTimes[0])
+                        prefs.putLong("endTime", contactTimes[1])
                         prefs.putFloat("lat", lat.toFloat())
                         prefs.putFloat("lon", lon.toFloat())
                         prefs.putFloat("alt", alt.toFloat())
@@ -131,12 +126,12 @@ class CountdownActivity : AppCompatActivity() {
                             Log.d("Timing", "Creating timer.")
                             timerSet = !timerSet
 
-                            val countdownTimeDiff = ((times[0] * 1000) - 60 * 1000) - System.currentTimeMillis() //TODO: use
+                            val countdownTimeDiff = ((contactTimes[0]) - 60 * 1000) - System.currentTimeMillis() //TODO: use
                             //val countdownTimeDiff = 5000L //TODO: remove (schedules switch to camera activity for 5 seconds from current time)
 
                             //check to make sure if it is past C2 - 1 minute already
                             if(countdownTimeDiff > 0) {
-                                //create a countdown timer  that ticks once per second
+                                //create a countdown timer that ticks once per second
                                 object : CountDownTimer(countdownTimeDiff, 1000) {
 
                                     //at each tick, update the countdown timer on screen
@@ -179,44 +174,6 @@ class CountdownActivity : AppCompatActivity() {
             })
         }
     }
-
-    //convert `hh:mm:ss` format string to unix time (this version is specifically for Apr. 8, 2024 eclipse
-    fun convertTimes(data: Array<String>): LongArray {
-        val start = data[0].split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        val end = data[1].split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-
-        //add actual time to unix time of UTC midnight for start of that day
-        //TODO: modify the first number in both of these to UTC midnight start of the day for whatever eclipse this is being used for
-        val startUnix = 1712534400 + start[0].toInt() * 3600L + start[1].toInt() * 60L + start[2].toInt() //todo: for april 8
-        val endUnix = 1712534400 + end[0].toInt() * 3600L + end[1].toInt() * 60L + end[2].toInt()
-
-        //example of how it needs to be changed for other eclipses; this one specifically is for the October 14th, 2023 annular eclipse
-        //long startUnix = 1697241600 + start[0].toInt() * 3600L + start[1].toInt() * 60L + start[2].toInt()
-        //long endUnix = 1697241600 + end[0].toInt() * 3600L + end[1].toInt() * 60L + end[2].toInt()
-
-        return longArrayOf(startUnix, endUnix)
-    }
-
-    //schedules based on current day; highly recommend against using this since timezone conversions are jank, but I've left it in just in case
-    /*fun testConvertTimes(data: Array<String>): LongArray {
-        //0 -> hour; 1 -> minute; 2 -> second
-        val start = data[0].split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        val end = data[1].split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-
-        //get current time in seconds, remove a day if it is past UTC midnight for the date that your timezone is currently in
-        var currentDateUnix = System.currentTimeMillis() / 1000
-        val currentTimeUnix = currentDateUnix % 86400
-        if (currentTimeUnix > 0 && currentTimeUnix < 5 * 60 * 60) {
-            Log.d("testConvertTimes", "Current time is past UTC midnight; Subtracting a day from time estimate")
-            currentDateUnix -= 86400
-        }
-        val currentDateTimezoneCorrectedUnix = currentDateUnix - (currentDateUnix % (60 * 60 * 24)) // - (-5 * 60 * 60); //add this +5 hours back for sunset tests
-
-        //convert the given time to seconds, add it to the start of the day as calculated by
-        val startUnix = currentDateTimezoneCorrectedUnix + start[0].toInt() * 3600L + start[1].toInt() * 60L + start[2].toInt()
-        val endUnix = currentDateTimezoneCorrectedUnix + end[0].toInt() * 3600L + end[1].toInt() * 60L + end[2].toInt()
-        return longArrayOf(startUnix, endUnix)
-    }*/
 
     //switch the visible UI elements when the left and right arrows are pressed
     fun onArrowClick(v: View){

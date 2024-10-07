@@ -1,9 +1,5 @@
 package com.wkuxr.sunsketcher.location;
 
-import android.util.Log;
-
-import java.util.ArrayList;
-
 public class LocToTime {
 //Java Solar Eclipse Calculator
 //
@@ -12,19 +8,18 @@ public class LocToTime {
 // The source code this file is based on was created by
 // chris@obyrne.com  and  fred.espenak@nasa.gov
 // If you would like to use or modify this code, send them,
-// as well as travis.peden194@topper.wku.edu, an email about it.
+// as well as travis.peden194@topper.wku.edu, an email of inquiry.
 //
 // Code obtained from http://eclipse.gsfc.nasa.gov/JSEX/JSEX-index.html
-// and http://www.chris.obyrne.com:80/Eclipses/calculator.html (now 404'd, 
-// can be found at http://web.archive.org/web/20071006051658/http://www.chris.obyrne.com:80/Eclipses/calculator.html
 //
+
 /*
 Java Solar Eclipse Explorer
 Java Version 1 by Travis Peden - 2022.
 Javascript Version 1 by Chris O'Byrne and Fred Espenak - 2007.
 (based on "Eclipse Calculator" by Chris O'Byrne and Stephen McCann - 2003)
 
-This file (LocToTime.java) is free software; you can redistribute it and/or
+This program (LocToTime.java) is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation; either version 2
 of the License, or (at your option) any later version.
@@ -34,19 +29,6 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 */
-    
-/*
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License
-    as published by the Free Software Foundation; either version 2
-    of the License, or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-*/
-
 
 //
 // Observer constants -
@@ -61,42 +43,48 @@ GNU General Public License for more details.
 // Note that correcting for refraction will involve creating a "virtual" altitude
 // for each contact, and hence a different value of rho and O' for each contact!
 //
-    
+
 /*public static void main(String[] args){
     //test main to see if everything works properly
-    double lat = 32 + 50.8/60;
-    double lon = -96 + (-0.8/60);
-    //double lat = 25.122;
-    //double lon = -104.2252;
-    double alt = 0;
-    String[] data = calculatefor(lat, lon, alt);
-    
+    //double lat = 32 + 50.8/60;
+    //double lon = -96 + (-0.8/60);
+    double lat = 41.62517;
+    double lon = -2.24238;
+    double alt = 1012;
+    //double lat = 42.31943;
+    //double lon = 0.28997;
+    //double alt = 734;
+    long[] data = calculatefor(lat, lon, alt);
+
     if(data.length == 1) System.out.println(data[0]);
-    else System.out.println("Start of total: " + data[0] + "\nEnd of total:" + data[1]);
+    if(data[0] == Long.MAX_VALUE) System.out.println("Location is outside of path of totality/annularity.");
+    else System.out.println("Start of total: " + data[0] + "\nEnd of total:   " + data[1]);
+    System.out.println("Start of day:   " + getdate(mid));
 }*/
 
     static double[] obsvconst = new double[7];
 
-//TODO: Aug. 12, 2026
-/*public static double[] elements = {2461265.24104, 18.0, -3.0, 3.0, 75.4, 75.4,    //Date, hour of greatest eclipse, delta T
-    0.47551399,   0.51892489, -0.00007730, -0.00000804,                             //x
-    0.77118301,  -0.23016800, -0.00012460,  0.00000377,                             //y
-   14.79666996,  -0.01206500, -0.00000300,                                          //d
-   88.74778748,  15.00308990,  0.00000000,                                          //mu
-    0.53795499,   0.00009390, -0.00001210,                                          //l1
-   -0.00814200,   0.00009350, -0.00001210,                                          //l2
-    0.00461410,   0.00459110};*/                                                    //tan f1, tan f2
+    //TODO: Aug. 12, 2026
+    public static double[] elements = {2461265.24104, 18.0, -3.0, 3.0, 75.4, 75.4,    //Date, hour of greatest eclipse, delta T
+            0.47551399,  0.51892489, -0.00007730, -0.00000804,                        //x
+            0.77118301, -0.23016800, -0.00012460,  0.00000377,                        //y
+           14.79666996, -0.01206500, -0.00000300,                                     //d
+           88.74778748, 15.00308990,  0.00000000,                                     //mu
+            0.53795499,  0.00009390, -0.00001210,                                     //l1
+           -0.00814200,  0.00009350, -0.00001210,                                     //l2
+            0.00461410,  0.00459110};                                                 //tan f1, tan f2
 
     //updated elements provided by Fred Espenak
 //TODO: Apr. 8, 2024
-    public static double[] elements = {2460409.262841, 18.0, -4.0, 4.0, 69.2, 69.2,     //Date, hour of greatest eclipse, delta T
-           -0.3182485, 0.5117099,  0.0000326, -0.0000084,                               //x
-            0.2197639, 0.2709581, -0.0000594, -0.0000047,                               //y
-            7.5861838, 0.0148444, -0.0000017,                                           //d
-           89.591230, 15.004082,  -8.380e-07,                                           //mu
-            0.5358323, 0.0000618, -1.276e-05,                                           //l1
-           -0.0102736, 0.0000615, -1.269e-05,                                           //l2
-            0.0046683, 0.0046450};                                                      //tan f1, tan f2
+/*public static double[] elements = {2460409.262841, 18.0, -4.0, 4.0, 69.2, 69.2,     //Date, hour of greatest eclipse, delta T
+   -0.3182485,    0.5117099,  0.0000326, -0.0000084,                                //x
+    0.2197639,    0.2709581, -0.0000594, -0.0000047,                                //y
+    7.5861838,    0.0148444, -0.0000017,                                            //d
+   89.591230,    15.004082,  -8.380e-07,                                            //mu
+    0.5358323,    0.0000618, -1.276e-05,                                            //l1
+   -0.0102736,    0.0000615, -1.269e-05,                                            //l2
+    0.0046683,    0.0046450};*/                                                       //tan f1, tan f2
+
 
 //TODO: Oct. 14, 2023
 /*public static double[] elements = {2460232.250470, 18.0, -4.0, 4.0, 69.1, 69.1,   //Date, hour of greatest eclipse, delta T
@@ -117,6 +105,7 @@ GNU General Public License for more details.
     0.5420930,   0.0001241, -1.180e-05,
    -0.0040250,   0.0001234, -1.170e-05,
     0.0046222,   0.0045992};*/
+
 //
 // Eclipse circumstances
 //  (0) Event type (C1=-2, C2=-1, Mid=0, C3=1, C4=2)
@@ -167,17 +156,9 @@ GNU General Public License for more details.
 //      (0 = above horizon, 1 = below horizon, 2 = sunrise, 3 = sunset, 4 = below horizon, disregard)
 //
 
-    static String[] month = new String[]{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-
-    static double[] c1 = new double[41];
     static double[] c2 = new double[41];
     static double[] mid = new double[41];
     static double[] c3 = new double[41];
-    static double[] c4 = new double[41];
-
-
-    static String currenttimeperiod = "";
-    static ArrayList<String> loadedtimeperiods = new ArrayList<>();
 
     // Populate the circumstances array with the time-only dependent circumstances (x, y, d, m, ...)
     static double[] timedependent(double[] circumstances) {
@@ -292,54 +273,6 @@ GNU General Public License for more details.
         return circumstances;
     }
 
-    // Iterate on C1 or C4
-    static double[] c1c4iterate(double[] circumstances) {
-        double sign;
-        int iter;
-        double tmp;
-        double n;
-
-        timelocdependent(circumstances);
-        if (circumstances[0] < 0) {
-            sign = -1.0;
-        } else {
-            sign = 1.0;
-        }
-        tmp = 1.0;
-        iter = 0;
-        while (((tmp > 0.000001) || (tmp < -0.000001)) && (iter < 50)) {
-            n = Math.sqrt(circumstances[30]);
-            tmp = circumstances[26] * circumstances[25] - circumstances[24] * circumstances[27];
-            tmp = tmp / n / circumstances[28];
-            tmp = sign * Math.sqrt(1.0 - tmp * tmp) * circumstances[28] / n;
-            tmp = (circumstances[24] * circumstances[26] + circumstances[25] * circumstances[27]) / circumstances[30] - tmp;
-            circumstances[1] = circumstances[1] - tmp;
-            timelocdependent(circumstances);
-            iter++;
-        }
-        return circumstances;
-    }
-
-    // Get C1 and C4 data
-//   Entry conditions -
-//   1. The mid array must be populated
-//   2. The magnitude at mid eclipse must be > 0.0
-    static void getc1c4() {
-        double tmp;
-        double n;
-
-        n = Math.sqrt(mid[30]);
-        tmp = mid[26] * mid[25] - mid[24] * mid[27];
-        tmp = tmp / n / mid[28];
-        tmp = Math.sqrt(1.0 - tmp * tmp) * mid[28] / n;
-        c1[0] = -2;
-        c4[0] = 2;
-        c1[1] = mid[1] - tmp;
-        c4[1] = mid[1] + tmp;
-        c1c4iterate(c1);
-        c1c4iterate(c4);
-    }
-
     // Iterate on C2 or C3
     static double[] c2c3iterate(double[] circumstances) {
         double sign;
@@ -372,9 +305,9 @@ GNU General Public License for more details.
     }
 
     // Get C2 and C3 data
-//   Entry conditions -
-//   1. The mid array must be populated
-//   2. There must be either a total or annular eclipse at the location!
+    //   Entry conditions -
+    //   1. The mid array must be populated
+    //   2. There must be either a total or annular eclipse at the location!
     static void getc2c3() {
         double tmp;
         double n;
@@ -465,52 +398,10 @@ GNU General Public License for more details.
         }
     }
 
-    // Calculate the time of sunrise or sunset
-    static void getsunriset(double[] circumstances, double riset) {
-        double h0;
-        double diff;
-        int iter;
-
-        diff = 1.0;
-        iter = 0;
-        while ((diff > 0.00001) || (diff < -0.00001)) {
-            iter++;
-            if (iter == 4) return;
-            h0 = Math.acos((Math.sin(-0.00524) - Math.sin(obsvconst[0]) * circumstances[5]) / Math.cos(obsvconst[0]) / circumstances[6]);
-            diff = (riset * h0 - circumstances[16]) / circumstances[13];
-            while (diff >= 12.0) diff -= 24.0;
-            while (diff <= -12.0) diff += 24.0;
-            circumstances[1] += diff;
-            timelocdependent(circumstances);
-        }
-    }
-
-    // Calculate the time of sunrise
-    static void getsunrise(double[] circumstances) {
-        getsunriset(circumstances, -1.0);
-    }
-
-    // Calculate the time of sunset
-    static void getsunset(double[] circumstances) {
-        getsunriset(circumstances, 1.0);
-    }
-
-    // Copy a set of circumstances
-    static void copycircumstances(double[] circumstancesfrom, double[] circumstancesto) {
-        int i;
-
-        for (i = 1; i < 41; i++) {
-            circumstancesto[i] = circumstancesfrom[i];
-        }
-    }
-
     static void getall() {
         getmid();
-        //observational(mid);
-        // Calculate m, magnitude and moon/sun
         midobservational();
         if (mid[37] > 0.0) {
-            getc1c4();
             if ((mid[36] < mid[29]) || (mid[36] < -mid[29])) {
                 getc2c3();
                 if (mid[29] < 0.0) {
@@ -521,13 +412,11 @@ GNU General Public License for more details.
                 observational(c2);
                 observational(c3);
 
-                c2[36] = 999.9;
+                c2[36] = 999.9; //these can be used for limb correction if available, currently unusued
                 c3[36] = 999.9;
             } else {
                 mid[39] = 1; // Partial eclipse
             }
-            observational(c1);
-            observational(c4);
         } else {
             mid[39] = 0; // No eclipse
         }
@@ -559,233 +448,35 @@ GNU General Public License for more details.
 
     }
 
-    // Get the local date of an event
-    static String getdate(double[] circumstances) {
-        double t;
-        String ans;
-        double jd;
-        double a;
-        double b;
-        double c;
-        double d;
-        double e;
-        int index;
-
-        index = (int) obsvconst[6];
+    // Get the UTC 00:00 timestamp for the day of the eclipse
+    static long getdate(double[] circumstances) {
+        int index = (int) obsvconst[6];
         // Calculate the JD for noon (TDT) the day before the day that contains T0
-        jd = Math.floor(elements[index] - (elements[1 + index] / 24.0));
-        // Calculate the local time (ie the offset in hours since midnight TDT on the day containing T0).
-        t = circumstances[1] + elements[1 + index] - obsvconst[3] - (elements[4 + index] - 0.5) / 3600.0;
-        if (t < 0.0) {
-            jd--;
-        }
-        if (t >= 24.0) {
-            jd++;
-        }
-        if (jd >= 2299160.0) {
-            a = Math.floor((jd - 1867216.25) / 36524.25);
-            a = jd + 1 + a - Math.floor(a / 4);
-        } else {
-            a = jd;
-        }
-        b = a + 1525.0;
-        c = Math.floor((b - 122.1) / 365.25);
-        d = Math.floor(365.25 * c);
-        e = Math.floor((b - d) / 30.6001);
-        d = b - d - Math.floor(30.6001 * e);
-        if (e < 13.5) {
-            e = e - 1;
-        } else {
-            e = e - 13;
-        }
-        if (e > 2.5) {
-            ans = c - 4716 + "-";
-        } else {
-            ans = c - 4715 + "-";
-        }
-        ans += month[(int) e - 1] + "-";
-        if (d < 10) {
-            ans = ans + "0";
-        }
-        ans = ans + d;
-        return ans;
+        double jd = Math.floor(elements[index] - (elements[1 + index] / 24.0)) + 0.5;
+        return (long) (86400.0 * (jd - 2440587.5)) * 1000;
     }
 
     //
-// Get the local time of an event
-    static String gettime(double[] circumstances) {
-        double t;
-        String ans;
+    // Get the local time of an event
+    static long gettime(double[] circumstances) {
         int index;
 
-        ans = "";
         index = (int) obsvconst[6];
-        t = circumstances[1] + elements[1 + index] - obsvconst[3] - (elements[4 + index] - 0.5) / 3600.0;
+        double t = circumstances[1] + elements[1 + index] - obsvconst[3] - (elements[4 + index] - 0.5) / 3600.0;
         if (t < 0.0) {
             t = t + 24.0;
         }
         if (t >= 24.0) {
             t = t - 24.0;
         }
-        if (t < 10.0) {
-            ans = ans + "0";
-        }
-        ans = ans + (int) Math.floor(t) + ":";
-        t = (t * 60.0) - 60.0 * Math.floor(t);
-        if (t < 10.0) {
-            ans = ans + "0";
-        }
-        ans = ans + (int) Math.floor(t);
-        if (circumstances[40] <= 1) { // not sunrise or sunset
-            ans = ans + ":";
-            t = (t * 60.0) - 60.0 * Math.floor(t);
-            if (t < 10.0) {
-                ans = ans + "0";
-            }
-            ans = ans + (int) Math.floor(t);
-        }
 
-        return ans;
+        return (long) Math.floor(t * 3600 * 1000);
     }
 
-    //the next five methods aren't currently used but I'm leaving them in because they may be useful later on
-// Get the altitude
-    static String getalt(double[] circumstances) {
-        double t;
-        String ans;
-
-        if (circumstances[40] == 2) {
-            return "0(r)";
-        }
-        if (circumstances[40] == 3) {
-            return "0(s)";
-        }
-        if ((circumstances[32] < 0.0) && (circumstances[32] >= -0.00524)) {
-            // Crude correction for refraction (and for consistency's sake)
-            t = 0.0;
-        } else {
-            t = circumstances[32] * 180.0 / Math.PI;
-        }
-        if (t < 0.0) {
-            ans = "-";
-            t = -t;
-        } else {
-            ans = "";
-        }
-        t = Math.floor(t + 0.5);
-        if (t < 10.0) {
-            ans = ans + "0";
-        }
-        ans = ans + t;
-
-        return ans;
-    }
-
-    //
-// Get the azimuth
-    static String getazi(double[] circumstances) {
-        double t;
-        String ans;
-
-        ans = "";
-        t = circumstances[35] * 180.0 / Math.PI;
-        if (t < 0.0) {
-            t = t + 360.0;
-        }
-        if (t >= 360.0) {
-            t = t - 360.0;
-        }
-        t = Math.floor(t + 0.5);
-        if (t < 100.0) {
-            ans = ans + "0";
-        }
-        if (t < 10.0) {
-            ans = ans + "0";
-        }
-        ans = ans + t;
-
-        return ans;
-    }
-
-    //
-// Get the duration in mm:ss.s format
-//
-// Adapted from code written by Stephen McCann - 27/04/2001
-    static String getduration() {
-        double tmp;
-        String ans;
-
-        if (c3[40] == 4) {
-            tmp = mid[1] - c2[1];
-        } else if (c2[40] == 4) {
-            tmp = c3[1] - mid[1];
-        } else {
-            tmp = c3[1] - c2[1];
-        }
-        if (tmp < 0.0) {
-            tmp = tmp + 24.0;
-        } else if (tmp >= 24.0) {
-            tmp = tmp - 24.0;
-        }
-        tmp = (tmp * 60.0) - 60.0 * Math.floor(tmp) + 0.05 / 60.0;
-        ans = Math.floor(tmp) + "m";
-        tmp = (tmp * 60.0) - 60.0 * Math.floor(tmp);
-        if (tmp < 10.0) {
-            ans = ans + "0";
-        }
-        ans += Math.floor(tmp) + "s";
-        return ans;
-    }
-
-    //
-// Get the magnitude
-    static String getmagnitude() {
-        String a;
-
-        a = Double.toString(Math.floor(1000.0 * mid[37] + 0.5) / 1000.0);
-
-        if (mid[40] == 2) {
-            a = a + "(r)";
-        }
-        if (mid[40] == 3) {
-            a = a + "(s)";
-        }
-        return a;
-    }
-
-    //
-// Get the coverage
-    static String getcoverage() {
-        String a;
-        double b;
-        double c;
-
-        if (mid[37] <= 0.0) {
-            a = "0.0";
-        } else if (mid[37] >= 1.0) {
-            a = "1.000";
-        } else {
-            if (mid[39] == 2) {
-                c = mid[38] * mid[38];
-            } else {
-                c = Math.acos((mid[28] * mid[28] + mid[29] * mid[29] - 2.0 * mid[36] * mid[36]) / (mid[28] * mid[28] - mid[29] * mid[29]));
-                b = Math.acos((mid[28] * mid[29] + mid[36] * mid[36]) / mid[36] / (mid[28] + mid[29]));
-                a = Double.toString(Math.PI - b - c);
-                c = ((mid[38] * mid[38] * Double.parseDouble(a) + b) - mid[38] * Math.sin(c)) / Math.PI;
-            }
-            a = Double.toString(Math.floor(1000.0 * c + 0.5) / 1000.0);
-        }
-        if (mid[40] == 2) {
-            a = a + "(r)";
-        }
-        if (mid[40] == 3) {
-            a = a + "(s)";
-        }
-        return a;
-    }
-
-    public static String[] calculatefor(double lat, double lon, double alt) {
-        String[] info = new String[2];
+    //given a latitude, longitude, and altitude, calculate the times of contact 2 and 3 of a total/annular eclipse.
+    //If the location is outside of the eclipse path, returns Long.MAX_VALUE which can be handled by calling methods.
+    public static long[] calculatefor(double lat, double lon, double alt) {
+        long[] info = new long[2];
 
         calcObsv(lat, lon, alt);
         //calcObsv(25.122, -104.2252, alt);
@@ -793,12 +484,9 @@ GNU General Public License for more details.
         getall();
 
         if (mid[39] > 1) {
-            info[0] = gettime(c2);
-            info[1] = gettime(c3);
-            Log.d("LocationTiming", info[0] + ";   " + info[1]);
-        } else return new String[]{"N/A"};
+            info[0] = gettime(c2) + getdate(mid);
+            info[1] = gettime(c3) + getdate(mid);
+        } else return new long[]{Long.MAX_VALUE};
         return info;
     }
-
-
 }
