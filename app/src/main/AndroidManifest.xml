@@ -29,11 +29,11 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
-        <activity
+        <!--activity
             android:name=".activities.ImageCroppingActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" /> -->
         <activity
             android:name=".activities.TermsAndConditionsActivity"
             android:exported="false"

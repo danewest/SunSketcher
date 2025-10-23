@@ -12,6 +12,12 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
+def useOpenCV = hasProperty("useOpenCV") && getProperty("useOpenCV") == "true"
+
 rootProject.name = "SunSketcher"
 include ':app'
-include ':opencv'
+
+if (useOpenCV) {
+    include ':opencv'
+}

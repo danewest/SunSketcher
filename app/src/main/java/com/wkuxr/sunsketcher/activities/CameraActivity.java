@@ -322,7 +322,8 @@ public class CameraActivity extends AppCompatActivity {
                 if(prefs.getBoolean("cropped", false)){ //if all images have been cropped, false if not found
                     intent = new Intent(this, SendConfirmationActivity.class);
                 } else {
-                    intent = new Intent(this, ImageCroppingActivity.class);
+                    // Temporarily disabled (OpenCV not in use)
+                    // intent = new Intent(this, ImageCroppingActivity.class);
                 }
                 break;
             case 0: //denied upload after taking images
@@ -479,8 +480,13 @@ public class CameraActivity extends AppCompatActivity {
     //scheduled task that closes the camera and switches context activities
     static class SwitchActivityTask extends TimerTask {
         public void run(){
-            Log.d("ACTIVITYSWITCH", "To " + ImageCroppingActivity.class.getName());
-            Intent intent = new Intent(singleton, ImageCroppingActivity.class);
+            // Below disabled temporarily, no image processing
+            // Log.d("ACTIVITYSWITCH", "To " + ImageCroppingActivity.class.getName());
+            // Intent intent = new Intent(singleton, ImageCroppingActivity.class);
+
+            //temporary replacement code
+            Log.d("ACTIVITYSWITCH", "To FinishedInfoActivity");
+            Intent intent = new Intent(singleton, FinishedInfoActivity.class);
             singleton.closeCamera();
             singleton.startActivity(intent);
             singleton.finish(); //makes this screen automatically close if someone tries to navigate back to it using the back button, if the code in the onCreate function that switches the activity context fails
