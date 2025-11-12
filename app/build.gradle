@@ -8,7 +8,7 @@ plugins {
 def useOpenCV = project.hasProperty("useOpenCV") && project.getProperty("useOpenCV") == "true"
 
 android {
-    compileSdk 33
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.wkuxr.eclipsetotality"

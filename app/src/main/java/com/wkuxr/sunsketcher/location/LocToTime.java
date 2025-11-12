@@ -65,14 +65,14 @@ GNU General Public License for more details.
     static double[] obsvconst = new double[7];
 
     //TODO: Aug. 12, 2026
-    public static double[] elements = {2461265.24104, 18.0, -3.0, 3.0, 75.4, 75.4,    //Date, hour of greatest eclipse, delta T
+    /*public static double[] elements = {2461265.24104, 18.0, -3.0, 3.0, 75.4, 75.4,    //Date, hour of greatest eclipse, delta T
             0.47551399,  0.51892489, -0.00007730, -0.00000804,                        //x
             0.77118301, -0.23016800, -0.00012460,  0.00000377,                        //y
            14.79666996, -0.01206500, -0.00000300,                                     //d
            88.74778748, 15.00308990,  0.00000000,                                     //mu
             0.53795499,  0.00009390, -0.00001210,                                     //l1
            -0.00814200,  0.00009350, -0.00001210,                                     //l2
-            0.00461410,  0.00459110};                                                 //tan f1, tan f2
+            0.00461410,  0.00459110};  */                                               //tan f1, tan f2
 
     //updated elements provided by Fred Espenak
 //TODO: Apr. 8, 2024
@@ -97,14 +97,14 @@ GNU General Public License for more details.
     0.0046882,   0.0046648};*/                                                      //tan f1, tan f2
 
 //TODO: Aug. 21, 2017 (for testing the calculator without spoofing, as this eclipse passes the lab)
-/*public static double[] elements = {2457987.268521, 18.0, -4.0, 4.0, 70.3, 70.3,
+public static double[] elements = {2457987.268521, 18.0, -4.0, 4.0, 70.3, 70.3,
    -0.1295710,   0.5406426, -2.940e-05, -8.100e-06,
     0.4854160,  -0.1416400, -9.050e-05,  2.050e-06,
    11.8669596,  -0.0136220, -2.000e-06,
    89.2454300,  15.0039368,  0.000e-00,
     0.5420930,   0.0001241, -1.180e-05,
    -0.0040250,   0.0001234, -1.170e-05,
-    0.0046222,   0.0045992};*/
+    0.0046222,   0.0045992};
 
 //
 // Eclipse circumstances
