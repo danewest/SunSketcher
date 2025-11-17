@@ -43,7 +43,9 @@ public class MainActivity extends AppCompatActivity {
         singleton = this;
         App.setContext(this);
 
-        reqPerm(perms);
+        if (!reqPerm(perms)) {
+            return;
+        }
 
         // Legacy functionality temporarily disabled for trimmed scope (no image processing, no server, etc.)
         /*
@@ -195,4 +197,31 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
+
+    // Ensure app knows when user accepts/denies permissions
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 1) {  // same request code you used in reqPerm()
+            boolean fineGranted = false;
+            boolean cameraGranted = false;
+
+            for (int i = 0; i < permissions.length; i++) {
+                if (permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    fineGranted = (grantResults[i] == PackageManager.PERMISSION_GRANTED);
+                }
+                if (permissions[i].equals(Manifest.permission.CAMERA)) {
+                    cameraGranted = (grantResults[i] == PackageManager.PERMISSION_GRANTED);
+                }
+            }
+
+            if (fineGranted && cameraGranted) {
+                Log.d("Permissions", "All required permissions granted.");
+            } else {
+                Log.w("Permissions", "Missing one or more required permissions.");
+            }
+        }
+    }
+
 }
