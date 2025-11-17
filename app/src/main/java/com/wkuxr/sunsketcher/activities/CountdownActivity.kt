@@ -98,9 +98,13 @@ class CountdownActivity : AppCompatActivity() {
                     //lon = -60.7450
 
                     //TODO: for testing 2026 eclipse (location spoof)
-                    lat = 80.26822
-                    lon = -27.75176
-                    alt = 1213.0
+                    //lat = 80.26822
+                    //lon = -27.75176
+                    //alt = 1213.0
+
+                    //TODO: for testing 2017 eclipse (location spoof)
+                    //lat = 36.99032
+                    //lon = -86.443602
 
                     //get contact times using obtained location TODO: use for actual app releases
                     val contactTimes = LocToTime.calculatefor(lat, lon, alt)
