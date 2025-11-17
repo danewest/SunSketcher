@@ -4,8 +4,11 @@ plugins {
     id 'kotlin-kapt'
 }
 
+// Toggle flag for OpenCV support (defined in gradle.properties)
+def useOpenCV = project.hasProperty("useOpenCV") && project.getProperty("useOpenCV") == "true"
+
 android {
-    compileSdk 33
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.wkuxr.eclipsetotality"
@@ -15,12 +18,14 @@ android {
         versionName "1.0.7"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        buildConfigField "boolean", "USE_OPENCV", useOpenCV.toString()
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {
@@ -34,6 +39,16 @@ android {
         jvmTarget = '17'
     }
     namespace 'com.wkuxr.sunsketcher'
+
+    // Only include the CMake build if OpenCV is enabled
+     if (useOpenCV) {
+        externalNativeBuild {
+            cmake {
+                path "src/main/cpp/CMakeLists.txt"
+                arguments "-DUSE_OPENCV=${useOpenCV}"
+           }
+        }
+    }
 }
 
 dependencies {
@@ -56,5 +71,9 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.6.2"
     implementation 'com.google.android.play:integrity:1.3.0'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':opencv')
+
+    // Include OpenCV only if enabled
+    if (useOpenCV) {
+        implementation project(':opencv')
+    }
 }

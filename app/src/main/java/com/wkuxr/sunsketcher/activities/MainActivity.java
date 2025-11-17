@@ -21,7 +21,6 @@ import com.wkuxr.sunsketcher.location.LocationAccess;
 import com.wkuxr.sunsketcher.location.Sunset;
 import com.wkuxr.sunsketcher.databinding.ActivityMainBinding;
 import com.wkuxr.sunsketcher.networking.IDRequest;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
@@ -44,8 +43,12 @@ public class MainActivity extends AppCompatActivity {
         singleton = this;
         App.setContext(this);
 
-        reqPerm(perms);
+        if (!reqPerm(perms)) {
+            return;
+        }
 
+        // Legacy functionality temporarily disabled for trimmed scope (no image processing, no server, etc.)
+        /*
         SharedPreferences prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         int hasConfirmDeny = prefs.getInt("upload", -1); //if -1, hasn't taken images yet
         Intent intent = null;
@@ -92,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
             });
             idTimeThread.start();
         }
+        */
 
         //the commented out code below here relating to clientIDs is debug functionality to display the clientID on screen
         //binding.clientIDText.setText("ClientID: " + clientID);
@@ -109,7 +113,9 @@ public class MainActivity extends AppCompatActivity {
                 if(prefs.getBoolean("cropped", false)){
                     intent = new Intent(this, SendConfirmationActivity.class);
                 } else { //cropped is false if not all images have been cropped (this is also the default if cropped is not found)
-                    intent = new Intent(this, ImageCroppingActivity.class);
+                    // intent = new Intent(this, ImageCroppingActivity.class);
+                    // ^^ Comment out the image cropping reference
+                    intent = new Intent(this, SendConfirmationActivity.class);
                 }
                 break;
             case 0: //denied upload
@@ -125,9 +131,9 @@ public class MainActivity extends AppCompatActivity {
             default: //don't do anything if the above cases aren't true
         }
         //switch to the respective screen if necessary
-        if(intent != null) {
-            this.startActivity(intent);
-        }
+         if(intent != null) {
+             this.startActivity(intent);
+         }
     }
 
     public void start(View v){
@@ -191,4 +197,31 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
+
+    // Ensure app knows when user accepts/denies permissions
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 1) {  // same request code you used in reqPerm()
+            boolean fineGranted = false;
+            boolean cameraGranted = false;
+
+            for (int i = 0; i < permissions.length; i++) {
+                if (permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    fineGranted = (grantResults[i] == PackageManager.PERMISSION_GRANTED);
+                }
+                if (permissions[i].equals(Manifest.permission.CAMERA)) {
+                    cameraGranted = (grantResults[i] == PackageManager.PERMISSION_GRANTED);
+                }
+            }
+
+            if (fineGranted && cameraGranted) {
+                Log.d("Permissions", "All required permissions granted.");
+            } else {
+                Log.w("Permissions", "Missing one or more required permissions.");
+            }
+        }
+    }
+
 }

@@ -39,7 +39,8 @@ class CountdownActivity : AppCompatActivity() {
             -2 -> intent = if (prefs.getBoolean("cropped", false)) { //-2 means not yet confirmed or denied upload, but has taken images; if cropped is true, all images have been cropped
                 Intent(this, SendConfirmationActivity::class.java)
             } else { //cropped is false if not all images have been cropped (this is also the default if cropped is not found)
-                Intent(this, ImageCroppingActivity::class.java)
+                //Intent(this, ImageCroppingActivity::class.java)
+                Intent(this, SendConfirmationActivity::class.java)
             }
 
             0 -> intent = Intent(this, FinishedInfoDenyActivity::class.java) //0 means upload was denied
@@ -97,9 +98,13 @@ class CountdownActivity : AppCompatActivity() {
                     //lon = -60.7450
 
                     //TODO: for testing 2026 eclipse (location spoof)
-                    lat = 80.26822
-                    lon = -27.75176
-                    alt = 1213.0
+                    //lat = 80.26822
+                    //lon = -27.75176
+                    //alt = 1213.0
+
+                    //TODO: for testing 2017 eclipse (location spoof)
+                    //lat = 36.99032
+                    //lon = -86.443602
 
                     //get contact times using obtained location TODO: use for actual app releases
                     val contactTimes = LocToTime.calculatefor(lat, lon, alt)

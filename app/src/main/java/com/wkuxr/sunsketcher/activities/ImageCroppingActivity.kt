@@ -1,5 +1,6 @@
 package com.wkuxr.sunsketcher.activities
-
+// Commenting out the whole file temporarily; no OpenCV/image processing needed
+/*
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -277,3 +278,4 @@ class ImageCroppingActivity : AppCompatActivity() {
         return pt
     }
 }
+ */
