@@ -438,7 +438,7 @@ public class CameraActivity extends AppCompatActivity {
         @Override
         public void run() {
             startStillCaptureRequest();
-            sequenceHandler.postDelayed(this, 500);
+            sequenceHandler.postDelayed(this, 100);
         }
     };
 
@@ -612,7 +612,12 @@ public class CameraActivity extends AppCompatActivity {
             }
             mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), rotatedWidth, rotatedHeight);
             Size mImageSize = chooseOptimalSize(map.getOutputSizes(imageFormat), rotatedWidth, rotatedHeight);
-            mImageReader = ImageReader.newInstance(mImageSize.getWidth(), mImageSize.getHeight(), imageFormat, 1);
+            mImageReader = ImageReader.newInstance(
+                    mImageSize.getWidth(),
+                    mImageSize.getHeight(),
+                    imageFormat,
+                    10
+            );
             mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
             mCameraId = currentLarge;
             CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(mCameraId);
