@@ -118,13 +118,24 @@ public class CameraActivity extends AppCompatActivity {
     private String mCameraId;
     private Size mPreviewSize;
     private ImageReader mImageReader;
+    //number of full-size frames the reader can hold while earlier ones are still being written to disk; with 1 most frames in a fast burst were lost
+    private static final int MAX_IMAGES = 10;
 
     //callback from images being captured
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener = new
             ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
-                    mBackgroundHandler.post(new ImageSaver(reader.acquireLatestImage()));
+                    //acquireNextImage (not acquireLatestImage) so queued frames in a fast burst are saved instead of discarded
+                    try {
+                        Image image = reader.acquireNextImage();
+                        if (image != null) {
+                            mBackgroundHandler.post(new ImageSaver(image));
+                        }
+                    } catch (IllegalStateException e) {
+                        //all MAX_IMAGES buffers are still waiting to be saved, so this frame is dropped
+                        Log.w("CameraDebug", "Image buffer full, frame dropped: " + e.getMessage());
+                    }
                 }
             };
 
@@ -358,7 +369,14 @@ public class CameraActivity extends AppCompatActivity {
         prefs = getSharedPreferences("eclipseDetails", Context.MODE_PRIVATE);
         prefs.edit().putInt("upload", -2).apply();
 
-        //timer that takes images every 1 seconds for 20 seconds starting 15 seconds before t[c2], then another timer for images every 1s for 20s starting 5s before t[c3]
+        //capture schedule mirrors the iOS app (CameraService.swift, useSpainSchedule) so both platforms take a similar number of photos:
+        //  c2-20s to c2-10s : 1 photo per second
+        //  c2-10s to c2+10s : 1 photo every 0.19 seconds
+        //  (only if USE_SPAIN_SCHEDULE is false) c2+10s to c2+20s : 1 photo per 2 seconds
+        //  midpoint         : 1 photo
+        //  (only if USE_SPAIN_SCHEDULE is false) c3-20s to c3-10s : 1 photo per second
+        //  c3-10s to c3+10s : 1 photo every 0.19 seconds
+        //  c3+10s to c3+20s : 1 photo per second
         //the next three lines are for testing functionality. They perform the same time randomization as above in the onCreate function, but set the start time and end time relative to the current time
         //long randomizer = (long)((Math.random() * 500) - 250); //TODO: remove for actual app releases
         //startTime = System.currentTimeMillis() + 30000 + randomizer; //TODO: remove for actual app releases
@@ -368,28 +386,32 @@ public class CameraActivity extends AppCompatActivity {
 
         //create a timer which is used to schedule all of the timing triggers
         sequenceTimer = new Timer();
-        //set timer to start captures at t[c2] - 20 at 1 img per 2 seconds
+        //set timer to start captures at t[c2] - 20 at 1 img per second
         Date startC2d1 = new Date(startTime - 20000);
         sequenceTimer.schedule(new StartSequenceTask(),startC2d1);
-        //switch capture rate to 2 per second at t[c2] - 10
+        //switch capture rate to ~5 per second at t[c2] - 10
         Date startC2d2 = new Date(startTime - 10000);
         sequenceTimer.schedule(new FastSequenceTask(), startC2d2);
-        //switch capture rate to 1 img per 2 seconds at t[c2] + 10
-        Date startC2d3 = new Date(startTime + 10000);
-        sequenceTimer.schedule(new StartSequenceTask(), startC2d3);
-        //set timer to stop captures at t[c2] + 20
-        Date endC2d3 = new Date(startTime + 20000);
-        sequenceTimer.schedule(new StopSequenceTask(), endC2d3);
+        if (USE_SPAIN_SCHEDULE) {
+            //stop captures at t[c2] + 10 (iOS goes straight to the midpoint photo)
+            sequenceTimer.schedule(new StopSequenceTask(), new Date(startTime + 10000));
+        } else {
+            //switch capture rate to 1 img per 2 seconds at t[c2] + 10
+            sequenceTimer.schedule(new StartLongSequenceTask(), new Date(startTime + 10000));
+            //set timer to stop captures at t[c2] + 20
+            sequenceTimer.schedule(new StopSequenceTask(), new Date(startTime + 20000));
+        }
         //set timer to take a single capture at midpoint
         Date mid = new Date(midTime);
         sequenceTimer.schedule(new MidpointCaptureTask(), mid);
-        //set timer to start captures at t[c3] - 20
-        Date startC3d1 = new Date(endTime - 20000);
-        sequenceTimer.schedule(new StartSequenceTask(), startC3d1);
-        //switch capture rate to 2 per second at t[c2] - 10
+        if (!USE_SPAIN_SCHEDULE) {
+            //set timer to start captures at t[c3] - 20 at 1 img per second
+            sequenceTimer.schedule(new StartSequenceTask(), new Date(endTime - 20000));
+        }
+        //switch capture rate to ~5 per second at t[c3] - 10
         Date startC3d2 = new Date(endTime - 10000);
         sequenceTimer.schedule(new FastSequenceTask(), startC3d2);
-        //switch capture rate to 1 img per 2 seconds at t[c2] + 10
+        //switch capture rate to 1 img per second at t[c3] + 10
         Date startC3d3 = new Date(endTime + 10000);
         sequenceTimer.schedule(new StartSequenceTask(), startC3d3);
         //set timer to stop captures at t[c3] + 20
@@ -415,38 +437,68 @@ public class CameraActivity extends AppCompatActivity {
     Timer sequenceTimer = null;
     Handler sequenceHandler = new Handler();
 
-    //thread runnable that takes a photo and then waits for 2 seconds
+    //capture intervals, matching the iOS app (CameraService.swift)
+    private static final boolean USE_SPAIN_SCHEDULE = true; //same flag name/default as iOS useSpainSchedule
+    private static final long SLOW_INTERVAL_MS = 1000;      //iOS: 1.0s
+    private static final long LONG_INTERVAL_MS = 2000;      //iOS: 2.0s (only used when USE_SPAIN_SCHEDULE is false)
+    private static final long FAST_INTERVAL_MS = 190;       //iOS: 0.19s
+
+    //thread runnable that takes a photo and then waits for SLOW_INTERVAL_MS
     Runnable sequenceRunnable = new Runnable(){
         @Override
         public void run(){
             startStillCaptureRequest();
-            sequenceHandler.postDelayed(this, 2000);
+            sequenceHandler.postDelayed(this, SLOW_INTERVAL_MS);
         }
     };
 
-    //scheduled task that removes all fast capture task callbacks and starts the 1-per-2-seconds image captures
+    //thread runnable that takes a photo and then waits for LONG_INTERVAL_MS
+    Runnable longSequenceRunnable = new Runnable(){
+        @Override
+        public void run(){
+            startStillCaptureRequest();
+            sequenceHandler.postDelayed(this, LONG_INTERVAL_MS);
+        }
+    };
+
+    //scheduled task that removes all other capture task callbacks and starts the 1-per-second image captures
     static class StartSequenceTask extends TimerTask {
         public void run(){
             Log.d("CameraDebug", "Starting slow captures.");
             singleton.sequenceHandler.removeCallbacks(singleton.fastSequenceRunnable);
+            singleton.sequenceHandler.removeCallbacks(singleton.longSequenceRunnable);
+            singleton.sequenceHandler.removeCallbacks(singleton.sequenceRunnable);
             singleton.sequenceHandler.postDelayed(singleton.sequenceRunnable, 0);
         }
     }
 
-    //thread runnable that takes a photo and then waits for 0.5 seconds
+    //scheduled task that removes all other capture task callbacks and starts the 1-per-2-seconds image captures
+    static class StartLongSequenceTask extends TimerTask {
+        public void run(){
+            Log.d("CameraDebug", "Starting long-interval captures.");
+            singleton.sequenceHandler.removeCallbacks(singleton.fastSequenceRunnable);
+            singleton.sequenceHandler.removeCallbacks(singleton.sequenceRunnable);
+            singleton.sequenceHandler.removeCallbacks(singleton.longSequenceRunnable);
+            singleton.sequenceHandler.postDelayed(singleton.longSequenceRunnable, 0);
+        }
+    }
+
+    //thread runnable that takes a photo and then waits for FAST_INTERVAL_MS
     Runnable fastSequenceRunnable = new Runnable(){
         @Override
         public void run() {
             startStillCaptureRequest();
-            sequenceHandler.postDelayed(this, 100);
+            sequenceHandler.postDelayed(this, FAST_INTERVAL_MS);
         }
     };
 
-    //scheduled task that removes all slow capture task callbacks and starts the 2-per-second image captures
+    //scheduled task that removes all slow capture task callbacks and starts the fast image captures
     static class FastSequenceTask extends TimerTask {
         public void run(){
             Log.d("CameraDebug", "Starting fast captures.");
             singleton.sequenceHandler.removeCallbacks(singleton.sequenceRunnable);
+            singleton.sequenceHandler.removeCallbacks(singleton.longSequenceRunnable);
+            singleton.sequenceHandler.removeCallbacks(singleton.fastSequenceRunnable);
             singleton.sequenceHandler.postDelayed(singleton.fastSequenceRunnable, 0);
         }
     }
@@ -455,6 +507,7 @@ public class CameraActivity extends AppCompatActivity {
     static class StopSequenceTask extends TimerTask {
         public void run(){
             singleton.sequenceHandler.removeCallbacks(singleton.sequenceRunnable);
+            singleton.sequenceHandler.removeCallbacks(singleton.longSequenceRunnable);
             singleton.sequenceHandler.removeCallbacks(singleton.fastSequenceRunnable);
             Log.d("STOP_CAPTURES", "Image capture sequence callbacks have been removed.");
         }
@@ -612,12 +665,7 @@ public class CameraActivity extends AppCompatActivity {
             }
             mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), rotatedWidth, rotatedHeight);
             Size mImageSize = chooseOptimalSize(map.getOutputSizes(imageFormat), rotatedWidth, rotatedHeight);
-            mImageReader = ImageReader.newInstance(
-                    mImageSize.getWidth(),
-                    mImageSize.getHeight(),
-                    imageFormat,
-                    10
-            );
+            mImageReader = ImageReader.newInstance(mImageSize.getWidth(), mImageSize.getHeight(), imageFormat, MAX_IMAGES);
             mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
             mCameraId = currentLarge;
             CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(mCameraId);
